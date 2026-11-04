@@ -10,19 +10,23 @@ Archivy blokují IP adresu po sérii rychlých dotazů (MZA, ZA Opava…). Nást
   python3 -I tools/slusne.py bash pracovni/skript.sh [argumenty]   -> shellový skript; curl uvnitř jde přes brzdu
   python3 -I tools/slusne.py stav                                  -> limity a zastavené weby
   python3 -I tools/slusne.py odblokuj [web]                        -> zrušit stopku (jen když víš, proč nastala)
+  python3 -I tools/slusne.py zastav <web|adresa> [důvod]           -> zapsat stopku ručně (archiv odmítl prohlížeč:
+                                                                      403/429/503) – zastaví i skripty a nástroje
 
 Pravidla (pro každý web zvlášť, společně pro všechny procesy i projekty na počítači – mají jednu IP adresu):
-  - dotazy (stránky, hledání, API) nejvýš 1 za 2 s (ZA Opava 1 za 4 s), obrázky a dlaždice nejvýš 10 za s;
+  - dotazy (stránky, hledání, API) nejvýš 1 za 2 s (ZA Opava a digi.nacr.cz 1 za 4 s), obrázky a dlaždice nejvýš 10 za s;
     omezuje se frekvence, ne souběh (vlákna stahování dlaždic nevadí),
   - po odpovědi 429/503 (u dotazu i 403), po stránce „zablokováno“ nebo po 3 nepovedených spojeních za sebou
     se web zastaví pro všechny procesy a nástroj hned skončí (kód 3). Nic se neopakuje, nic se neobchází.
     Stopka trvá 30 minut, při druhém odmítnutí webu během 24 h 2 hodiny, při třetím a dalším 8 hodin.
   - curl, python a bash spuštěné z Pythonu (subprocess) jdou taky přes brzdu.
-  - MZA Brno (mza.cz, actapublica.eu) skripty nepovoluje: skriptem jen hledání knih (…/actapublica/matrika/hledani…,
+  - MZA Brno (mza.cz) skripty nepovoluje: skriptem jen hledání knih (…/actapublica/matrika/hledani…,
     1 dotaz za 4 s), detail knihy a snímky jen v prohlížeči. Jiná adresa MZA nástroj hned ukončí (kód 3).
+    Doména actapublica.eu MZA nepatří – skripty na ni taky ne.
   - SOA Třeboň (digi.ceskearchivy.cz) nástroj od 2. 11. 2026 odmítá: skripty nic, jen prohlížeč.
-localhost, vlastní web (Netlify), GitHub a npm se nebrzdí. V prohlížeči (Claude in Chrome) brzda neplatí –
-tam nejvýš 1 dotaz za 2 s a žádné smyčky fetch / Promise.all.
+  - SOA Praha (soapraha.cz, eBadatelna) nástroj od 2. 11. 2026 zakazuje (robots.txt): skripty nic, jen prohlížeč.
+localhost, vlastní web (Netlify), GitHub a npm se nebrzdí. V prohlížeči (Playwright, Claude in Chrome) brzda neplatí –
+tam aspoň 5–10 s mezi stránkami a žádné smyčky fetch / Promise.all (SKILL.md, Šetrně k archivům).
 Stav je v ~/.cache/rodokmen_slusne/ (Windows %LOCALAPPDATA%\\rodokmen_slusne), jen malé soubory JSON.
 """
 import http.client, io, json, os, re, shutil, socket, subprocess, sys, tempfile, threading, time
@@ -33,6 +37,7 @@ LIMITY = {                           # konec názvu webu: (dotaz, obrázek)
     "archives.cz": (4.0, 0.1),       # ZA Opava (digi.archives.cz, images.archives.cz) – blokuje na 30 min
     "nominatim.openstreetmap.org": (1.1, 1.1),   # pravidla Nominatimu: nejvýš 1 dotaz za s
     "mza.cz": (4.0, 4.0),            # MZA Brno – skriptem jen hledání knih (ZAKAZ níže), blokuje i za rychlé dotazy na katalog
+    "digi.nacr.cz": (4.0, 4.0),      # Národní archiv (policejní přihlášky) – po pár rychlých kartách přiškrcuje podle IP
 }
 ZAKAZ = {                            # konec názvu webu: (cesty povolené skriptům, hláška pro ostatní)
     suffix: (re.compile(r"/actapublica/matrika/hledani"),
@@ -40,13 +45,22 @@ ZAKAZ = {                            # konec názvu webu: (cesty povolené skrip
              "(https://www.mza.cz/actapublica/matrika/hledani?typ=obec&search_by_obec=<obec>&page=<n>); detail knihy "
              "a snímky jen v prohlížeči Acta Publica – přiblížit zápis a uložit snímek obrazovky (reference/portaly.md, "
              "MZA Brno). Neobcházej to (jiná adresa, nástroj, hlavičky).")
-    for suffix in ("mza.cz", "actapublica.eu")
+    for suffix in ("mza.cz",)
 }
+ZAKAZ["actapublica.eu"] = (         # cizí doména s obsahem MZA (MZA 3. 11. 2026: „není v naší správě“)
+    re.compile(r"(?!)"),
+    "actapublica.eu není web MZA (doménu MZA nespravuje) – nepoužívej ji. Matriky MZA jsou na "
+    "https://www.mza.cz/actapublica (skriptem jen hledání knih, snímky v prohlížeči; reference/portaly.md, MZA Brno).")
 ZAKAZ["digi.ceskearchivy.cz"] = (   # SOA Třeboň: od 2. 11. 2026 vrací nástroji (User-Agent „rodokmen“) 403
     re.compile(r"(?!)"),             # skriptům nic
     "SOA Třeboň od 2. 11. 2026 nástroj rodokmen odmítá (HTTP 403) – trebon.py ani vlastní skripty nepoužívej. "
     "Matriky čti v prohlížeči digi.ceskearchivy.cz: přiblížit zápis a uložit snímek obrazovky (reference/portaly.md, "
     "SOA Třeboň). Neobcházej to (jiný User-Agent, nástroj, hlavičky).")
+ZAKAZ["soapraha.cz"] = (            # SOA Praha (eBadatelna): od 2. 11. 2026 robots.txt „User-agent: rodokmen / Disallow: /“, 403
+    re.compile(r"(?!)"),             # skriptům nic
+    "SOA Praha (eBadatelna) od 2. 11. 2026 nástroj rodokmen zakazuje (robots.txt, HTTP 403) – ebadatelna.py ani vlastní "
+    "skripty nepoužívej. Matriky čti v prohlížeči eBadatelny: výřez zápisu ze snímku, který prohlížeč načetl, a snímek "
+    "obrazovky (reference/portaly.md, SOA Praha). Neobcházej to (jiný User-Agent, nástroj, hlavičky).")
 VOLNE = ("localhost", "127.0.0.1", "::1", "0.0.0.0", "netlify.app", "netlify.com", "github.com",
          "githubusercontent.com", "npmjs.org", "pypi.org", "pythonhosted.org")
 UA = "Mozilla/5.0 (rodokmen)"           # jak se představuje slusne.py curl (stejně jako nástroje)
@@ -282,19 +296,99 @@ def _host(conn):
     return getattr(conn, "_tunnel_host", None) or conn.host
 
 
+try:   # sdílená mezipaměť obrázků (tools/cache.py); bez ní brzda funguje dál, jen bez úspory
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import cache as _mezipamet
+except Exception:   # noqa: BLE001 – starší projekt bez cache.py
+    _mezipamet = None
+finally:
+    sys.path.pop(0)
+
+
+def _plna_url(conn, url):
+    if "://" in url:
+        return url
+    https = isinstance(conn, getattr(http.client, "HTTPSConnection", ()))
+    port = getattr(conn, "_tunnel_port", None) or conn.port
+    vychozi = 443 if https else 80
+    return f"{'https' if https else 'http'}://{_host(conn)}{'' if not port or port == vychozi else f':{port}'}{url}"
+
+
+def zapocti(host, velikost, z_disku=True):
+    """Statistika pro slusne.py stav: obrázek vzatý z mezipaměti místo z archivu (z_disku=True), nebo stažený
+    z archivu a uložený do mezipaměti (z_disku=False). Volá ji i ebadatelna.py a cache.py (snímky z prohlížeče)."""
+    skupina, _ = _skupina(host)
+    if not skupina:
+        return
+    pocet, mb = ("z_mezipameti", "usetreno_mb") if z_disku else ("stazeno", "stazeno_mb")
+    path = _cesta(skupina)
+    try:
+        with _Zamek(path + ".lock"):
+            st = _nacti(path)
+            st[pocet] = st.get(pocet, 0) + 1
+            st[mb] = round(st.get(mb, 0) + velikost / 1024 ** 2, 2)
+            st.setdefault("pocitano_od", time.strftime("%Y-%m-%d"))
+            _uloz(path, st)
+    except OSError:
+        pass
+
+
+_zapocti = zapocti
+
+
+class _Soubor:   # „socket“ pro odpověď z mezipaměti
+    def __init__(self, data):
+        self.data = data
+
+    def makefile(self, *a, **k):
+        return io.BytesIO(self.data)
+
+
+def _odpoved_z_disku(path):
+    data = open(path, "rb").read()
+    typ = {".jpg": "image/jpeg", ".png": "image/png", ".gif": "image/gif", ".tif": "image/tiff",
+           ".webp": "image/webp"}.get(os.path.splitext(path)[1], "application/octet-stream")
+    hlava = (f"HTTP/1.1 200 OK\r\nContent-Type: {typ}\r\nContent-Length: {len(data)}\r\n"
+             "X-Rodokmen: mezipamet\r\n\r\n").encode()
+    r = http.client.HTTPResponse(_Soubor(hlava + data), method="GET")
+    r.begin()
+    return r, len(data)
+
+
 def _zapni():
     C = http.client.HTTPConnection
     if getattr(C, "_slusne", False):
         return
     put, get, connect = C.putrequest, C.getresponse, C.connect
+    putheader, endheaders, send = C.putheader, C.endheaders, C.send
+    PRIMO = (C, getattr(http.client, "HTTPSConnection", C))   # odpověď z disku jen pro urllib (ne urllib3 a spol.)
 
     def putrequest(self, method, url, *a, **k):
         self._slusne_obr = je_obrazek(url)
+        self._slusne_disk = self._slusne_ulozit = None
         zakaz(_host(self), url)
+        if _mezipamet and method == "GET" and self._slusne_obr and _skupina(_host(self))[0]:
+            plna = _plna_url(self, url)
+            ulozeny = _mezipamet.najdi_url(plna) if type(self) in PRIMO else None
+            if ulozeny:   # z mezipaměti: na archiv nejde nic, ani čekání brzdy
+                self._slusne_disk = ulozeny
+                return None
+            self._slusne_ulozit = plna
         pockej(_host(self), self._slusne_obr)
         return put(self, method, url, *a, **k)
 
+    def putheader_(self, *a, **k):
+        return None if getattr(self, "_slusne_disk", None) else putheader(self, *a, **k)
+
+    def endheaders_(self, *a, **k):
+        return None if getattr(self, "_slusne_disk", None) else endheaders(self, *a, **k)
+
+    def send_(self, data, *a, **k):
+        return None if getattr(self, "_slusne_disk", None) else send(self, data, *a, **k)
+
     def connect_(self):
+        if getattr(self, "_slusne_disk", None):
+            return None
         try:
             return connect(self)
         except (ConnectionRefusedError, ConnectionResetError, TimeoutError, socket.timeout) as e:
@@ -302,6 +396,12 @@ def _zapni():
             raise
 
     def getresponse(self):
+        ulozeny = getattr(self, "_slusne_disk", None)
+        if ulozeny:
+            self._slusne_disk = None
+            r, velikost = _odpoved_z_disku(ulozeny)
+            _zapocti(_host(self), velikost)
+            return r
         r = get(self)
         host, obr = _host(self), getattr(self, "_slusne_obr", False)
         telo = None
@@ -310,9 +410,18 @@ def _zapni():
             telo = r.read()             # přečíst a vrátit zpět, aby volající dostal celé tělo
             r.fp, r.length, r.chunked, r.will_close = io.BytesIO(telo), len(telo), False, True
         kontroluj_odpoved(host, r.status, obr, telo)
+        plna = getattr(self, "_slusne_ulozit", None)
+        if plna and r.status == 200 and not r.getheader("Content-Encoding"):
+            delka = r.getheader("Content-Length")
+            data = r.read()             # obrázek uložit a vrátit volajícímu celý
+            r.fp, r.length, r.chunked, r.will_close = io.BytesIO(data), len(data), False, True
+            delka = int(delka) if delka and delka.strip().isdigit() else None
+            if _mezipamet.uloz_url(plna, data, delka):   # jen úplný obrázek (délka, značka konce)
+                zapocti(host, len(data), z_disku=False)
         return r
 
     C.putrequest, C.getresponse, C.connect, C._slusne = putrequest, getresponse, connect_, True
+    C.putheader, C.endheaders, C.send = putheader_, endheaders_, send_
 
 
 # --- brzda pro podprocesy: curl, python a bash spuštěné z Pythonu (úpravu http.client nedědí) ---------------------
@@ -497,6 +606,33 @@ def _stav():
                 print(f"  {f[:-5]}: odmítnutí za 24 h {len(odm)} (poslední {_cas(odm[-1])}), další stopka by trvala {delka}")
     if nic:
         print("  žádný web není zastavený")
+    _stav_mezipameti(d)
+
+
+def _stav_mezipameti(d):
+    """Kolik obrázků se stáhlo z archivu a kolikrát se místo dalšího stažení vzaly z disku (tools/cache.py)."""
+    weby = [(f[:-5], _nacti(os.path.join(d, f))) for f in sorted(os.listdir(d)) if f.endswith(".json")] if d else []
+    weby = [(w, st) for w, st in weby if st.get("z_mezipameti") or st.get("stazeno")]
+    if not weby:
+        return
+    od = min(st.get("pocitano_od", "?") for _, st in weby)
+    print(f"Mezipaměť obrázků (tools/cache.py), počítáno od {od}:")
+    sz = sd = mz = md = 0
+    for w, st in weby:
+        z, d_, m1, m2 = st.get("stazeno", 0), st.get("z_mezipameti", 0), st.get("stazeno_mb", 0), st.get("usetreno_mb", 0)
+        sz, sd, mz, md = sz + z, sd + d_, mz + m1, md + m2
+        print(f"  {w}: z archivu {z}× ({_mb(m1)}), z disku {d_}× ({_mb(m2)}){_podil(z, d_)}")
+    if len(weby) > 1:
+        print(f"  celkem: z archivu {sz}× ({_mb(mz)}), z disku {sd}× ({_mb(md)}){_podil(sz, sd)}")
+
+
+def _mb(m):
+    return f"{m:.0f} MB" if m >= 10 else f"{m:.1f} MB"
+
+
+def _podil(z, d):
+    """Podíl dotazů na obrázky, které archiv díky mezipaměti nedostal."""
+    return f" – ušetřeno {100 * d / (z + d):.0f} % stažení" if z + d else ""
 
 
 def _odblokuj(web=None):
@@ -526,6 +662,13 @@ def main(argv):
         return _stav()
     if cmd == "odblokuj":
         return _odblokuj(rest[0] if rest else None)
+    if cmd == "zastav":   # odmítnutí, které brzda sama nevidí (prohlížeč) – stejná stopka jako u skriptů
+        if not rest:
+            sys.exit("slusne.py zastav <web nebo adresa> [důvod], např. zastav ebadatelna.soapraha.cz \"HTTP 403 v prohlížeči\"")
+        web = urlsplit(rest[0] if "//" in rest[0] else "//" + rest[0]).hostname
+        if not _skupina(web)[0]:
+            sys.exit(f"slusne: {rest[0]} brzda nehlídá (vlastní web, localhost…) – není co zastavit")
+        zastav(web, "ručně: " + (" ".join(rest[1:]) or "archiv odmítl prohlížeč"))
     if cmd == "curl":
         return _curl(rest)
     if cmd in ("bash", "sh"):
