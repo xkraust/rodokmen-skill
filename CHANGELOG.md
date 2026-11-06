@@ -16,6 +16,10 @@ Věk osoby u událostí na webu.
   Když známe jen rok nebo je údaj pravděpodobný, píše se „asi“. U malých dětí se ukazují měsíce nebo dny.
   Počítá se z dat, která už v projektu jsou, takže stačí aktualizovat projekt a znovu sestavit web.
 
+**Návody**
+- Popis dat (`data.md`, `osoby.py`): datum psát hned za značku `*`/`×`/`†` a u narození co nejpřesněji –
+  podle něj web počítá věk.
+
 ## 0.7.0 – 3. 11. 2026
 
 Sdílená mezipaměť obrázků: každý snímek se z archivu stáhne jen jednou. A kontrola, která nenechá prázdné rody a mapu.

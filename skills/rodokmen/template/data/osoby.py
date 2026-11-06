@@ -11,6 +11,7 @@
 #                        unk  = neznámé (jen místo v rodokmenu)
 #   f    fakta jako krátké věty: "* 12. 3. 1873 Hořice čp. 477", "kovář", "× 28. 1. 1897 Anna Stejskalová", "† 14. 5. 1902"
 #        (* narození, × sňatek, † úmrtí – podle těchto značek web pozná sňatky a místa pro mapu)
+#        datum hned za značkou; z data u * web počítá věk při sňatku a úmrtí – čím přesnější, tím líp
 #   r    klíče zápisů z data/zaznamy.json, které osobu dokládají
 #   note poznámka: proč je údaj nejistý, rozpory, odkud se vzal
 #   sex  jen u osoby 1: "M" nebo "F" (u ostatních plyne z čísla)

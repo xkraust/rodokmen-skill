@@ -34,6 +34,10 @@ P = {
   na sousedním čísle (manžel 2k, manželka 2k+1, i přes `SAME`). U `doc` hlásí `čp.`, které není v žádném citovaném
   zápisu (`shrnuti`, přepis) jako číslo domu (`čp. 23`, `No 23`, `N. 23`, `[Dům] 23`, `z Ostřetína 23`; datum, věk ani
   číslo zápisu, strany či snímku neplatí); číslo převzaté odjinud označ ve faktu zdrojem: `* 1862 Ostřetín čp. 23 (podle stromu)`.
+  Datum piš hned za značku (`× 20. 6. 1919 Holice …`, ne `× Holice 20. 6. 1919`). Web z faktu `*` počítá věk při sňatku
+  a úmrtí (`× 20. 6. 1919 (29 let)`), u zápisů osoby a u sňatku na stránce rodiny. Úplná data dají přesný věk
+  (u dětí měsíce či dny); jen rok, `asi`/`≈` nebo `st: "prob"` → „asi 54 let“; `před`/`po` nebo chybějící `*` → bez věku.
+  Proto do `*` zapisuj co nejpřesnější datum narození, i když `y` má jen roky.
 - `r` klíče zápisů ze `zaznamy.json`. `st` viz `matriky.md`: `doc` přečteno v matrice, `prob` pravděpodobné,
   `fam` od rodiny (i strom, který si rodina vede sama, např. GEDCOM z jejího MyHeritage), `mh` cizí strom z internetu, `unk`.
 - `LINES = {8: ("Novákové", "Kováři z Holic…"), …}` – jen čísla 8–15; název rodu = příjmení v množném čísle. Vyplň hned, jak znáš pradědečka nebo prababičku – bez LINES web neukáže rody a nepřijde rada k příběhu.
