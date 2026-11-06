@@ -6,6 +6,16 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.7.1 – 6. 11. 2026
+
+Věk osoby u událostí na webu.
+
+**Nové**
+- Web na stránce osoby ukazuje za datem sňatku a úmrtí věk osoby v té době, např. „× 20. 6. 1919 (29 let)“.
+  Věk je i u matričních zápisů osoby (kromě křtu) a u sňatku na stránce rodiny („ženich 29 let, nevěsta 24 let“).
+  Když známe jen rok nebo je údaj pravděpodobný, píše se „asi“. U malých dětí se ukazují měsíce nebo dny.
+  Počítá se z dat, která už v projektu jsou, takže stačí aktualizovat projekt a znovu sestavit web.
+
 ## 0.7.0 – 3. 11. 2026
 
 Sdílená mezipaměť obrázků: každý snímek se z archivu stáhne jen jednou. A kontrola, která nenechá prázdné rody a mapu.

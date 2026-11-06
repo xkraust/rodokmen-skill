@@ -4,7 +4,7 @@ import PersonLink from '../../components/PersonLink.astro';
 import Record from '../../components/Record.astro';
 import Pedigree from '../../components/Pedigree.astro';
 import MobileTree from '../../components/MobileTree.astro';
-import { people, families, lineByK, records, dateKey, href, statusClass } from '../../lib/data.js';
+import { people, families, lineByK, records, dateKey, href, statusClass, birthOf, factWithAge } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return Object.keys(people).map((slug) => ({ params: { slug } }));
@@ -13,6 +13,7 @@ const p = people[Astro.params.slug];
 const line = p.line ? lineByK[p.line] : null;
 const recs = [...new Set(p.records)].filter((r) => records[r]).sort((a, b) => dateKey(records[a].date) - dateKey(records[b].date));
 const path = [...p.path].reverse().filter(Boolean);
+const birth = birthOf(p);
 ---
 <Base title={p.name} description={`${p.name} ${p.years} – ${p.rel}`}>
   <div class="crumbs">
@@ -30,7 +31,7 @@ const path = [...p.path].reverse().filter(Boolean);
     <p class="note">V rodokmenu dvakrát – pedigree collapse: je předkem přes {p.children.map((c, i) => <>{i > 0 && ' i přes '}<PersonLink slug={c} /></>)}.
       Podruhé jako {p.also.map((a) => a.rel).join(', ')}.</p>
   )}
-  {p.facts.length > 0 && <ul class="facts">{p.facts.map((f) => <li>{f}</li>)}</ul>}
+  {p.facts.length > 0 && <ul class="facts">{p.facts.map((f) => <li>{factWithAge(f, birth)}</li>)}</ul>}
   {p.note && <p class="note">{p.note}</p>}
 
   <h2>Rodina</h2>
@@ -76,6 +77,6 @@ const path = [...p.path].reverse().filter(Boolean);
   )}
 
   <h2>Zápisy z matrik</h2>
-  {recs.length ? <div class="recs">{recs.map((r) => <Record id={r} showPeople exclude={p.slug} />)}</div>
+  {recs.length ? <div class="recs">{recs.map((r) => <Record id={r} showPeople exclude={p.slug} birth={birth} />)}</div>
     : <p class="muted">K této osobě zatím nemáme vlastní matriční zápis – údaje pocházejí ze zápisů jejích dětí{p.st === 'fam' ? ' nebo od rodiny' : ''}.</p>}
 </Base>

@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PersonLink from '../../components/PersonLink.astro';
 import Record from '../../components/Record.astro';
-import { people, families, lineByK, records, href } from '../../lib/data.js';
+import { people, families, lineByK, records, href, birthOf, factWithAge, parseDate, ageAt } from '../../lib/data.js';
 
 export function getStaticPaths() {
   return Object.keys(families).map((id) => ({ params: { id } }));
@@ -12,6 +12,12 @@ const father = f.father ? people[f.father] : null;
 const mother = f.mother ? people[f.mother] : null;
 const children = f.children.map((s) => people[s]);
 const line = f.line ? lineByK[f.line] : null;
+// věk ženicha a nevěsty k datu sňatku
+const marriageAges = (m) => {
+  const ev = parseDate(m);
+  const parts = [['ženich', father], ['nevěsta', mother]].map(([who, p]) => [who, ageAt(birthOf(p), ev)]).filter(([, a]) => a);
+  return parts.length ? ` – ${parts.map(([who, a]) => `${who} ${a}`).join(', ')}` : '';
+};
 const title = [father?.name ?? (f.fatherUnknown ? 'otec neuveden' : 'neznámý otec'), mother?.name ?? 'neznámá matka'].join(' a ');
 ---
 <Base title={`Rodina: ${title}`}>
@@ -25,7 +31,7 @@ const title = [father?.name ?? (f.fatherUnknown ? 'otec neuveden' : 'neznámý o
         {p ? (
           <>
             <p><PersonLink slug={p.slug} /><br /><span class="small muted">{p.rel}</span></p>
-            {p.facts.length > 0 && <ul class="facts small">{p.facts.map((x) => <li>{x}</li>)}</ul>}
+            {p.facts.length > 0 && <ul class="facts small">{p.facts.map((x) => <li>{factWithAge(x, birthOf(p))}</li>)}</ul>}
             {p.family && <p class="small"><a href={href.family(p.family)}>Rodina, ze které pochází →</a></p>}
           </>
         ) : <p class="muted">{i === 0 && f.fatherUnknown ? 'V zápisech neuveden – dítě se narodilo jako nemanželské.' : 'Zatím neznámá osoba.'}</p>}
@@ -36,7 +42,7 @@ const title = [father?.name ?? (f.fatherUnknown ? 'otec neuveden' : 'neznámý o
   {f.marriage.length > 0 && (
     <>
       <h2>Sňatek</h2>
-      <ul class="facts">{f.marriage.map((m) => <li>{m.replace(/^×\s*/, '')}</li>)}</ul>
+      <ul class="facts">{f.marriage.map((m) => <li>{m.replace(/^×\s*/, '')}{marriageAges(m)}</li>)}</ul>
     </>
   )}
 
