@@ -1,5 +1,14 @@
 # Správa repozitáře rodokmen-skill
 
+## Plány úprav
+
+- Každý plán úpravy ukládej jako Markdown soubor do `docs/development/`.
+- První slovo názvu souboru musí být vždy `plán` (s diakritikou a malým písmenem), například `plán-portréty-osob.md`.
+- Použij výstižný název podle plánované úpravy; při zpřesnění stejného plánu aktualizuj jeho existující soubor.
+- Toto pravidlo platí pro všechny budoucí plány úprav v tomto repozitáři.
+
+## Vydání verze
+
 Vydání nové verze: zvedni číslo ve třech místech najednou – `.claude-plugin/plugin.json` (`version`),
 `skills/rodokmen/VERZE` (podle něj Claude u uživatele pozná, že má aktualizovat projekt) a README na dvou místech – nahoře „Aktuální verze: X.Y.Z (vydána D. M. RRRR)“ a v požadavcích
 „Stav k D. M. RRRR (verze X.Y.Z)“, vždy s číslem verze i datem vydání.
