@@ -2,11 +2,13 @@
 
 Datum: 8. 11. 2026
 
-Stav: návrh odsouhlasen uživatelem, implementace zatím neprovedena.
+Stav: původní návrh odsouhlasen uživatelem; doplněno posouzení nabídky portrétu při prohlížení dokumentů. Implementace zatím neprovedena.
 
 ## Cíl
 
 Na stránce osoby zobrazovat její portrét vedle jména, štítků a výpisu událostí podle dodaného screenshotu. Portrét se nebude zobrazovat mezi rodinnými dokumenty ani ve společné galerii u příběhu rodu. Rozpoznání bude automatické podle názvu obrázku obsahujícího `portrét` nebo `portret`, bez ohledu na velikost písmen a zápis diakritiky.
+
+Při prohlížení rodinných dokumentů má asistent navíc rozpoznat fotografii vhodnou jako portrét jedné osoby, oznámit to uživateli a nabídnout její použití. Teprve po souhlasu ji označí názvem pro portrét a oznámí konkrétní změnu názvu.
 
 ## Ověřený současný stav
 
@@ -16,8 +18,32 @@ Na stránce osoby zobrazovat její portrét vedle jména, štítků a výpisu ud
 - `skills/rodokmen/template/web/src/pages/osoba/[slug].astro` vykresluje jméno, štítky, události a níže sekci Rodinné dokumenty.
 - `skills/rodokmen/template/web/src/pages/pribehy/index.astro` vykresluje společnou galerii Rodinné dokumenty a fotografie.
 - Řešení lze doplnit do současného exportu a šablony bez nové knihovny.
+- `skills/rodokmen/SKILL.md` ve fázi 1 již ukládá asistentovi prohlédnout a vytěžit fotografie z `dokumenty/`. Sem lze doplnit vizuální posouzení a rozhovor s uživatelem. Současné Python nástroje obsah fotografií jako portrét neklasifikují.
+- `skills/rodokmen/tools/zapis.py` používá `img` jako identifikátor dokumentu a vyžaduje jeho shodu s klíčem příkazu. Změnu klíče existující položky nepodporuje; zápis pod novým klíčem by přidal další položku.
 
 ## Postup implementace
+
+### 0. Nabídka portrétu při prohlížení dokumentů
+
+Rozšířit `skills/rodokmen/SKILL.md` ve fázi 1 a podrobný postup v `skills/rodokmen/reference/data.md`:
+
+1. Při skutečném prohlížení obrázku vyhodnotit, zda jde o samostatnou fotografii jedné osoby vhodnou pro záhlaví její stránky. Nestačí samotný název souboru nebo jediná tvář uvnitř skenu dokumentu. Skupinové fotografie, koláže a dokumenty s vloženou fotografií automaticky nenabízet jako hotový portrét; případný výřez řešit zvlášť.
+2. Oznámit zjištění jako návrh, například: „Na fotografii `IMG_1234.jpg` je jedna osoba a snímek by se hodil jako portrét. Chcete ho použít na stránce Josefa Krause?“ Jméno použít pouze tehdy, když přiřazení vyplývá z údajů uživatele nebo evidence. Když není známo, zeptat se také, komu fotografie patří; identitu neurčovat podle obličeje.
+3. Před rozhodnutím stručně vysvětlit, že fotografie bude u jména a událostí a nebude v galerii dokumentů. Nabídnout použití jako portrét, ponechání mezi dokumenty nebo odložení rozhodnutí.
+4. Po souhlasu oznámit konkrétní plánovaný název, například: „Pro web fotografii uložím jako `josef_kraus_portret.jpg`, aby se zobrazovala jako portrét.“ Po úspěšném zpracování potvrdit skutečný výsledek. Souhlas s touto nabídkou zahrnuje popsané pojmenování; nevyžadovat druhé potvrzení téhož kroku.
+5. Rozhodnutí a vazbu původního souboru na osobu a výsledný klíč zaznamenat do `data/udaje_od_rodiny.md`, aby se zamítnutá či již vyřízená nabídka při dalším prohlížení neopakovala. Při odložení se k ní vrátit v odpovídajícím kontextu.
+
+Vizuální posouzení provádí asistent při práci s dokumenty, nikoliv export webu. Může se mýlit; proto jde o návrh s rozhodnutím uživatele. Pro tento postup není potřeba přidávat knihovnu na rozpoznávání obličejů ani samostatnou službu. Bez možnosti skutečně zobrazit obrázek automatické posouzení neslibovat a vyžádat popis nebo označení uživatelem. Nepřetržité sledování složky není součástí návrhu.
+
+#### Pojmenování a již evidované fotografie
+
+- Doporučená varianta ponechá vstupní originál v `dokumenty/` pod původním názvem a označí jako portrét webové kopie v `vyrezy/` a `zdroje/` a klíč `img`. U nového snímku tak jde o uložení pod zvoleným názvem, nikoliv o přejmenování originálu; sdělení uživateli musí tento rozdíl přesně popsat.
+- Pokud má být přejmenován také vstupní originál, musí to být součástí konkrétně popsané nabídky, včetně původního a nového názvu, a aktualizovat se musí jeho evidované odkazy. Pro funkci portrétu to není nutné.
+- U již evidovaného obrázku přejmenovat existující webové kopie a změnit `img` ve stejné položce; nevytvářet druhou položku dokumentu. Zachovat popis a přiřazení osoby.
+- Pro tento případ rozšířit `zapis.py` o explicitní změnu klíče existujícího dokumentu s kontrolou kolize. Soubory a související odkazy přejmenovat koordinovaně podle návodu; předem zkontrolovat cílové názvy a při chybě obnovit původní stav. Nepřepisovat jiný obrázek, při kolizi zvolit jedinečný název.
+- Před přejmenováním vyhledat odkazy na starý klíč v datech a textech (například `web.json`, markdownové příběhy a případná zvýraznění), aktualizovat relevantní odkazy a znovu exportovat web. Zohlednit, že export nyní staré kopie v `web/public/` sám neodstraňuje; ověřit jejich využití a cíleně odstranit pouze nahrazené soubory bez dalších odkazů.
+- Pokud osoba už portrét má, nabídnout ponechání současného nebo nahrazení novým. Při nahrazení vyřešit i označení původního obrázku, aby o výsledku nerozhodovalo náhodné pořadí dvou kandidátů. Pravidlo „první existující“ zůstává záložním chováním exportu pro ručně připravená data.
+- Při odmítnutí nepřidávat označení `portret`. Jestli ho už obsahuje název vstupního souboru, použít po vysvětlení pro běžný dokument neutrální webový klíč bez tohoto označení, aby ho export přesto nevybral jako portrét.
 
 ### 1. Rozpoznání portrétu
 
@@ -65,6 +91,10 @@ Tento postup využívá stávající přidávání fotografií; nezahrnuje vytv�
 
 ## Ověření před dokončením
 
+- Na ukázkách samostatné fotografie, skupinové fotografie a dokumentu s vloženou fotografií ověřit správnou nabídku asistenta; nepovažovat vizuální klasifikaci za zaručenou.
+- Ověřit rozhovor při souhlasu, odmítnutí, odložení, neznámé identitě a již existujícím portrétu. Před souhlasem se fotografie nesmí přejmenovat ani změnit její zařazení.
+- Ověřit přesné oznámení nového názvu, zachování originálu v doporučené variantě a zaznamenání rozhodnutí bez opakované nabídky.
+- Otestovat změnu klíče již evidovaného dokumentu: žádná duplicitní položka, zachované údaje, funkční odkazy, kontrola kolizí a zotavení z neúspěšného přejmenování.
 - Rozpoznání variant s diakritikou, bez diakritiky, s různou velikostí písmen a s kombinujícími znaménky; běžná fotografie se nesmí označit za portrét.
 - Správné přiřazení portrétu včetně alternativního čísla osoby, chybějícího souboru a více kandidátů.
 - Portrét se zobrazí v horní části stránky a nebude v žádné ze dvou galerií dokumentů; běžné dokumenty zůstanou zobrazené.
