@@ -4,6 +4,7 @@
 
 Použití (z kořene projektu):
   zapis.py <soubor> <klíč> <vstup.json> [--sloucit]
+  zapis.py dokumenty <starý_klíč> --prejmenovat <nový_klíč> [--nahled]
     soubor     zaznamy | svazky | prepisy | zvyrazneni | mista | dokumenty   (= data/<soubor>.json)
     klíč       zaznamy: „klic“ zápisu; dokumenty: „img“; ostatní: klíč ve slovníku (id svazku, klíč zápisu, obec)
     vstup.json soubor s jedním objektem JSON (napiš ho nástrojem Write do pracovni/), „-“ = ze vstupu
@@ -11,6 +12,9 @@ Použití (z kořene projektu):
 Položka se stejným klíčem se nahradí, jinak se přidá na konec. Python skripty ani `sed -i` na data nepoužívej.
 """
 import json, os, re, sys
+import tempfile, unicodedata
+from pathlib import Path
+from urllib.parse import quote
 for _s in (sys.stdout, sys.stderr):   # UTF-8 výstup i na Windows bez -X utf8 (cp1250 neumí třeba „→“)
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -49,7 +53,161 @@ def jako(text, s, e, v):
     return json.dumps(v, ensure_ascii=False, indent=1).replace("\n", "\n" + odsazeni)
 
 
+def _atomic_bytes(path, content):
+    """Zápis vedle cíle a atomické nahrazení, bez ponechání rozpracovaného souboru."""
+    fd, tmp = tempfile.mkstemp(prefix=".zapis-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(content)
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
+def rename_document(root, old, new, preview=False):
+    """Přejmenuje evidenci, odvozené JPG a známé odkazy; při chybě vrátí provedené změny."""
+    root = Path(root).resolve()
+    def canonical(key):
+        return unicodedata.normalize("NFC", key).casefold()
+
+    for key in (old, new):
+        if (not key or key in (".", "..") or key[-1] in " ." or
+                re.search(r'[<>:"/\\|?*\x00-\x1f]', key) or
+                re.fullmatch(r"(?i)(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?", key)):
+            raise ValueError(f"Neplatný klíč obrázku: {key!r}; použijte název bez cesty a přípony.")
+    if canonical(old) == canonical(new):
+        raise ValueError("Nový klíč se musí lišit od původního i bez ohledu na velikost písmen.")
+
+    def inside(path):
+        if not path.resolve().is_relative_to(root):
+            raise ValueError(f"Cesta vede mimo projekt: {path}")
+        return path
+
+    docs_path = inside(root / "data" / "dokumenty.json")
+    raw = docs_path.read_bytes()
+    text = raw.decode("utf-8-sig")
+    docs = json.loads(text)
+    if not isinstance(docs, list):
+        raise ValueError("dokumenty.json musí být seznam.")
+    matches = [i for i, d in enumerate(docs) if d.get("img") == old]
+    if len(matches) != 1:
+        raise ValueError(f"Klíč {old} musí mít právě jednu položku v dokumenty.json.")
+    if any(canonical(d["img"]) == canonical(new) for d in docs):
+        raise ValueError(f"Dokument {new} už existuje.")
+    records_path = inside(root / "data" / "zaznamy.json")
+    if records_path.exists() and any(canonical(r["klic"]) in (canonical(old), canonical(new))
+                                     for r in json.loads(records_path.read_text(encoding="utf-8-sig"))):
+        raise ValueError("Klíč sdílí matriční zápis; přejmenování dokumentu by změnilo i jeho snímek.")
+
+    idx = matches[0]
+    _, s, e = polozky(text)[idx]
+    changed = text[:s] + jako(text, s, e, dict(docs[idx], img=new)) + text[e:]
+    changes = {docs_path: changed.encode("utf-8")}
+    moves = []
+    for folder in ("vyrezy", "zdroje", "web/public/img", "web/public/zdroje"):
+        directory = inside(root / folder)
+        src, dst = inside(directory / (old + ".jpg")), inside(directory / (new + ".jpg"))
+        if directory.exists() and any(canonical(p.name) == canonical(new + ".jpg") for p in directory.iterdir()):
+            raise ValueError(f"Cílový soubor už existuje: {dst}")
+        if src.exists():
+            if not src.is_file():
+                raise ValueError(f"Očekáván soubor: {src}")
+            moves.append((src, dst))
+    if not (root / "vyrezy" / (old + ".jpg")).is_file():
+        raise ValueError(f"Chybí vyrezy/{old}.jpg; nejprve připravte webový obrázek.")
+
+    def links(value):
+        # Relativní cesty i URL, včetně názvů s diakritikou zakódovaných v URL.
+        variants = [(old, False)]
+        if quote(old, safe="") != old:
+            variants.append((quote(old, safe=""), True))
+        for before, encoded in variants:
+            pattern = r"(?<![\w-])((?:img|vyrezy|zdroje)/)" + re.escape(before) + r"\.jpg(?![\w.-])"
+            def replace(match):
+                url = encoded or match[1] == "img/" or (match.start() > 0 and value[match.start() - 1] == "/")
+                return match[1] + (quote(new, safe="") if url else new) + ".jpg"
+            value = re.sub(pattern, replace, value)
+        return value
+
+    # Měnit zdrojové odkazy, generované HTML a site.json se obnoví exportem/buildem.
+    paths = list((root / "data").rglob("*"))
+    src_dir = root / "web" / "src"
+    if src_dir.exists():
+        paths += [p for p in src_dir.rglob("*") if p.relative_to(src_dir).parts[0] not in ("data", "generated")]
+    for path in paths:
+        if not path.is_file() or path.suffix not in (".json", ".md", ".py", ".astro", ".js", ".ts", ".html", ".css"):
+            continue
+        inside(path)
+        before = changes.get(path, path.read_bytes()).decode("utf-8-sig")
+        after = before
+        if path.suffix == ".json":
+            data = json.loads(before)
+            if path.name == "zvyrazneni.json" and old in data and any(canonical(k) == canonical(new) for k in data):
+                raise ValueError(f"Zvýraznění pro {new} už existuje.")
+            foto_span, login_span, highlight_span = None, None, None
+            if path.name == "zvyrazneni.json" and old in data:
+                start = next(s for k, s, e in polozky(before) if k == old)
+                highlight_span = re.search(r'("(?:[^"\\]|\\.)*")\s*:\s*$', before[:start]).span(1)
+            if path.name == "web.json":
+                for field, start, end in polozky(before):
+                    if field == "prihlaseni":
+                        login_span = (start, end)
+                    if field == "uvod" and isinstance(data.get("uvod"), dict):
+                        foto_span = next(((start + s, start + e) for k, s, e in polozky(before[start:end]) if k == "foto"), None)
+            def token(match):
+                if login_span and login_span[0] <= match.start() < login_span[1]:
+                    return match[0]
+                value = json.loads(match[0])
+                rename_key = (match.start(), match.end()) == highlight_span
+                rename_value = (match.start(), match.end()) == foto_span
+                replacement = new if value == old and (rename_key or rename_value) else links(value)
+                return json.dumps(replacement, ensure_ascii=False) if replacement != value else match[0]
+            after = re.sub(r'"(?:[^"\\]|\\.)*"', token, before)
+            json.loads(after)
+        else:
+            after = links(before)
+        if after != before:
+            changes[path] = after.encode("utf-8")
+
+    for src, dst in moves:
+        print(f"{src.relative_to(root)} → {dst.relative_to(root)}")
+    for path in changes:
+        print(f"Aktualizace: {path.relative_to(root)}")
+    if preview:
+        print("Náhled: nic nezměněno.")
+        return
+
+    originals = {p: p.read_bytes() for p in changes}
+    moved, written = [], []
+    try:
+        for src, dst in moves:
+            if dst.exists():
+                raise FileExistsError(dst)
+            os.rename(src, dst)
+            moved.append((src, dst))
+        for path, content in changes.items():
+            _atomic_bytes(path, content)
+            written.append(path)
+    except BaseException:
+        for path in reversed(written):
+            _atomic_bytes(path, originals[path])
+        for src, dst in reversed(moved):
+            os.rename(dst, src)
+        raise
+    print(f"Přejmenováno: {old} → {new}. Originál v dokumenty/ zachován. Spusťte npm run data a npm run build ve web/.")
+
+
 def main():
+    if "--prejmenovat" in sys.argv:
+        args = [a for a in sys.argv[1:] if a != "--nahled"]
+        if len(args) != 4 or args[0] != "dokumenty" or args[2] != "--prejmenovat":
+            sys.exit(__doc__)
+        try:
+            rename_document(ROOT, args[1], args[3], preview="--nahled" in sys.argv)
+        except (OSError, ValueError) as e:
+            sys.exit(f"Přejmenování se nezdařilo: {e}")
+        return
     args = [a for a in sys.argv[1:] if a != "--sloucit"]
     sloucit = "--sloucit" in sys.argv
     if len(args) != 3 or args[0] not in {*SEZNAMY, *SLOVNIKY}:

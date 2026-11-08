@@ -88,6 +88,62 @@ jen ji výraz `re` nechytí ve skloňovaném tvaru („v Přesece“ × `Přesek
 `[{"img": "foto_svatba_1919", "popis": "Svatba Jana a Josefy, Holice 1919.", "osoby": [8, 9]}]`
 Obrázek ulož přes `vyrez.py dokumenty/<sken>.jpg foto_svatba_1919` (vznikne `vyrezy/` i `zdroje/`).
 
+### Portréty osob
+
+Při prohlížení dokumentů nabídni samostatnou fotografii jedné osoby jako portrét. Skupinová fotka, koláž ani
+tvář uvnitř dokumentu nejsou hotový portrét; případný výřez domluv zvlášť. Posouzení obrázku je návrh, ne jistota.
+Když obrázek nemůžeš zobrazit, požádej o popis či označení, nepředstírej rozpoznání. Identitu neodhaduj z obličeje:
+použij přiřazení od rodiny nebo v evidenci; při nejasnosti se zeptej, kdo na snímku je.
+
+Nabídka například: „Na fotografii `IMG_1234.jpg` je jedna osoba a snímek by se hodil jako portrét. Chcete ho použít
+na stránce Josefa Krause vedle jména a událostí? Pak se nebude zobrazovat v dokumentech.“ Uživatel může souhlasit,
+ponechat fotku mezi dokumenty nebo rozhodnutí odložit. Před souhlasem nic nepřejmenovávej ani nepřesouvej mezi sekcemi.
+
+Po souhlasu oznam konkrétní jméno: „Pro web fotografii uložím jako `josef_kraus_portret.jpg`.“ Další souhlas se
+stejným krokem nevyžaduj. Vstupní originál v `dokumenty/` ponech pod původním názvem; slovo „přejmenováno“ použij
+jen pro skutečně přejmenované soubory. Přejmenování samotného originálu musí být součástí nabídky uživateli.
+Po úspěšném zpracování potvrď výsledek a do `data/udaje_od_rodiny.md` zapiš datum, původní soubor, osobu, rozhodnutí
+(ano / ne / odloženo) a výsledný klíč. Neopakuj vyřízené nabídky, odložené řeš později v odpovídajícím kontextu.
+
+**Nová fotografie:** ověř volný klíč, vytvoř webové kopie a přidej položku přes `zapis.py`:
+
+```text
+python3 -I tools/vyrez.py dokumenty/IMG_1234.jpg josef_kraus_portret
+python3 -I tools/zapis.py dokumenty josef_kraus_portret pracovni/portret.json
+```
+
+Obsah `pracovni/portret.json` (číslo 2 nahraď skutečným číslem osoby):
+
+```json
+{"img": "josef_kraus_portret", "popis": "Josef Kraus, rodinná fotografie.", "osoby": [2]}
+```
+
+Rozhodující je klíč v `img` a název výsledného JPG. Export rozpoznává podřetězec `portret` kdekoliv v názvu,
+bez ohledu na diakritiku a velikost písmen: `portrét`, `PORTRET`, `PoRtRéT`. Samotný původní název nestačí.
+Při odmítnutí použij neutrální webový klíč bez tohoto označení, i když ho původní soubor obsahuje; změnu vysvětli.
+
+**Již evidovaná fotografie:** nejprve vyhledej použití starého klíče v projektu. Příkaz má náhled a kontroluje
+kolize; při kolizi vyber volný klíč. Nikdy nepřidej druhý dokument jen kvůli změně názvu:
+
+```text
+python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_kraus_portret --nahled
+python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_kraus_portret
+```
+
+Příkaz zachová ostatní pole položky, přejmenuje existující JPG ve `vyrezy/`, `zdroje/`, `web/public/img/`
+a `web/public/zdroje/`. Opraví klíč v `web.json`, klíč zvýraznění a odkazy na JPG v textových souborech `data/`
+a vlastních šablonách `web/src/` (i URL s diakritikou). Originály nemění. Při chybě vrátí provedené změny.
+Pokud klíč sdílí matriční zápis, přejmenování odmítne; připrav samostatnou kopii fotografie s novým klíčem.
+Nestandardní odkazy (např. vlastní skripty skládající název) oprav podle výsledku vyhledání. Pak ve `web/`
+spusť `npm run data` a `npm run build`, aby se obnovily generované stránky a vyhledávání.
+
+**Osoba už portrét má:** nabídni ponechání nebo nahrazení. Při nahrazení přejmenuj předchozí portrét na neutrální
+klíč bez `portret` (oznámíš, že se vrátí mezi dokumenty), potom označ nový. Když uživatel ponechá původní,
+nový snímek zůstane běžným dokumentem. Pro ručně připravená data export použije první existující portrét v pořadí
+`dokumenty.json` a upozorní na další. Chybějící soubor přeskočí; chybějící či víceznačné přiřazení oznámí.
+Portrét musí mít právě jednu známou osobu; více čísel téže osoby přes `SAME` nevadí. Portréty se nezobrazují
+v žádné ze dvou galerií dokumentů, ani jako nevybrané alternativy.
+
 ## `web.json` – nastavení webu
 Viz `web.md`.
 

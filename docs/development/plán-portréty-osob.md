@@ -2,7 +2,7 @@
 
 Datum: 8. 11. 2026
 
-Stav: původní návrh odsouhlasen uživatelem; doplněno posouzení nabídky portrétu při prohlížení dokumentů. Implementace zatím neprovedena.
+Stav: implementováno ve verzi 0.9.3 dne 8. 11. 2026. Automatické kontroly prošly; vizuální kontrola v prohlížeči zbývá, protože připojení prohlížeče nebylo dostupné.
 
 ## Cíl
 
@@ -105,4 +105,19 @@ Tento postup využívá stávající přidávání fotografií; nezahrnuje vytv�
 
 ## Promítnutí do existujícího rodokmenu
 
-Tento repozitář obsahuje šablonu webu. Po implementaci bude pro zobrazení na existujícím rodokmenu potřeba aktualizovat také jeho projekt a znovu vygenerovat web. Samotné uložení tohoto plánu funkčnost webu nemění.
+Tento repozitář obsahuje šablonu webu. Pro zobrazení na existujícím rodokmenu je potřeba aktualizovat také jeho projekt a znovu vygenerovat web. Ověření proběhlo na odděleném ukázkovém projektu; uživatelův rodokmen se touto implementací neaktualizoval ani nenasazoval.
+
+## Výsledek implementace a ověření
+
+- Export rozděluje běžné dokumenty a portréty, kontroluje přiřazení a existenci obrázku, slučuje aliasy osoby a upozorňuje na více kandidátů.
+- Stránka osoby zobrazuje portrét a popisek s proklikem; styly obsahují jednu kolonu pod 640 px a zachování proporcí fotografie.
+- `zapis.py dokumenty <starý_klíč> --prejmenovat <nový_klíč> [--nahled]` koordinuje změnu evidence, odvozených JPG a známých odkazů. Originály zachovává; kolize odmítá a při chybě vrací provedené změny.
+- Nabídka portrétu a rozhodování uživatele jsou popsány v `SKILL.md` a `reference/data.md`; scénáře souhlasu, odmítnutí, odložení a náhrady byly zkontrolovány v pokynech. Skutečný rozhovor s uživatelem nad novými fotografiemi nebyl součástí testu.
+- `python -I -X utf8 tests/portrety/test_portrety.py -v`: 15 testů, včetně celého exportu, názvů shodných s poli datového formátu, zachování přihlašovacího nastavení a návratu změn při simulovaném selhání přejmenování i zápisu.
+- `python -I -X utf8 tests/aktualizace/test_aktualizace.py skills/rodokmen`: 20 testů prošlo.
+- Validátor `skill-creator/scripts/quick_validate.py`: skill je platný.
+- Ukázkový projekt založený z upstream commitu `f0f8337` (0.9.2) aktualizován přes `novy_projekt.py`; `npm install`, `npm run data` a `npm run build` prošly. Astro sestavilo 587 stránek a Pagefind vytvořil vyhledávací index.
+- `python -I -X utf8 tests/portrety/test_built.py <ukázkový_projekt>/web`: ověřeno HTML všech 261 osob, dva portréty, odkazy na dostupné obrázky a vyloučení z obou galerií. Testovací snímky měly různé proporce.
+- Finální sestavení ověřilo také osobu ze staršího exportu bez pole `portrait` a stránku s dlouhým jménem, událostí a poznámkou; kontrola byla na úrovni sestavení a HTML.
+- Vizuální kontrolu na počítači a mobilu nelze prohlásit za provedenou: nástroj prohlížeče hlásil nedostupný browser host i native pipe. Responzivní styly a HTML jsou připravené, zbývá jejich kontrola v připojeném prohlížeči.
+- Při přípravě verze byly opraveny dříve commitnuté značky konfliktů v `plugin.json`, `VERZE`, README a changelogu; historie obou větví zůstala zachována.

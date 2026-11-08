@@ -214,6 +214,44 @@ def cloudflare_files(cfg, digest):
           + json.dumps(wrangler, ensure_ascii=False, indent=2) + "\n")
 
 
+def is_portrait(key):
+    """Označení v názvu souboru, nezávislé na velikosti písmen a Unicode diakritice."""
+    name = unicodedata.normalize("NFD", os.path.basename(key))
+    return "portret" in "".join(c for c in name if not unicodedata.combining(c)).casefold()
+
+
+def document_lists(docs_cfg, slugs):
+    """Dokumenty a jeden existující portrét na kanonickou osobu; pořadí určuje evidence."""
+    docs, portraits, by_person = [], {}, {}
+    seen = set()
+    for d in docs_cfg:
+        key = d["img"]
+        if key in seen:
+            print(f"POZOR: duplicitní dokument {key} – použita první položka.")
+            continue
+        seen.add(key)
+        persons = list(dict.fromkeys(slugs[k] for k in d.get("osoby", []) if k in slugs))
+        portrait = is_portrait(key)
+        if portrait and (len(persons) != 1 or any(k not in slugs for k in d.get("osoby", []))):
+            print(f"POZOR: portrét {key} musí mít přiřazenou právě jednu známou osobu (aliasy téže osoby nevadí).")
+            continue
+        if not os.path.isfile(os.path.join(VYREZY, key + ".jpg")):
+            print(f"POZOR: {'portrét' if portrait else 'dokument'} {key} – chybí vyrezy/{key}.jpg, přeskočeno.")
+            continue
+        item = dict(img=key, caption=d.get("popis", ""))
+        if portrait:
+            person = persons[0]
+            if person in portraits:
+                print(f"POZOR: více portrétů pro {person}: ponechán {portraits[person]['img']}, přeskočen {key}.")
+                continue
+            portraits[person] = dict(item, full=os.path.isfile(os.path.join(ZDROJE, key + ".jpg")))
+        else:
+            docs.append(dict(item, people=persons))
+            for person in persons:
+                by_person.setdefault(person, []).append(item)
+    return docs, portraits, by_person
+
+
 def main():
     ns = load_people()
     P, LINES, SIDE, ISSUES = ns["P"], ns["LINES"], ns["SIDE"], ns["ISSUES"]
@@ -249,6 +287,8 @@ def main():
     for a, c in SAME.items():
         aliases_of.setdefault(c, []).append(a)
 
+    docs, portraits, person_docs = document_lists(docs_cfg, slugs)
+
     def line_of(k):
         g = gen(k)
         return k >> (g - 3) if g >= 3 else None
@@ -270,7 +310,7 @@ def main():
             child=slugs.get(k // 2) if k > 1 else None, spouse=slugs.get(k ^ 1) if k > 1 else None,
             family=None, ownFamily=None, path=path,
             side=[dict(name=s["n"], text=s["t"], records=[r for r in s.get("r", []) if r in recs]) for s in SIDE if s["k"] == k],
-            docs=[dict(img=d["img"], caption=d["popis"]) for d in docs_cfg if k in d.get("osoby", [])],
+            docs=person_docs.get(slugs[k], []), portrait=portraits.get(slugs[k]),
             children=[slugs[c] for c in [k // 2] + [a // 2 for a in aliases_of.get(k, [])] if k > 1 and c in slugs],
             also=[dict(k=a, rel=relation(a), line=line_of(a), child=slugs.get(a // 2)) for a in aliases_of.get(k, [])],
         )
@@ -366,8 +406,7 @@ def main():
     site = dict(config=public_cfg, places=places, root=slugs[1], aliases={a: slugs[a] for a in SAME}, people=people,
                 families=families, records=records, lines=lines,
                 issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
-                docs=[dict(img=d["img"], caption=d["popis"], people=[slugs[k] for k in d.get("osoby", []) if k in slugs])
-                      for d in docs_cfg if os.path.exists(os.path.join(VYREZY, d["img"] + ".jpg"))])
+                docs=docs)
 
     write(os.path.join(WEB, "src", "data", "site.json"), json.dumps(site, ensure_ascii=False, indent=1))
     gen_dir = os.path.join(WEB, "src", "generated")

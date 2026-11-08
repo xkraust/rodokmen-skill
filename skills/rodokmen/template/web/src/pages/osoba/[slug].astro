@@ -14,24 +14,38 @@ const line = p.line ? lineByK[p.line] : null;
 const recs = [...new Set(p.records)].filter((r) => records[r]).sort((a, b) => dateKey(records[a].date) - dateKey(records[b].date));
 const path = [...p.path].reverse().filter(Boolean);
 const birth = birthOf(p);
+const portrait = p.portrait;
+const portraitImage = portrait ? `${encodeURIComponent(portrait.img)}.jpg` : null;
 ---
 <Base title={p.name} description={`${p.name} ${p.years} – ${p.rel}`}>
   <div class="crumbs">
     {path.map((s, i) => <>{i > 0 && <span>→</span>}{s === p.slug ? <span>{people[s].name}</span> : <a href={href.person(s)}>{people[s].name.split(' ')[0]} {people[s].years}</a>}</>)}
   </div>
-  <h1>{p.name}</h1>
-  <div class="chips">
-    {p.years && <span class="chip">{p.years}</span>}
-    <span class="chip">{p.rel}</span>
-    {line && <a class="chip" href={href.line(line.slug)}><span class="dot" style={`background:${line.color}`}></span>rod {line.name}</a>}
-    <span class={`chip ${statusClass(p.st)}`}>{p.status}</span>
-  </div>
+  <div class:list={['person-intro', { 'has-portrait': portrait }]}>
+    <div class="person-summary">
+      <h1>{p.name}</h1>
+      <div class="chips">
+        {p.years && <span class="chip">{p.years}</span>}
+        <span class="chip">{p.rel}</span>
+        {line && <a class="chip" href={href.line(line.slug)}><span class="dot" style={`background:${line.color}`}></span>rod {line.name}</a>}
+        <span class={`chip ${statusClass(p.st)}`}>{p.status}</span>
+      </div>
 
-  {p.also.length > 0 && (
-    <p class="note">V rodokmenu dvakrát – pedigree collapse: je předkem přes {p.children.map((c, i) => <>{i > 0 && ' i přes '}<PersonLink slug={c} /></>)}.
-      Podruhé jako {p.also.map((a) => a.rel).join(', ')}.</p>
-  )}
-  {p.facts.length > 0 && <ul class="facts">{p.facts.map((f) => <li>{factWithAge(f, birth)}</li>)}</ul>}
+      {p.also.length > 0 && (
+        <p class="note">V rodokmenu dvakrát – pedigree collapse: je předkem přes {p.children.map((c, i) => <>{i > 0 && ' i přes '}<PersonLink slug={c} /></>)}.
+          Podruhé jako {p.also.map((a) => a.rel).join(', ')}.</p>
+      )}
+      {p.facts.length > 0 && <ul class="facts">{p.facts.map((f) => <li>{factWithAge(f, birth)}</li>)}</ul>}
+    </div>
+    {portrait && (
+      <figure class="person-portrait">
+        <a href={`/${portrait.full ? 'zdroje' : 'img'}/${portraitImage}`} target="_blank" rel="noopener" aria-label={`Otevřít portrét: ${p.name} (nová karta)`}>
+          <img src={`/img/${portraitImage}`} alt={`Portrét: ${p.name}`} decoding="async" />
+        </a>
+        {portrait.caption && <figcaption>{portrait.caption}</figcaption>}
+      </figure>
+    )}
+  </div>
   {p.note && <p class="note">{p.note}</p>}
 
   <h2>Rodina</h2>

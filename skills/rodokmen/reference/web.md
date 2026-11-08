@@ -5,6 +5,10 @@ Stránky: úvod (lákadlo, statistiky, zajímavosti, mapa, rody, vějíř), př�
 mapa (OpenStreetMap), vějíř přes celou obrazovku s hledáním, seznam předků, zápisy (s výřezem, rámečkem, přepisem
 a překladem), stránka osoby, rodiny, „Co hledáme“, výzkumný deník, hledání.
 
+Na stránce osoby může být portrét vpravo vedle jména a událostí, na mobilu pod údaji. Zachovává proporce a kliknutí
+otevře plné rozlišení (pokud existuje). Poznámka je pod celým blokem. Portrét se nezobrazuje v galeriích dokumentů.
+Přidání a pojmenování: `data.md` → „Portréty osob“. Bez portrétu stránka nevyhrazuje místo pro fotografii.
+
 ## Příkazy (ve složce `web/`)
 | příkaz | co dělá |
 |---|---|

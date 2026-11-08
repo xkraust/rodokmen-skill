@@ -1,10 +1,6 @@
 {
   "name": "rodokmen",
-<<<<<<< HEAD
-  "version": "0.7.2",
-=======
-  "version": "0.9.2",
->>>>>>> upstream/HEAD
+  "version": "0.9.3",
   "description": "Rodokmen z českých matrik a rodinný web – průvodce pro začátečníky (česky).",
   "author": {
     "name": "Jindřich Šaršon"

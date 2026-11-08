@@ -97,6 +97,11 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
   prarodiče, pradědečci: **jména, rodná příjmení žen, roky a místa narození, sňatky, úmrtí (a kde jsou pohřbeni), řemesla, domy (čísla popisná!)**.
 - Požádej o dokumenty: rodné a oddací listy, domovské listy, parte, fotky (i náhrobků), rodinné kroniky, paměti, staré dopisy,
   výpisy z MyHeritage/Geni od příbuzných. Ať je dá do `dokumenty/`. Přečti je celé (PDF/fotky) a vytěž.
+- **Portrét osoby:** při prohlížení samostatné fotografie jedné osoby nabídni její použití vedle jména a událostí
+  (pak nebude v galerii dokumentů). Identitu převezmi z evidence nebo od uživatele, neurčuj ji podle obličeje.
+  Před souhlasem neměň název ani zařazení. Po souhlasu oznam konkrétní nový název webové kopie s `portret`,
+  originál zachovej a rozhodnutí zapiš do `data/udaje_od_rodiny.md`. Při odmítnutí nabídku neopakuj.
+  Pro nový i již evidovaný snímek postupuj podle `reference/data.md` → „Portréty osob“ (náhrada portrétu, přejmenování a odkazy).
 - Doporuč zeptat se nejstarších žijících příbuzných – teď, dokud to jde. Nabídni seznam otázek.
 - **Příbuzenství ber doslova, jak ho rodina řekla** („pradědeček babičky“ ≠ „otec babičky“) – nikdy ho neopravuj podle
   toho, co se ti hodí do dat. Při nejasnosti se zeptej. Ztotožnění jen podle křestního jména veď jako `prob` s poznámkou.

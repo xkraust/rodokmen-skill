@@ -6,25 +6,19 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
-<<<<<<< HEAD
-## 0.7.2 – 6. 11. 2026
-
-Popis dat doplněný o výpočet věku.
-
-**Návody**
-- Popis dat (`data.md`, `osoby.py`): datum psát hned za značku `*`/`×`/`†` a u narození co nejpřesněji –
-  podle něj web počítá věk.
-
-## 0.7.1 – 6. 11. 2026
-
-Věk osoby u událostí na webu.
+## 0.9.3 – 8. 11. 2026
 
 **Nové**
-- Web na stránce osoby ukazuje za datem sňatku a úmrtí věk osoby v té době, např. „× 20. 6. 1919 (29 let)“.
-  Věk je i u matričních zápisů osoby (kromě křtu) a u sňatku na stránce rodiny („ženich 29 let, nevěsta 24 let“).
-  Když známe jen rok nebo je údaj pravděpodobný, píše se „asi“. U malých dětí se ukazují měsíce nebo dny.
-  Počítá se z dat, která už v projektu jsou, takže stačí aktualizovat projekt a znovu sestavit web.
-=======
+- Portrét osoby vedle jména a událostí, na mobilu pod údaji. Fotografie s `portrét` nebo `portret` v názvu
+  (bez ohledu na velikost písmen) se zobrazí jako portrét a nebude v galeriích dokumentů.
+- Při prohlížení rodinných fotografií asistent nabídne vhodný snímek jako portrét. Po souhlasu oznámí nový
+  název webové kopie, zachová originál a zaznamená rozhodnutí.
+- `zapis.py dokumenty <klíč> --prejmenovat <nový_klíč>` přejmenuje evidovaný obrázek i jeho odkazy,
+  kontroluje kolize a při chybě vrací změny. `--nahled` ukáže změny bez zápisu.
+
+**Opravy**
+- Odstraněny ponechané značky konfliktů po sloučení upstreamu; sjednoceny údaje o verzi a zachována historie forku.
+
 ## 0.9.2 – 7. 11. 2026
 
 **Opravy**
@@ -147,7 +141,24 @@ Bezpečná aktualizace projektu (vlastní úpravy zůstanou), rychlé stahován�
 
 Aktualizaci projektu napsal pavelzbornik (PR #88), stejně jako opravu `mista.py` (PR #85) a nové kontroly
 (PR #86). Děkuji i všem, kdo poslali zkušenosti e-mailem.
->>>>>>> upstream/HEAD
+
+## 0.7.2 – 6. 11. 2026
+
+Popis dat doplněný o výpočet věku.
+
+**Návody**
+- Popis dat (`data.md`, `osoby.py`): datum psát hned za značku `*`/`×`/`†` a u narození co nejpřesněji –
+  podle něj web počítá věk.
+
+## 0.7.1 – 6. 11. 2026
+
+Věk osoby u událostí na webu.
+
+**Nové**
+- Web na stránce osoby ukazuje za datem sňatku a úmrtí věk osoby v té době, např. „× 20. 6. 1919 (29 let)“.
+  Věk je i u matričních zápisů osoby (kromě křtu) a u sňatku na stránce rodiny („ženich 29 let, nevěsta 24 let“).
+  Když známe jen rok nebo je údaj pravděpodobný, píše se „asi“. U malých dětí se ukazují měsíce nebo dny.
+  Počítá se z dat, která už v projektu jsou, takže stačí aktualizovat projekt a znovu sestavit web.
 
 ## 0.7.0 – 3. 11. 2026
 
