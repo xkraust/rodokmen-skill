@@ -6,6 +6,7 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+<<<<<<< HEAD
 ## 0.7.2 – 6. 11. 2026
 
 Popis dat doplněný o výpočet věku.
@@ -23,6 +24,130 @@ Věk osoby u událostí na webu.
   Věk je i u matričních zápisů osoby (kromě křtu) a u sňatku na stránce rodiny („ženich 29 let, nevěsta 24 let“).
   Když známe jen rok nebo je údaj pravděpodobný, píše se „asi“. U malých dětí se ukazují měsíce nebo dny.
   Počítá se z dat, která už v projektu jsou, takže stačí aktualizovat projekt a znovu sestavit web.
+=======
+## 0.9.2 – 7. 11. 2026
+
+**Opravy**
+- Kontrola nové verze z 0.9.1 u některých lidí neproběhla: hlídač sítě ji zablokoval (teď pustí skript, který se ptá
+  jen GitHubu) a kopie nástroje v projektu nenašla nainstalovaný skill (teď ho najde, a když ne, netvrdí „aktuální“).
+  U ručně nakopírovaného skillu radí stáhnout novou verzi z GitHubu místo příkazů pro plugin (#136).
+- Windows: hlídač sítě se po aktualizaci projektu nemusel spustit – v nastavení byl jen příkaz `python`, který
+  v prostředí Claude Code může vést na nefunkční zástupce z Microsoft Store. Teď je tam vždy plná cesta k Pythonu.
+- `npm install` ve `web/` už nehlásí závažnou zranitelnost (knihovna `undici`, používá ji jen sestavení webu).
+
+**Návody**
+- MZA Brno: snímky přes Playwright, ne vestavěný prohlížeč Claude desktop (dostává 403 i po pauze). Bílý snímek
+  s chybou 403 je blokace, ne pomalé načítání – Claude přestane a řekne to (#147).
+
+Děkuji všem za rychlá hlášení e-mailem i na GitHubu.
+
+## 0.9.1 – 6. 11. 2026
+
+**Nové**
+- Kontrola nové verze i proti GitHubu: Claude na začátku konverzace zjistí, jestli nevyšla novější verze, než je
+  nainstalovaná (nejvýš jednou denně), a poradí, jak skill aktualizovat. Dřív to poznal, jen když se kopie skillu
+  aktualizovala sama, a to se u některých instalací děje se zpožděním hodin až dnů (#98).
+
+**Opravy**
+- Aktualizace projektu odmítne starší kopii skillu, než ze které projekt vznikl – projekt se tak nevrátí ke staré verzi.
+
+## 0.9.0 – 6. 11. 2026
+
+Hlavní novinka: **rodinný web se nově zveřejňuje na Cloudflare.** Nasazování i přenos jsou zdarma bez limitu,
+takže web jde aktualizovat kdykoli (bezplatný Netlify vystačí jen na zhruba 20 nasazení měsíčně).
+
+**Nové**
+- **Zveřejnění na Cloudflare (výchozí).** Uživatel si jen založí účet a v prohlížeči klikne na „Allow“, zbytek
+  udělá Claude: navrhne adresu podle rodu (`https://rodokmen.novakovi.workers.dev`), předem ověří, že je volná,
+  a web nasadí příkazem `npm run nasadit-cloudflare`. Rodinná otázka chrání stránky i fotky, kontrola po nasazení
+  počká, až se nová adresa rozšíří, a ověří, že web bez přihlášení ukáže otázku (#50, #67).
+- Kdo má web na Netlify, nic měnit nemusí – `npm run nasadit` funguje dál. Claude teď ale po zveřejnění nenasazuje
+  po každém kole, jen na pokyn nebo jednou na konci sezení, a hlášku „Forbidden“ vysvětlí jako vyčerpané kredity (#54).
+
+**Opravy**
+- Vlastní server (Docker, CapRover): nginx kvůli přihlašovací otázce vůbec nenastartoval (chyba 502), u otevřeného
+  webu padal na dvojí `default`. Image je nově `nginx:stable-alpine` (#56, #61).
+- Odpověď na přihlašovací otázku jen z azbuky nebo symbolů: nasazení teď řekne proč, místo „není odpověď“.
+- Hlavička `SKILL.md` je platný YAML – hlásil ji jako chybnou GitHub i GitHub Copilot (#131).
+- Indikační skici stabilního katastru: v budově je červeně číslo popisné a černě číslo stavební parcely, ne
+  naopak (#132).
+
+**Návody**
+- Vlastní server: úklid starého image po přestavbě, příprava webu bez Node.js, přihlášení jen přes https,
+  za reverse proxy subdoména místo podadresáře.
+
+Děkuji všem, kdo poslali poznámky a opravy – hlavně za zkušenosti s Cloudflare a Dockerem.
+
+## 0.8.2 – 5. 11. 2026
+
+**Opravy**
+- SOA Plzeň (Porta fontium): nástroje se ptají nejvýš jednou za 10 sekund, jak archiv žádá ve svém robots.txt.
+  Stahování je pomalejší, hlavně mapa knihy (#129).
+
+## 0.8.1 – 5. 11. 2026
+
+V dnešním vydání jsem se zaměřil na nejčastěji hlášené problémy a vylepšení.
+
+**Nové**
+- Porta fontium: `portafontium.py obec "<obec>"` vypíše všechny knihy obce seskupené podle fary a seřazené podle let.
+  Je z toho vidět i přechod obce mezi farami a stejnojmenné obce jiných far.
+- FamilySearch: snímek z přihlášeného prohlížeče (Playwright) jde uložit do mezipaměti a do projektu v plném
+  rozlišení (`cache.py uloz`) a dál normálně vyříznout. Nový postup pro **Slovensko**: najít faru v katalogu,
+  zjistit, do kdy jsou knihy natočené (často jen do 1895), a jak pracovat s neúplným indexem.
+- Vybledlé snímky: `vyrez.py` a `overit.py` mají přepínač `--kontrast`. Bledá stránka se už nemá prohlásit za prázdnou.
+- Vojáci 1. světové války: `anno.py --ztraty` hledá jen v rakouských seznamech ztrát (pluk, domovská obec, ročník,
+  raněn/zajat/padl).
+- Netlify: po `npm run nasadit` se web sám otevře bez přihlášení a pozná, jestli ho místo rodinné otázky chrání
+  přihlášení k Netlify (ochrana týmu u nových webů). Vypíše, jak ji vypnout. Ručně `npm run overit`.
+
+**Opravy**
+- Brzda se zastaví i tehdy, když archiv přijme spojení, ale neodpovídá (noční výpadky). Dřív každé volání čekalo
+  přes dvě minuty.
+- `anno.py`: filtr podle listu (`ANNO_TITLE`) vracel vždy 0 výsledků.
+
+**Návody**
+- ZA Opava: detail svazku neotvírat přímou adresou (ukáže jiný svazek), raději trvalým odkazem `permalink?xid`.
+  Vestavěný prohlížeč aplikace Claude archiv odmítne, okno aspoň 1400×900, CAPTCHA řeší uživatel.
+- SOA Litoměřice: hledání přes pole Místo, vyzkoušený úryvek pro adresy snímků, jak poznat blokaci.
+- MZA: sčítací operáty 1857–1921 (jen v prohlížeči). Nástroj na stahování snímků z MZA nebude, archiv to zakázal.
+- Claude in Chrome: výstup JavaScriptu s adresou rozšíření zablokuje – jak to obejít.
+- Svazky „dosud uložené na matričním úřadě“, knihy řazené po vsích (neúplný popis, samostatné knihy vsí, pasti
+  rejstříků) a posun mezi číslem v rejstříku a snímkem.
+- Mapy stabilního katastru: jak se dostat k indikační skice a jak ji číst.
+- Výpadky archivů: co dělat, když archiv večer nebo v noci neodpovídá.
+
+Děkuji všem, kdo poslali zkušenosti e-mailem.
+
+## 0.8.0 – 4. 11. 2026
+
+Bezpečná aktualizace projektu (vlastní úpravy zůstanou), rychlé stahování z ARONu a přesnější kontrola dat.
+
+**Nové**
+- Aktualizace projektu už nepřepisuje vlastní úpravy webu a nástrojů. Projekt si pamatuje šablonu, ze které vznikl,
+  a při aktualizaci každý soubor buď přepíše (neupravený), nechá (šablona se nezměnila), nebo sloučí obě změny.
+  Kde to nejde, nechá soubor beze změny a Claude s vámi projde, co je nového a co je vaše úprava. Projekt ze starší
+  verze se při první aktualizaci přepíše jako dřív, ale původní soubory (nově i `tools/`) zůstanou v záloze
+  v `pracovni/` (#79, PR #88).
+- ARON: snímek se stahuje celý jedním požadavkem (jako tlačítko „stáhnout“) místo desítek dlaždic. Stránka, která
+  trvala minuty, je tu za sekundu, v plném rozlišení přesně původní sken. Zmenšení a výřez se dělají z disku a další
+  výřezy téže stránky už archiv nezatěžují.
+- `kontrola.py` hlásí sňatek, který nejmenuje partnera z rodokmenu (druhý sňatek vdovce u první ženy), a číslo domu,
+  které žádný citovaný zápis nedokládá (#80, PR #86). U předků bez obce na mapě ukáže slova, která vypadají jako obec
+  (#81).
+
+**Opravy**
+- `mista.py` hledá jen sídla – už nenajde bar nebo kadeřnictví stejného jména – a varuje, když je nové místo přes
+  50 km od ostatních (stejnojmenná obec jinde) (#81, PR #85).
+- Mezipaměť obrázků ukládá jen celé obrázky: přerušené stažení se neuloží a zkrácený snímek se stáhne znovu.
+- Aktualizace projektu neslučuje `package-lock.json`, vezme nový.
+
+**Návody**
+- SOA Třeboň: nástroj `trebon.py` je na žádost archivu odstraněn (licence DigiArchivu nepovoluje stahování
+  snímků skripty, #91). Matriky se čtou v prohlížeči jako dosud.
+
+Aktualizaci projektu napsal pavelzbornik (PR #88), stejně jako opravu `mista.py` (PR #85) a nové kontroly
+(PR #86). Děkuji i všem, kdo poslali zkušenosti e-mailem.
+>>>>>>> upstream/HEAD
 
 ## 0.7.0 – 3. 11. 2026
 
