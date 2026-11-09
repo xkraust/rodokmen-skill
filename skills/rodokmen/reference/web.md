@@ -44,7 +44,11 @@ Náhled spouštěj na pozadí a uživateli pošli odkaz. Vzhled si ověř sám (
   proto ať ji uživatel nepoužívá jako heslo jinde. Bez odpovědi nasazení (`npm run nasadit`, `deploy-caprover`)
   skončí chybou; otevřený web jen výslovně přes `"otevreny": true` v `prihlaseni`.
   Je to lehká ochrana proti náhodným návštěvníkům, ne bankovní zabezpečení – citlivé věci na web nepatří.
-- `uvod.foto` = klíč obrázku ve `vyrezy/` (ulož přes `vyrez.py`).
+- `uvod.foto` = klíč obrázku ve `vyrezy/` (ulož přes `vyrez.py`). Zobrazí se celá, bez ořezu (nejvýš 420 px vysoká,
+  na mobilu 60 % výšky okna) – co na ní být nemá (okraj skenu, prázdné pozadí), ořízni už ve `vyrez.py` oblastí.
+  Fotka se ukáže jen s vyplněným `uvod.nadpis` nebo `uvod.odstavce`.
+- Pořadí úvodní stránky: název, úvod s fotkou, čísla, zajímavosti (`zajimavosti_na_uvodu`), rodokmen (vějíř, na mobilu
+  strom), rody, mapa. Sekce bez dat (žádné zajímavosti, rody nebo místa) se vynechá.
 - `pribeh`: `menu` a `tlacitko` pojmenuj podle hlavního rodu („Příběh Novákových“), `rod` = číslo rodu (8–15).
   Bez vyplněného `uvod` ukáže úvodní stránka aspoň název a `lead` příběhu. Viz `pribehy.md`.
 - Šablona `web.json` je prázdná – název nastav hned, jak znáš příjmení výchozí osoby (`kontrola.py` hlásí zbytky ukázky).

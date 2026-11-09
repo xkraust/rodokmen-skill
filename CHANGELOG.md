@@ -6,6 +6,19 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.9.4 – 9. 11. 2026
+
+**Nové**
+- Úvodní stránka webu má nové pořadí: po zajímavostech následuje rodokmen (vějíř, na mobilu strom), pak rody
+  a mapa je na konci.
+
+**Opravy**
+- Úvodní fotka se už neořezává do pruhu 2 : 1 – fotky na výšku i čtvercové portréty se ukážou celé (nejvýš 420 px
+  vysoké, na mobilu 60 % výšky okna), vycentrované vedle textu.
+
+**Návody**
+- `reference/web.md` popisuje pořadí úvodní stránky a radí ořezat okraje úvodní fotky už ve `vyrez.py`.
+
 ## 0.9.3 – 8. 11. 2026
 
 **Nové**

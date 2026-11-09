@@ -55,13 +55,12 @@ const cards = config.zajimavosti_na_uvodu ?? [];
     </>
   )}
 
-  {site.places.length > 0 && (
-    <>
-      <h2>Kde žili naši předci</h2>
-      <FamilyMap height="420px" compact />
-      <p><a href="/mapa/">Celá mapa se jmény a filtrem rodů →</a></p>
-    </>
-  )}
+  <h2>Rodokmen</h2>
+  <div class="only-mobile">
+    <MobileTree k={1} />
+  </div>
+  <div class="fan-preview only-desktop"><a class="cover" href="/vejir/" aria-label="Otevřít vějíř předků přes celou obrazovku"></a><Fragment set:html={fan} /></div>
+  <p><a class="btn" href="/vejir/">Otevřít vějíř předků přes celou obrazovku →</a> <a href="/predci/" style="margin-left:1rem">nebo seznam všech předků</a></p>
 
   {lineList.length > 0 && (
     <>
@@ -77,10 +76,11 @@ const cards = config.zajimavosti_na_uvodu ?? [];
     </>
   )}
 
-  <h2>Rodokmen</h2>
-  <div class="only-mobile">
-    <MobileTree k={1} />
-  </div>
-  <div class="fan-preview only-desktop"><a class="cover" href="/vejir/" aria-label="Otevřít vějíř předků přes celou obrazovku"></a><Fragment set:html={fan} /></div>
-  <p><a class="btn" href="/vejir/">Otevřít vějíř předků přes celou obrazovku →</a> <a href="/predci/" style="margin-left:1rem">nebo seznam všech předků</a></p>
+  {site.places.length > 0 && (
+    <>
+      <h2>Kde žili naši předci</h2>
+      <FamilyMap height="420px" compact />
+      <p><a href="/mapa/">Celá mapa se jmény a filtrem rodů →</a></p>
+    </>
+  )}
 </Base>
