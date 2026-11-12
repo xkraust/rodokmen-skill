@@ -21,7 +21,9 @@ Mění-li se formát mezi `tools/` a `template/web/`, otestuj i aktualizaci proj
 # Vývoj forku lokálně (xkraust/rodokmen-skill)
 
 ## Jak je plugin zapojený do Claude Code
-- Pracovní kopie (jediné místo pro úpravy): `C:\Users\tomas\Documents\VSCode\rodokmen-skill`.
+- Pracovní kopie (jediné místo pro úpravy): klon repozitáře, ve kterém právě pracuješ. Cesta je na každém počítači
+  jiná: konkrétní hodnotu pro tento počítač najdeš v `CLAUDE.local.md` (necommituje se) a v
+  `~\.claude\plugins\known_marketplaces.json` (klíč `rodokmen-skill`, pole `path`).
   Je to klon forku `xkraust/rodokmen-skill` (remote `origin`); původní repo autora je remote `upstream`
   (`sarsonj/rodokmen-skill`).
 - Marketplace `rodokmen-skill` má v nastavení Claude Code zdroj `directory` s cestou k tomuto klonu
@@ -30,6 +32,16 @@ Mění-li se formát mezi `tools/` a `template/web/`, otestuj i aktualizaci proj
 - Plugin je `rodokmen@rodokmen-skill`. Claude Code z klonu při instalaci a aktualizaci KOPÍRUJE soubory do
   `~\.claude\plugins\cache\rodokmen-skill\rodokmen\<verze>\`. Soubory v `~\.claude\plugins\` nikdy needituj,
   přepisují se.
+
+## Nastavení na novém počítači
+Marketplace se v Claude Code nastavuje zvlášť na každém počítači (přes git se nepřenáší). Po naklonování:
+1. Ověř `~\.claude\plugins\known_marketplaces.json`. Pokud `rodokmen-skill` chybí nebo ukazuje na jinou cestu,
+   spusť `/plugin marketplace remove rodokmen-skill`, pak `/plugin marketplace add <cesta-ke-klonu>`
+   a `/plugin install rodokmen@rodokmen-skill`.
+2. Založ `CLAUDE.local.md` (je v `.gitignore`) s větou „Na tomto počítači je klon v `<cesta>`“.
+3. V `/plugin` ověř, že je nainstalovaná aktuální verze (`skills/rodokmen/VERZE`).
+
+TODO (laptop, 13. 11. 2026): projít tento postup i na laptopu a po dokončení tento řádek smazat.
 
 ## Postup po každé úpravě skillu
 1. Uprav soubory v klonu (typicky `skills/rodokmen/`, `tools/`, `template/web/`, `docs/`).
@@ -42,7 +54,7 @@ Mění-li se formát mezi `tools/` a `template/web/`, otestuj i aktualizaci proj
 5. Ověř, že skill funguje, a teprve potom `git push origin main`.
 
 ## Poznámky
-- Rychlé zkoušení bez cache a bez zvyšování verze: `claude --plugin-dir C:\Users\tomas\Documents\VSCode\rodokmen-skill`
+- Rychlé zkoušení bez cache a bez zvyšování verze: `claude --plugin-dir .` (ve složce klonu)
   (nainstalovanou verzi pak dočasně vypni, ať se skilly nepřekrývají).
 - Novinky od autora: `git fetch upstream`, pak `git merge upstream/main`. Fork se sám nesynchronizuje.
 - Přepnutí zpět na repo autora: `/plugin marketplace remove rodokmen-skill`, pak
