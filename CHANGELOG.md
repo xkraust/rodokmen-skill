@@ -23,6 +23,8 @@ a místa narození, domovskou obec. Pomůže hlavně u narození po roce 1910, j
 **Návody**
 - Nový `reference/scitani.md`: kdy sčítání použít, ročníky, uspořádání sady, portály po krajích (Porta fontium, MZA,
   Třeboň, Litoměřice, Opava, ARON, FamilySearch), pasti (soudní okres, osady, data z paměti) a vzor přepisu archu 1921.
+- SOA Třeboň: sčítání v prohlížeči a hledání osoby ve jmenných rejstřících sčítání napříč celým archivem (s číslem
+  popisným a snímkem).
 - Odkazy na sčítání v `SKILL.md`, `metodika.md` (milníky, mrtvé body), `portaly.md`, `matriky.md` a `data.md`.
 
 ## 0.10.0 – 10. 11. 2026

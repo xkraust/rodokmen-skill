@@ -211,7 +211,10 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
 
 ## K ověření před implementací
 
-1. Třeboň `digi.ceskearchivy.cz/Census` – hledání obce, struktura sady, trvalý odkaz na snímek (v prohlížeči).
+1. ~~Třeboň – hledání obce, struktura sady, trvalý odkaz na snímek (v prohlížeči).~~ Ověřeno 12. 11. 2026
+   (Velká Lhota, Claude in Chrome): stránka obce → Sčítání lidu, sada = jedna řada snímků, trvalý odkaz
+   `/<sada>/<snímek>`, rejstřík sady s čp. a hledání ve jmenných rejstřících sčítání napříč archivem. Zapsáno
+   v `scitani.md`.
 2. ~~Porta fontium census – adresa sady, IIIF, trvalý odkaz.~~ Ověřeno 12. 11. 2026 (Zbyslav). Zbývá zjistit,
    proč chybí Zbyslav 1910 (nedochováno, nebo jinde) a jestli hledání v prohlížeči najde obec bez znalosti okresu.
 3. Litoměřice Vademecum – kde jsou operáty, zda mají snímky.

@@ -85,6 +85,8 @@ Adresy u nevyzkoušených portálů ověř při prvním použití (portály se m
   Souřadnice ber vždy z aktuálního snímku okna (po načtení stránky nebo `vp.reset()`), ne ze staršího.
 - Svazek do `svazky.json` přes `zapis.py` (Ostatní portály, krok 4, klíč `trebon_<kniha>`).
 - Některé fary mají knihy po vesnicích, které nejsou v seznamu knih místa (Vacov → Žár) – hledej podle titulků knih fary.
+- **Sčítání lidu 1857–1921** se jmennými rejstříky napříč archivem (HLEDÁNÍ → Jmenné rejstříky → Typ materiálu:
+  Sčítání lidu): postup v `scitani.md`.
 - **Civilní matriky (1920–1945) lidí bez vyznání** jsou v knihách okresních úřadů (např. Tábor, kniha 12304) a mají
   dobrovolnický rejstřík. Dobrá cesta, když farní matrika mlčí. U obce se neukážou (patří okresu) – hledej u okresního města.
 

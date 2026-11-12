@@ -30,8 +30,8 @@ příjmení manželky (ale tchyně mohla být podruhé vdaná).
 Dochovanost záleží na obci: u obce bývá jen některý rok. Na Moravě jsou starší ročníky úplnější.
 
 ## Jak je sada uspořádaná
-**Sada = obec × rok**, rozdělená po domech (čísla popisná). U obce bývá **souhrn** (soupis obce s rozpisem čísel).
-U každého domu:
+**Sada = obec × rok** (osada mívá vlastní sadu). Porta fontium ji dělí po domech (čísla popisná), Třeboň a MZA ji
+mají jako jednu řadu snímků seřazenou po domech. U obce bývá **souhrn** (soupis obce s rozpisem čísel). U každého domu:
 1. **sběrný arch domovní** – země, soudní okres, obec, čp., majitel domu, byty a počet osob v každém,
 2. **sčítací arch** pro každý byt – osoby po řádcích, často na dvoustraně (vlevo osobní údaje, vpravo národnost,
    náboženství, povolání), na konci podpis hlavy domácnosti a komisaře.
@@ -48,7 +48,7 @@ nebo Wikipedie obce.
 |---|---|---|
 | SOA Plzeň a SOkA západních Čech | Porta fontium – `portafontium.eu/contents/census` | **ano – `portafontium.py scitani`** (níže) |
 | MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže) |
-| SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` → Sčítání lidu (`/Census`) | jen v prohlížeči (brzda); postup neověřen |
+| SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
 | SOA Litoměřice (severní Čechy) | VadeMeCum `vademecum.soalitomerice.cz` (ikona „osoby“) | neověřeno |
 | ZA Opava (sev. Morava, Slezsko) | `digi.archives.cz/da/` | neověřeno; přísné limity snímků (`portaly.md`) |
 | SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
@@ -71,6 +71,28 @@ z Litoměřic, Trutnova, Třeboně, Brna a Opavy a pro oblast Zámrsku i jmenný
 4. Dům jako kniha: `info <id>`, `snimek <id> <snímek> pracovni/scitani/<obec>_<rok>_cp<čp>_<snímek>.jpg [nahled] [výřez]`,
    `link <id> <snímek>`, `svazek <id>` (klíč `pf_<id>`, archiv podle kódu sady, např. SOkA Klatovy).
    Snímek 1 = sběrný arch domovní, další = sčítací archy.
+
+### SOA Třeboň – jen v prohlížeči
+Archiv skripty odmítá (brzda je zastaví) – vše v prohlížeči, tempo a pravidla jako u třeboňských matrik
+(`portaly.md` → SOA Třeboň). Ověřeno 11/2026 na Velké Lhotě (SOkA Jindřichův Hradec, soudní okres Dačice).
+- **Hledání podle jména – začni jím.** Záložka HLEDÁNÍ → Typ: **Jmenné rejstříky** → Příjmení (případně Jméno,
+  Lokalita) a **Typ materiálu: Sčítání lidu** → Hledat. Prohledá dobrovolnické rejstříky sčítání v celém archivu
+  (i bez obce): u každé osoby rok, lokalita, osada, **číslo popisné a snímek**, náhled odkazuje na snímek.
+  Rejstříky nemají všechny sady – negativní výsledek nic nedokazuje.
+- **Sady obce:** `https://digi.ceskearchivy.cz/<Obec>` (jako u matrik; zkontroluj název a okres – portál přesměruje
+  na stránku místa, např. „Velká Lhota (Volfířov, Jindřichův Hradec)“) → vlevo **SČÍTÁNÍ LIDU** (adresa
+  `…/<místo>/scitani-lidu`) → tabulky „Sčítání lidu: <obec> <rok>“ s inventárním číslem; osady mají vlastní sady
+  (Poldovka 1857). Ikona lupy otevře snímky v nové záložce `https://digi.ceskearchivy.cz/<sada>/<snímek>`
+  (zároveň trvalý odkaz), název sady v tabulce otevře popis.
+- **Sada = obec × rok v jedné řadě snímků** (Velká Lhota 1921: 88 snímků), ne po domech. Hlavička okna: archiv
+  (SOkA), datace, soudní okres, inventární číslo. 1921 je na formuláři „Popisný arch“, 1857 „Aufnahmsbogen“.
+- **Rejstřík sady:** záložka REJSTŘÍKY → Jmenný rejstřík po písmenech: příjmení, jméno, vyznání, lokalita,
+  **číslo popisné**, rok; kliknutí na řádek otevře snímek (`…/<sada>/<snímek>`). Export TEXTOVÝ FORMÁT / XLSX je
+  stažení souboru – jen se souhlasem uživatele. Na snímku vpravo panel „Index“ = osoby zapsané na tomto snímku.
+- **Čtení a uložení:** prohlížeč je stejný jako u matrik (Zoomify v rámci `ram_obsah`, `Z.Viewport`) – úryvek
+  z `portaly.md` (SOA Třeboň) přiblíží zápis a vrátí odkaz; snímek okna → `vyrez.py`. Svazek ručně
+  (`zapis.py svazky`, klíč `trebon_<sada>`): archiv = SOkA z hlavičky, `svazek` = „Sčítání lidu <rok>, soudní okres
+  <okres>, <obec>, inv. č. <číslo>“, `url` = `https://digi.ceskearchivy.cz/<sada>/1`.
 
 ### MZA Brno – jen v prohlížeči
 Portál `https://www.mza.cz/scitacioperaty/digisada/search` (ne Acta Publica; brzda jiné adresy MZA skriptům nepustí,
