@@ -52,7 +52,7 @@ nebo Wikipedie obce.
 | SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
 | ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči** – snímky skriptem nejdou (níže) |
 | SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
-| SOA Praha | eBadatelna – archiválie, jen 1869, 1880, 1900 a jen část | jen v prohlížeči (brzda) |
+| SOA Praha (střední Čechy) | eBadatelna → Archiválie, typ **Sčítací operáty** (asi 260 sad, hlavně 1869) | **jen v prohlížeči** (brzda; níže) |
 | AHMP (Praha) | katalog Praga Publica, 1869–1921 | neověřeno |
 | více archivů | FamilySearch: „Czech Republic Censuses and Inhabitant Registers, 1800–1990“ (kolekce 1930345) | přes přihlášený prohlížeč (`portaly.md` → FamilySearch) |
 
@@ -131,6 +131,17 @@ v popředí, **CAPTCHA řeší uživatel**, blokace aplikace už po ~75 rychlýc
   (jako u SOA Třeboň, úryvek bez `iframe`). Limit obrázků (~6 snímků, pak 403) hlídej jako u matrik.
 - Svazek ručně: archiv podle detailu sady (ikona „i“: archiv a fond, např. „Okresní úřad Hlučín (NAD 158), inv. č. 46“),
   `svazek` = „Sčítání lidu 1921, Štěpánkovice čp. 2–302“, `url` = permalink.
+
+### SOA Praha – jen v prohlížeči
+Archiv nástroj zakazuje (brzda) – vše v prohlížeči, tempo a ukládání snímků jako u archiválií v `portaly.md`
+(SOA Praha). Ověřeno 11/2026.
+- **Hledání:** `https://ebadatelna.soapraha.cz/pages/SearchArchivaliePage` → Typ archiválie **Sčítací operáty**,
+  případně Lokality (našeptávač jako u matrik) → Vyhledat. Bez obce asi 260 sad (52 stran po 5) – stránky
+  neprocházej, zadej obec. Řádek: „Sčítání lidu 1869: Okres Slaný - obec Bdín“, fond (okresní úřad), lokality, rok,
+  počet snímků a odkaz `/pages/ArchivaliePage/archivalieId/<id>`; osady mají vlastní sady.
+- Snímky `https://ebadatelna.soapraha.cz/a/<archivalieId>/<snímek>` (zároveň trvalý odkaz) – ulož je postupem pro
+  archiválie (`cache.py uloz`, `ebadatelna.py a-snimek` z disku). Svazek klíč `ebad_a_<id>`.
+- Pokrytí je malé (podle FamilySearch hlavně 1869, část 1880 a 1900) – když obec chybí, zkus FamilySearch.
 
 ### MZA Brno – jen v prohlížeči
 Portál `https://www.mza.cz/scitacioperaty/digisada/search` (ne Acta Publica; brzda jiné adresy MZA skriptům nepustí,
