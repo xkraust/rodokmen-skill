@@ -47,7 +47,7 @@ nebo Wikipedie obce.
 | archiv | portál | stav se skillem |
 |---|---|---|
 | SOA Plzeň a SOkA západních Čech | Porta fontium – `portafontium.eu/contents/census` | **ano – `portafontium.py scitani`** (níže) |
-| MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže) |
+| MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže), ověřeno |
 | SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
 | SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
 | ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči** – snímky skriptem nejdou (níže) |
@@ -134,8 +134,10 @@ v popředí, **CAPTCHA řeší uživatel**, blokace aplikace už po ~75 rychlýc
 
 ### MZA Brno – jen v prohlížeči
 Portál `https://www.mza.cz/scitacioperaty/digisada/search` (ne Acta Publica; brzda jiné adresy MZA skriptům nepustí,
-žádné stahování ani skládání dlaždic). Hledej obec v poli „Město/obec nebo část obce/osada“; sada = obec a rok
-s rozsahem čísel popisných. Detail `…/digisada/detail/<id>` má stejný prohlížeč `viewer` jako matriky
+žádné stahování ani skládání dlaždic). Hledej obec v poli „Město/obec nebo část obce/osada“ (Enter); výsledek
+uvádí rok, rozsah a **rozpis čísel popisných** (chybějící domy), archiv (SOkA), fond (obvykle okresní úřad) a **kód
+sady** (BV0124). Větší obec má v jednom roce víc sad podle čísel popisných – vyber sadu podle rozpisu. Ověřeno
+11/2026 na Velkých Pavlovicích: 1857, 1869, 1880, 1910 (3 sady), 1921 (2 sady), 1890 a 1900 chybí. Detail `…/digisada/detail/<id>` má stejný prohlížeč `viewer` jako matriky
 (`portaly.md` → MZA Brno: přiblížení, snímek obrazovky, limit snímků za den). Snímek 1 je soupis s metadaty
 (rozpis čísel, poznámky typu „čp. 134 má 2 archy“), pak archy po domech. 1857 uvádí jen rok narození, 1869 a 1880
 místo i datum.
