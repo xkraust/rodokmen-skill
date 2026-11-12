@@ -50,7 +50,7 @@ nebo Wikipedie obce.
 | MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže) |
 | SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
 | SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
-| ZA Opava (sev. Morava, Slezsko) | `digi.archives.cz/da/` | neověřeno; přísné limity snímků (`portaly.md`) |
+| ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči** – snímky skriptem nejdou (níže) |
 | SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
 | SOA Praha | eBadatelna – archiválie, jen 1869, 1880, 1900 a jen část | jen v prohlížeči (brzda) |
 | AHMP (Praha) | katalog Praga Publica, 1869–1921 | neověřeno |
@@ -114,6 +114,23 @@ Stejná Digitální badatelna jako u matrik (`portaly.md` → SOA Litoměřice):
   (2 = čtvrtina na orientaci, 0 = plné rozlišení na čtení); obrázkový server neomezuje.
 - Svazek ručně (`zapis.py svazky`, klíč např. `soal_<id>`): archiv = „SOkA Teplice – Sčítání lidu 1921 Teplice
   (NAD 1204)“, `svazek` = „Sčítání lidu 1921, soudní okres Bílina, Lužice čp. 1–74, karton 33“, `url` = permalink.
+
+### ZA Opava – jen v prohlížeči
+Stejná Digitální badatelna jako v Litoměřicích, pravidla z `portaly.md` (ZA Opava): okno aspoň 1400×900, karta
+v popředí, **CAPTCHA řeší uživatel**, blokace aplikace už po ~75 rychlých krocích. Ověřeno 11/2026 na Štěpánkovicích
+(Hlučínsko) – CAPTCHA tentokrát nepřišla.
+- **Hledání:** ikona **Sčítání** → obec do pole **Místo / Lokalita** → Enter v tom poli. Pozor, formulář se po prvním
+  hledání posune – zkontroluj, že obec není v poli „Číslo / Název arch. souboru“. Výsledek: „Štěpánkovice, série
+  čp. 2-302…, 1921“, fond **NAD 158 Okresní úřad Hlučín** (inv. č., karton) – operáty bývají ve fondech okresních
+  úřadů, ne v samostatném fondu. Velká obec = víc sérií podle čísel popisných.
+- **Sada = jedna řada snímků** (Štěpánkovice 1921: 614); snímek 1 je list s metadaty digitalizace. Trvalý odkaz
+  `https://digi.archives.cz/da/permalink?xid=<id>` (`portaly.md` → ZA Opava).
+- **Snímky jen v prohlížeči.** Dlaždice operátů (`images.archives.cz/ximage/common/zoomify/…/scitaci-operaty/…`)
+  vydá server jen prohlížeči, skriptu vrací 404 – `soal_zoomify.py` tu nefunguje a neobcházej to (hlavičky, cookies).
+  Prohlížeč je Zoomify přímo na stránce (`Z.Viewport`, bez rámu): přibliž zápis, ulož snímek obrazovky → `vyrez.py`
+  (jako u SOA Třeboň, úryvek bez `iframe`). Limit obrázků (~6 snímků, pak 403) hlídej jako u matrik.
+- Svazek ručně: archiv podle detailu sady (ikona „i“: archiv a fond, např. „Okresní úřad Hlučín (NAD 158), inv. č. 46“),
+  `svazek` = „Sčítání lidu 1921, Štěpánkovice čp. 2–302“, `url` = permalink.
 
 ### MZA Brno – jen v prohlížeči
 Portál `https://www.mza.cz/scitacioperaty/digisada/search` (ne Acta Publica; brzda jiné adresy MZA skriptům nepustí,

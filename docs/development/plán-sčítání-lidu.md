@@ -219,7 +219,9 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
    proč chybí Zbyslav 1910 (nedochováno, nebo jinde) a jestli hledání v prohlížeči najde obec bez znalosti okresu.
 3. ~~Litoměřice – kde jsou operáty, zda mají snímky.~~ Ověřeno 12. 11. 2026 (Lužice čp. 8, 1921): Digitální badatelna,
    ikona Operáty, sada po domech v jedné řadě, snímky přes `soal_zoomify.py` (cesta `…/ximage/operaty/…`), permalink.
-4. ZA Opava `digi.archives.cz` – zda jsou operáty v digitálním archivu a jak se hledají.
+4. ~~ZA Opava – zda jsou operáty online a jak se hledají.~~ Ověřeno 12. 11. 2026 (Štěpánkovice 1921): ikona Sčítání,
+   fondy okresních úřadů; dlaždice operátů server skriptu nevydá (404, prohlížeči 200) → snímky jen v prohlížeči.
+   Neobcházet; případně se zeptat archivu, zda smí nástroj stahovat jako u matrik.
 5. ARON – kde jsou starší operáty (1869–1921) pro obce východních Čech a zda mají snímky.
 6. FamilySearch kolekce 1930345 – přihlášení, jmenný rejstřík pro Zámrsk, katalog po obcích.
 7. Obsah ročníků 1880–1910 (obcovací řeč, gramotnost, domovská příslušnost) na skutečném snímku.
