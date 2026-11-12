@@ -51,9 +51,9 @@ nebo Wikipedie obce.
 | SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
 | SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
 | ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči** – snímky skriptem nejdou (níže) |
-| SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
+| SOA Zámrsk (východní Čechy) | ARON – jen katalog fondů, **bez snímků** | online ne → FamilySearch (okresy Hradec Králové, Náchod, Trutnov…) |
 | SOA Praha (střední Čechy) | eBadatelna → Archiválie, typ **Sčítací operáty** (asi 260 sad, hlavně 1869) | **jen v prohlížeči** (brzda; níže) |
-| AHMP (Praha) | katalog Praga Publica, 1869–1921 | neověřeno |
+| AHMP (Praha) | katalog Praga Publica | digitalizované operáty nenalezeny (11/2026) → pražské policejní přihlášky 1850–1914 (`portaly.md`) |
 | více archivů | FamilySearch: „Czech Republic Censuses and Inhabitant Registers, 1800–1990“ (kolekce 1930345) | v prohlížeči, procházení po okresech (níže) |
 
 Nevyzkoušený portál při prvním použití ověř a postup zapiš do `poznamky_pro_skill.md`. Placené databáze (Ancestry,
@@ -165,12 +165,14 @@ sady** (BV0124). Větší obec má v jednom roce víc sad podle čísel popisný
 (rozpis čísel, poznámky typu „čp. 134 má 2 archy“), pak archy po domech. 1857 uvádí jen rok narození, 1869 a 1880
 místo i datum.
 
-### ARON (SOA Zámrsk)
-`aron_search.py` hledá ve fondu matrik; sčítání je ve fondech okresních archivů. Ověřeno (11/2026): samostatné fondy
-„Sčítací operáty“ mají **SOkA Náchod (1900–1910)** a **SOkA Svitavy** (`aron_search.py "<obec>" "Sčítací operáty"`);
-slovo „sčítání“ v názvu mají hlavně operáty 1980 (SOkA Jičín) – pro rodokmen nepoužitelné. Starší operáty bývají
-ve fondech obcí a okresních úřadů – hledej v prohlížeči ARONu a před prvním použitím ověř, že mají snímky
-(`aron_img.py <apu> info`, scans: 0 = nejsou online).
+### ARON (SOA Zámrsk) a AHMP – sčítání online není
+- **ARON:** ověřeno 11/2026 – fondy „Sčítací operáty“ (SOkA Náchod 1900–1910, SOkA Svitavy) jsou jen v katalogu,
+  bez strukturovaného popisu a **bez snímků** (`aron_img.py <apu> info` → scans: 0); slovo „sčítání“ mají jinak hlavně
+  operáty 1980 (SOkA Jičín). Pro východní Čechy použij **FamilySearch** (okresy Hradec Králové, Náchod, Trutnov,
+  Pardubice, Jičín, Ústí nad Orlicí, Svitavy…), jinak dotaz na SOkA do `archivni_dotazy.md`.
+- **AHMP:** v katalogu Praga Publica digitalizované sčítací operáty nejsou (fulltext 11/2026). Pro Prahu 1850–1914
+  jsou náhradou **policejní přihlášky** (Národní archiv, `policie_prihlasky.py`, `portaly.md`) – karta celé rodiny
+  s daty a místy narození.
 
 ## Pasti
 - **Soudní okres** místo politického; obec mohla v různých letech patřit pod jiný soudní okres.

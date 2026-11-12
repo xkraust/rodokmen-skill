@@ -1,0 +1,58 @@
+{
+  "id" : "4a9afa85-40e9-4c2e-814a-028c2183347c",
+  "name" : "Sčítací operáty 1900 - 1910, 1900 - 1910",
+  "description" : null,
+  "permalink" : null,
+  "order" : 1,
+  "published" : false,
+  "depth" : 1,
+  "pos" : 1,
+  "childCnt" : 0,
+  "parent" : null,
+  "parts" : [ {
+    "id" : "15f7777d-2870-41a5-9d19-b56ee609cd56",
+    "value" : "Sčítací operáty 1900 - 1910, 1900 - 1910",
+    "type" : "PT~TITLE",
+    "childParts" : [ ],
+    "items" : [ {
+      "id" : "989935e5-80ab-4e48-bc3f-d84e14c3c0be",
+      "value" : "Sčítací operáty 1900 - 1910, 1900 - 1910",
+      "visible" : true,
+      "href" : null,
+      "type" : "TITLE"
+    } ]
+  }, {
+    "id" : "c4d091ed-1242-4f73-b664-69b922354b8e",
+    "value" : null,
+    "type" : "PT~FUND~INFO",
+    "childParts" : [ ],
+    "items" : [ {
+      "id" : "260fef53-465c-469d-a1f8-db84c574706c",
+      "value" : "19e97959-dadd-45d0-90e9-61744bf37fed",
+      "visible" : true,
+      "href" : null,
+      "type" : "INST~REF"
+    }, {
+      "id" : "e273ed3a-efc8-48e2-89dd-8a49a678119f",
+      "value" : "09000846-0000-4000-8000-000225103010",
+      "visible" : true,
+      "href" : null,
+      "type" : "ARCHDESC~ROOT~REF"
+    }, {
+      "id" : "9901f60e-343b-43e1-b0eb-a8a30ef9d287",
+      "value" : "846",
+      "visible" : true,
+      "href" : null,
+      "type" : "CISLO~NAD"
+    }, {
+      "id" : "3025d9d7-1067-40e1-9f4a-c4adeade574f",
+      "value" : "",
+      "visible" : true,
+      "href" : null,
+      "type" : "FUND~MARK"
+    } ]
+  } ],
+  "attachments" : [ ],
+  "digitalObjects" : [ ],
+  "type" : "FUND"
+}

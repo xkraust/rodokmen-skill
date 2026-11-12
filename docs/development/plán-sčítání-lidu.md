@@ -222,7 +222,8 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
 4. ~~ZA Opava – zda jsou operáty online a jak se hledají.~~ Ověřeno 12. 11. 2026 (Štěpánkovice 1921): ikona Sčítání,
    fondy okresních úřadů; dlaždice operátů server skriptu nevydá (404, prohlížeči 200) → snímky jen v prohlížeči.
    Neobcházet; případně se zeptat archivu, zda smí nástroj stahovat jako u matrik.
-5. ARON – kde jsou starší operáty (1869–1921) pro obce východních Čech a zda mají snímky.
+5. ~~ARON – kde jsou starší operáty a zda mají snímky.~~ Ověřeno 12. 11. 2026: fondy jen v katalogu, 0 snímků →
+   nástroj pro ARON nedělat, odkázat na FamilySearch. AHMP: digitalizované operáty v katalogu nenalezeny → policejní přihlášky.
 6. ~~FamilySearch kolekce 1930345~~ Ověřeno 12. 11. 2026: procházení okres → obec → rok → archivní číslo → snímek,
    jen ~2 300 indexovaných záznamů. Zbývá: zda snímek jde zobrazit bez přihlášení (rozšíření snímek obrazovky na
    stránce snímku nepovolilo).

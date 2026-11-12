@@ -27,6 +27,7 @@ a místa narození, domovskou obec. Pomůže hlavně u narození po roce 1910, j
 - ZA Opava: sčítání v Digitální badatelně (ikona Sčítání), snímky jen v prohlížeči.
 - SOA Praha: sčítací operáty mezi archiváliemi eBadatelny (typ Sčítací operáty); MZA Brno ověřeno.
 - FamilySearch: 4,9 milionu snímků sčítání z celé ČR, procházení po okresech a obcích.
+- ARON a AHMP sčítání online nemají – návod odkazuje na FamilySearch a pražské policejní přihlášky.
 - SOA Třeboň: sčítání v prohlížeči a hledání osoby ve jmenných rejstřících sčítání napříč celým archivem (s číslem
   popisným a snímkem).
 - Odkazy na sčítání v `SKILL.md`, `metodika.md` (milníky, mrtvé body), `portaly.md`, `matriky.md` a `data.md`.

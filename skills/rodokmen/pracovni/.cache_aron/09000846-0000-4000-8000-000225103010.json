@@ -1,0 +1,40 @@
+{
+  "id" : "09000846-0000-4000-8000-000225103010",
+  "name" : "Státní okresní archiv Náchod: Sčítací operáty 1900 - 1910",
+  "description" : null,
+  "permalink" : null,
+  "order" : 1,
+  "published" : false,
+  "depth" : 1,
+  "pos" : 1,
+  "childCnt" : 1,
+  "parent" : null,
+  "parts" : [ {
+    "id" : "0f40e7fd-4969-4a39-aac5-9df27fba86df",
+    "value" : null,
+    "type" : "PT~ARCH~DESC",
+    "childParts" : [ ],
+    "items" : [ ]
+  }, {
+    "id" : "da139452-93a6-4428-b5a7-8f9c1cd2ac0f",
+    "value" : null,
+    "type" : "PT~ARCH~DESC~FUND",
+    "childParts" : [ ],
+    "items" : [ {
+      "id" : "4dfd033a-60fa-4133-ba44-782f4b0d8fc2",
+      "value" : "4a9afa85-40e9-4c2e-814a-028c2183347c",
+      "visible" : true,
+      "href" : null,
+      "type" : "FUND~REF"
+    }, {
+      "id" : "3b1f85c3-2900-4ccc-89e0-3ddc2afcce5e",
+      "value" : "19e97959-dadd-45d0-90e9-61744bf37fed",
+      "visible" : true,
+      "href" : null,
+      "type" : "FUND~INST~REF"
+    } ]
+  } ],
+  "attachments" : [ ],
+  "digitalObjects" : [ ],
+  "type" : "ARCH_DESC"
+}
