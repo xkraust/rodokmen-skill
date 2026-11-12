@@ -10,6 +10,8 @@ Použití (z kořene projektu):
                 (další snímky téže knihy mají stejnou cestu, liší se jen číslem obrázku)
     adresa    = celá adresa obrázku začínající https:// (s „/ImageProperties.xml“ na konci i bez), např. ZA Opava:
                 https://images.archives.cz/ximage/matriky/zoomify/cz/archives/CZ-217000010/NAD-165/dao/images/<složka>/<uuid>.jpg
+                nebo sčítací operáty SOA Litoměřice (reference/scitani.md):
+                https://images.soalitomerice.cz/ximage/operaty/zoomify/cz/archives/CZ-224106010/operaty/dao/images/<složka>/<uuid>.jpg
     zmenseni  = 0 plné rozlišení (na čtení a výřez), 1 poloviční (na orientaci), 2 čtvrtinové
 POZOR: aplikace digi.soalitomerice.cz po ~100 rychlých požadavcích (digi.archives.cz v Opavě už po ~75) zablokuje
 přístup na 30 minut. Prohlížečem jen najdi knihu a cestu k obrázkům, snímky pak stahuj tímto nástrojem (obrázkový server

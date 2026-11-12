@@ -217,7 +217,8 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
    v `scitani.md`.
 2. ~~Porta fontium census – adresa sady, IIIF, trvalý odkaz.~~ Ověřeno 12. 11. 2026 (Zbyslav). Zbývá zjistit,
    proč chybí Zbyslav 1910 (nedochováno, nebo jinde) a jestli hledání v prohlížeči najde obec bez znalosti okresu.
-3. Litoměřice Vademecum – kde jsou operáty, zda mají snímky.
+3. ~~Litoměřice – kde jsou operáty, zda mají snímky.~~ Ověřeno 12. 11. 2026 (Lužice čp. 8, 1921): Digitální badatelna,
+   ikona Operáty, sada po domech v jedné řadě, snímky přes `soal_zoomify.py` (cesta `…/ximage/operaty/…`), permalink.
 4. ZA Opava `digi.archives.cz` – zda jsou operáty v digitálním archivu a jak se hledají.
 5. ARON – kde jsou starší operáty (1869–1921) pro obce východních Čech a zda mají snímky.
 6. FamilySearch kolekce 1930345 – přihlášení, jmenný rejstřík pro Zámrsk, katalog po obcích.

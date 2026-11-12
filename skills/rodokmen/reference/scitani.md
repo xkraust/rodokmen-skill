@@ -49,7 +49,7 @@ nebo Wikipedie obce.
 | SOA Plzeň a SOkA západních Čech | Porta fontium – `portafontium.eu/contents/census` | **ano – `portafontium.py scitani`** (níže) |
 | MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže) |
 | SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
-| SOA Litoměřice (severní Čechy) | VadeMeCum `vademecum.soalitomerice.cz` (ikona „osoby“) | neověřeno |
+| SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
 | ZA Opava (sev. Morava, Slezsko) | `digi.archives.cz/da/` | neověřeno; přísné limity snímků (`portaly.md`) |
 | SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
 | SOA Praha | eBadatelna – archiválie, jen 1869, 1880, 1900 a jen část | jen v prohlížeči (brzda) |
@@ -93,6 +93,27 @@ Archiv skripty odmítá (brzda je zastaví) – vše v prohlížeči, tempo a pr
   z `portaly.md` (SOA Třeboň) přiblíží zápis a vrátí odkaz; snímek okna → `vyrez.py`. Svazek ručně
   (`zapis.py svazky`, klíč `trebon_<sada>`): archiv = SOkA z hlavičky, `svazek` = „Sčítání lidu <rok>, soudní okres
   <okres>, <obec>, inv. č. <číslo>“, `url` = `https://digi.ceskearchivy.cz/<sada>/1`.
+
+### SOA Litoměřice – prohlížeč + `tools/soal_zoomify.py`
+Stejná Digitální badatelna jako u matrik (`portaly.md` → SOA Litoměřice): vstupní ověření, **blokace aplikace po
+25–100 rychlých krocích** (pauzy aspoň 3 s, žádné smyčky přes celou sadu). Ověřeno 11/2026 na Lužici (SOkA Teplice).
+- **Hledání:** `https://digi.soalitomerice.cz/digitalnibadatelna/` (stará adresa VadeMeCum sem přesměruje) → ikona
+  **Operáty** („Sčítací operáty“) → obec do pole **Místo / Lokalita** → **Enter v tom poli** (lupa nahoře po
+  novém ověření filtry vymaže). Výsledek: „Lužice • čp.:1-74“, fond „NAD 1204 Sčítání lidu 1921 Teplice“,
+  digitální sada, karton. Větší obce mají víc sad podle rozsahu čísel popisných; ve výsledcích bývají i „Přehledy
+  sčítacích obvodů“ okresu. U Lužice byl online jen rok 1921 – další roky hledej stejně, mohou chybět.
+- **Detail sady:** soudní okres (1930), územní rozsah, čísla popisná, počet snímků; „Pomocný pohled“ ukáže strom fondu
+  se všemi obcemi okresu. Trvalý odkaz `https://digi.soalitomerice.cz/digitalnibadatelna/permalink?xid=<id>`
+  (id = konec adresy `vysledekDetail/<id>`) – do `url` svazku.
+- **Sada = jedna řada snímků po domech** (Lužice 1921: 173 snímků; snímek 1 štítek sady, pak u každého domu sběrný arch
+  domovní a sčítací archy; formuláře česko-německé). Dům odhadni podle pořadí (čp. 8 = snímek 24–25) a ověř na
+  sběrném archu.
+- **Snímky:** adresy zjisti úryvkem z `portaly.md` (SOA Litoměřice) jen pro snímky, které čteš – u sčítání mají cestu
+  `https://images.soalitomerice.cz/ximage/operaty/zoomify/cz/archives/CZ-<kód SOkA>/operaty/dao/images/<složka>/<uuid>.jpg`
+  (SOkA Teplice = CZ-224106010). Stahuj `python3 -I tools/soal_zoomify.py "<celá adresa>" 2 pracovni/x.jpg`
+  (2 = čtvrtina na orientaci, 0 = plné rozlišení na čtení); obrázkový server neomezuje.
+- Svazek ručně (`zapis.py svazky`, klíč např. `soal_<id>`): archiv = „SOkA Teplice – Sčítání lidu 1921 Teplice
+  (NAD 1204)“, `svazek` = „Sčítání lidu 1921, soudní okres Bílina, Lužice čp. 1–74, karton 33“, `url` = permalink.
 
 ### MZA Brno – jen v prohlížeči
 Portál `https://www.mza.cz/scitacioperaty/digisada/search` (ne Acta Publica; brzda jiné adresy MZA skriptům nepustí,
