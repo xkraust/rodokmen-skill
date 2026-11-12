@@ -6,6 +6,25 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.11.0 – 12. 11. 2026
+
+Hlavní novinka: **sčítání lidu 1857–1921.** Sčítací arch ukáže celou domácnost v domě – kdo s kým bydlel, data
+a místa narození, domovskou obec. Pomůže hlavně u narození po roce 1910, jejichž matriky ještě nejsou v archivu.
+
+**Nové**
+- `portafontium.py scitani "<obec>" "<soudní okres>"` najde sčítání obce v západních Čechách po letech (i osadu vedenou
+  pod jinou obcí), `domy <id>` vypíše čísla popisná a tentýž dům v jiných letech; `snimek`, `link` a `svazek`
+  fungují i pro dům ze sčítání.
+- Ukázkový projekt má zápis ze sčítání 1921 (filtr „sčítání lidu“ na stránce zápisů).
+
+**Opravy**
+- Úvodní stránka webu se znovu sestaví (chyběl import stromu pro mobil po sloučení verze 0.10.0).
+
+**Návody**
+- Nový `reference/scitani.md`: kdy sčítání použít, ročníky, uspořádání sady, portály po krajích (Porta fontium, MZA,
+  Třeboň, Litoměřice, Opava, ARON, FamilySearch), pasti (soudní okres, osady, data z paměti) a vzor přepisu archu 1921.
+- Odkazy na sčítání v `SKILL.md`, `metodika.md` (milníky, mrtvé body), `portaly.md`, `matriky.md` a `data.md`.
+
 ## 0.10.0 – 10. 11. 2026
 
 Hlavní novinka: **přepracované návody.** SKILL.md, který Claude čte v každém sezení, je o třetinu kratší – podrobnosti
