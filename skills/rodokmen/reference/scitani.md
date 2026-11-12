@@ -54,11 +54,23 @@ nebo Wikipedie obce.
 | SOA Zámrsk (východní Čechy) | ARON – po fondech okresních archivů | viz níže, operáty 1869–1921 zatím nenalezeny |
 | SOA Praha (střední Čechy) | eBadatelna → Archiválie, typ **Sčítací operáty** (asi 260 sad, hlavně 1869) | **jen v prohlížeči** (brzda; níže) |
 | AHMP (Praha) | katalog Praga Publica, 1869–1921 | neověřeno |
-| více archivů | FamilySearch: „Czech Republic Censuses and Inhabitant Registers, 1800–1990“ (kolekce 1930345) | přes přihlášený prohlížeč (`portaly.md` → FamilySearch) |
+| více archivů | FamilySearch: „Czech Republic Censuses and Inhabitant Registers, 1800–1990“ (kolekce 1930345) | v prohlížeči, procházení po okresech (níže) |
 
-Nevyzkoušený portál při prvním použití ověř a postup zapiš do `poznamky_pro_skill.md`. FamilySearch má snímky
-z Litoměřic, Trutnova, Třeboně, Brna a Opavy a pro oblast Zámrsku i jmenný rejstřík; katalog je po obcích
-(„Czech Republic, <okres>, <obec>, census, 1869–1921“). Placené databáze (Ancestry, MyHeritage 1900–1921) jen zmiň.
+Nevyzkoušený portál při prvním použití ověř a postup zapiš do `poznamky_pro_skill.md`. Placené databáze (Ancestry,
+MyHeritage 1900–1921) jen zmiň.
+
+### FamilySearch – kolekce 1930345
+Ověřeno 11/2026 (bez přihlášení až po otevření snímku; zda se snímek bez účtu zobrazí, neověřeno – postup
+s přihlášeným prohlížečem je v `portaly.md` → FamilySearch).
+- `https://www.familysearch.org/search/collection/1930345` – jen asi 2 300 indexovaných záznamů, ale **4,9 milionu
+  snímků** z okresů celé ČR (u kolekce je jako místo originálů uvedena MZA Brno). Hledání podle jména tu skoro
+  nepomůže – **procházej snímky**: „Procházet všechny snímky“ → **okres** (~80, např. Hradec Králové, Náchod,
+  Trutnov – východní Čechy, kde jsme v ARONu starší operáty zatím nenašli) → **obec** → **rok** → **archivní číslo**
+  → snímky (adresa `ark:/61903/3:1:…` = trvalý odkaz).
+- Kolekce nemusí mít všechny roky obce (Dolní Přím: jen 1869), další bývají ve **Katalogu** pod obcí
+  („Czech Republic, <okres>, <obec>, census, 1869–1921“, filmy s ikonou fotoaparátu).
+- Cookie lištu odmítni (jen nezbytné). Rozšíření Claude in Chrome na stránce snímku nemusí smět dělat snímky
+  obrazovky – pak ať snímek uloží uživatel.
 
 ### Porta fontium – `tools/portafontium.py`
 1. `python3 -I tools/portafontium.py scitani` – přehled: archiv | soudní okres | roky (32 okresů).

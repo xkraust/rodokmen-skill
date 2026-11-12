@@ -223,7 +223,9 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
    fondy okresních úřadů; dlaždice operátů server skriptu nevydá (404, prohlížeči 200) → snímky jen v prohlížeči.
    Neobcházet; případně se zeptat archivu, zda smí nástroj stahovat jako u matrik.
 5. ARON – kde jsou starší operáty (1869–1921) pro obce východních Čech a zda mají snímky.
-6. FamilySearch kolekce 1930345 – přihlášení, jmenný rejstřík pro Zámrsk, katalog po obcích.
+6. ~~FamilySearch kolekce 1930345~~ Ověřeno 12. 11. 2026: procházení okres → obec → rok → archivní číslo → snímek,
+   jen ~2 300 indexovaných záznamů. Zbývá: zda snímek jde zobrazit bez přihlášení (rozšíření snímek obrazovky na
+   stránce snímku nepovolilo).
 7. Obsah ročníků 1880–1910 (obcovací řeč, gramotnost, domovská příslušnost) na skutečném snímku.
    Ročník 1921 ověřen na Zbyslavi čp. 43 (20 sloupců, viz vzor přepisu).
 
