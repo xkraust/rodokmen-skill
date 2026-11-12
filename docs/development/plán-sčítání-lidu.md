@@ -2,7 +2,7 @@
 
 Datum: 12. 11. 2026
 
-Stav: **implementováno ve verzi 0.11.0 (12. 11. 2026)** – návod `reference/scitani.md`, odkazy v ostatních
+Stav: **implementováno ve verzi 0.11.1 (12. 11. 2026)** – návod `reference/scitani.md`, odkazy v ostatních
 návodech, `portafontium.py scitani` / `domy` (+ `info`, `snimek`, `link`, `svazek` pro dům), test
 `tests/portafontium/test_scitani.py`, zápis sčítání v ukázce. Ověřeno na skutečném projektu (Zbyslav čp. 43, 1921).
 Zbývá: body v „K ověření“ 1 a 3–7 (ostatní portály jsou v návodu označené „neověřeno“); nástroj pro ARON jen

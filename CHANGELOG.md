@@ -6,7 +6,7 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
-## 0.11.0 – 12. 11. 2026
+## 0.11.1 – 12. 11. 2026
 
 Hlavní novinka: **sčítání lidu 1857–1921.** Sčítací arch ukáže celou domácnost v domě – kdo s kým bydlel, data
 a místa narození, domovskou obec. Pomůže hlavně u narození po roce 1910, jejichž matriky ještě nejsou v archivu.
