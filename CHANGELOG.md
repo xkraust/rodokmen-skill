@@ -6,6 +6,13 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.11.2 – 18. 11. 2026
+
+Sloučení novinek z původního repozitáře (verze 0.10.1 a 0.10.2, popis níže) se sčítáním lidu a portréty z tohoto forku.
+
+**Opravy**
+- Export webu přeskočí chybně zapsanou položku `ISSUES` a dál bere dokumenty a portréty podle evidence forku.
+
 ## 0.11.1 – 12. 11. 2026
 
 Hlavní novinka: **sčítání lidu 1857–1921.** Sčítací arch ukáže celou domácnost v domě – kdo s kým bydlel, data
@@ -31,6 +38,59 @@ a místa narození, domovskou obec. Pomůže hlavně u narození po roce 1910, j
 - SOA Třeboň: sčítání v prohlížeči a hledání osoby ve jmenných rejstřících sčítání napříč celým archivem (s číslem
   popisným a snímkem).
 - Odkazy na sčítání v `SKILL.md`, `metodika.md` (milníky, mrtvé body), `portaly.md`, `matriky.md` a `data.md`.
+
+## 0.10.2 – 16. 11. 2026
+
+Opravná verze: bezpečnější založení a aktualizace projektu, správný požadavek na Node a pravidla, aby chybné „není
+tam“ od pomocníka neschovalo předka.
+
+**Opravy**
+- Založení a aktualizace projektu už nemůžou zapsat mimo projekt, když je `.claude/` nebo `.skill_verze` symbolický
+  odkaz jinam (#193). Komentář v hlídači sítě, který skener Hermes Agent mylně bral jako nebezpečný kód, je
+  přeformulovaný.
+- Web potřebuje Node 22.12 nebo novější (Astro 7) – návod chtěl jen Node 20 a s ním web nešel sestavit. `npm run data`
+  teď starší Node hned srozumitelně ohlásí.
+- `kontrola.py` upozorní na hypotézu (`HYPOTEZY`) zapsanou jinak než `dict(…)` – export webu na ní padal.
+- Brzda už nezastaví celý Kramerius na hodiny kvůli HTTP 403 u neveřejného díla (OCR, stránky, obrázky) – to není
+  blokace, dílo jen není volně dostupné.
+
+**Návody**
+- Záporný výsledek pomocníka („prošel jsem snímky 20–60, není tam“) Claude přijme jen s dokladem – první a poslední
+  jméno a data z každého snímku, čtené ve zvětšení – a v deníku rozliší úsek prošlý s dokladem a jen orientačně.
+  Chybné „není“ dřív mohlo předka schovat natrvalo.
+
+## 0.10.1 – 13. 11. 2026
+
+Hlavní změna: **ZA Opava a SOA Praha omezily automatizovaný přístup.** ZA Opava od listopadu nepouští nástroje ani
+k obrázkům a na úvodní stránce upozorňuje na limity provozu. SOA Praha oznámila „automatizovaná bezpečnostní opatření
+a limity“ v eBadatelně. Obě badatelny dál fungují v prohlížeči tempem člověka – ověřil jsem to 13. 11. – a návody
+podle toho upravil. U Opavy je nově doporučený prohlížeč Playwright, protože jen v něm jde uložit celý snímek.
+
+**Nové**
+- ZA Opava: celý snímek přes Playwright. Prohlížeč snímků stránku sám přiblíží a projde, úryvek z dlaždic, které
+  přitom načetl, složí celý snímek – archiv nedostane žádný dotaz navíc a snímek se dál čte z disku. Uloží se do
+  sdílené mezipaměti, takže se stejný snímek podruhé neotvírá (#191).
+- `zapis.py --prepsat` nahradí položku celou, i když náhrada některá pole nemá.
+
+**Opravy**
+- ZA Opava: `soal_zoomify.py` pro Opavu skončí srozumitelnou hláškou s náhradním postupem a brzda skripty na archiv
+  zastaví – dřív končil výpisem chyby na HTTP 404 a návod ho pořád doporučoval (#191). Pro SOA Litoměřice nástroj
+  funguje dál.
+- Lokální web: `npm run nahled` už nehlásí „Another astro preview server is already running“, když běží náhled, který
+  pustil Claude (#186).
+- `zapis.py` už tiše nepřepíše existující položku kratší verzí – když by se ztratila pole (třeba podrobný seznam obcí
+  svazku), nic nezmění a vypíše je.
+- `kontrola.py` nově upozorní na překlad uložený pod jiným klíčem než `cs` (na webu se nezobrazil), na rodinný
+  dokument bez výřezu (na webu chyběl) a na chybně zapsanou položku `ISSUES`, na které spadl export webu.
+- `napady.py` nebere „† před 6/1919“ jako úmrtí v roce 1919 – už nevymýšlí španělskou chřipku ani dlouhověkost.
+- `ramecek.py` bez výřezu nespadne a nic nezapíše; `anno_snap.py` srozumitelně ohlásí, že dotaz v čísle novin nemá shodu.
+- Kontrola nové verze najde skill nainstalovaný k účtu v aplikaci Claude desktop i z kopie v projektu.
+
+**Návody**
+- SOA Praha: co dělat, když eBadatelna omezí i prohlížeč – skončit a čtení předat uživateli (#190).
+- ZA Opava: denní limit asi 50 snímků (po prvním odmítnutí ten den skončit), „Server Exception“ hned po CAPTCHA
+  limit není, žádné `fetch` na stránce. Matriky ZA Opava a pozemkové knihy Opavy a Olomouce jsou i na FamilySearch
+  v plném rozlišení – jak svazky spárovat a proč nikdy nepočítat s odhadnutým posunem snímků.
 
 ## 0.10.0 – 10. 11. 2026
 

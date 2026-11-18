@@ -412,15 +412,19 @@ def main():
     stats = dict(ancestors=len(known), documented=sum(p["st"] == "doc" for p in known), records=len(records),
                  generations=max(p["gen"] for p in people.values()) + 1)
     hypotheses = [dict(line=h.get("rod"), title=h.get("nadpis", "Hypotéza"), text=h.get("text", ""),
-                       items=[dict(name=a, text=b) for a, b in h.get("polozky", [])],
-                       records=[r for r in h.get("zaznamy", []) if r in recs]) for h in ns["HYPOTEZY"]]
+                       items=[dict(name=x[0], text=x[1]) for x in h.get("polozky", [])
+                              if isinstance(x, (tuple, list)) and len(x) == 2],
+                       records=[r for r in h.get("zaznamy", []) if r in recs])
+                  for h in ns["HYPOTEZY"] if isinstance(h, dict)]   # jiný zápis hlásí kontrola.py
 
     has_story = os.path.exists(os.path.join(DATA, "pribeh.md"))
     public_cfg = {k: v for k, v in cfg.items() if k != "prihlaseni"}
     public_cfg["maPribeh"] = has_story
     site = dict(config=public_cfg, places=places, root=slugs[1], aliases={a: slugs[a] for a in SAME}, people=people,
                 families=families, records=records, lines=lines,
-                issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES], stats=stats, hypotheses=hypotheses,
+                issues=[dict(title=i, text="") if isinstance(i, str) else dict(title=i[0], text=i[1]) for i in ISSUES
+                        if isinstance(i, str) or (isinstance(i, (tuple, list)) and len(i) == 2)],   # jiné hlásí kontrola.py
+                stats=stats, hypotheses=hypotheses,
                 docs=docs)
 
     write(os.path.join(WEB, "src", "data", "site.json"), json.dumps(site, ensure_ascii=False, indent=1))
