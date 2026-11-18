@@ -3,3 +3,6 @@ __pycache__/
 node_modules/
 
 CLAUDE.local.md
+
+# pracovní soubory a mezipaměť nástrojů (vznikají při spuštění nástrojů ze složky skillu)
+skills/rodokmen/pracovni/
