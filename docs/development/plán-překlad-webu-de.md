@@ -85,9 +85,9 @@ Rozhodnutí (18. 11. 2026): web nebude mít přepínač jazyků. Německá verze
   - `"zaklad": "krausovi"`: převezme `koren`, `rody` a další nastavení základní varianty, takže se rodokmen nemusí popisovat podruhé
   - `"jazyk": "de"`: zapne překladovou vrstvu z kroků 1 a 2
   - vlastní `netlify_site` a `cloudflare_worker` (`krausovi-de`)
-  - přeložené `rody` a `web` (název, úvod, otázka a odpověď)
+  - přeložené `rody` a `web` (název, úvod, přeložená otázka; odpověď se nepřekládá)
 - `web_varianty.py` musí umět `zaklad` (sloučit nastavení základu s nastavením varianty) a `jazyk`. Ostatní příkazy (`build`, `nasadit`, `nasadit-cf`, `nahled.py`) fungují beze změny.
-- Přihlášení je oddělené: německá otázka a odpověď, kterou znají němečtí příbuzní, a jiný otisk. Kdo zná odpověď na český web, německý tím neodemkne a naopak.
+- Přihlášení (rozhodnutí 18. 11. 2026): stejná otázka jako na českém webu, jen přeložená do němčiny, a stejná odpověď beze změny, takže i stejný otisk. Odpověď se při přípravě varianty bere vždy z originálního `web.json`. Weby jsou na různých adresách, takže se na každém přihlašuje zvlášť, ale stejným heslem.
 - Česká a německá verze se sestavují a nasazují nezávisle. Nasazení české verze německou nijak neovlivní.
 - Na úvodní stránku přidat „Stand: <datum>“, protože jde o snímek.
 - Volitelně jediný nenápadný odkaz v patičce českého webu („Deutsche Version“) a naopak. Nejde o přepínač, jen o odkaz na úvodní stránku druhého webu (ten se ptá na své vlastní heslo). Vyžaduje jeden řádek v `Base.astro` řízený z `web.json`, tedy úpravu šablony. Proto zatím ne.
