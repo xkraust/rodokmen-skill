@@ -68,6 +68,30 @@ def test_vystup():
     ok("ZIP do .ged odmítnut", r.returncode != 0 and ".zip" in r.stderr, r.stderr)
     r = spust(d, "--bez-obrazku", "--vystup", os.path.join(prac, "x.zip"))
     ok(".ged do .zip odmítnut", r.returncode != 0 and ".ged" in r.stderr, r.stderr)
+    # --slozka: rozbalený export (rodokmen.ged + media/) pro Family Tree Builder a Gramps
+    out = export(d, "--slozka")
+    sl = os.path.join(prac, "rodokmen")
+    ged = open(os.path.join(sl, "rodokmen.ged"), encoding="utf-8").read()
+    soubory = re.findall(r"^\d+ FILE (.+)$", ged, re.M)
+    ok("--slozka: rodokmen.ged a media/ vedle sebe", soubory and all(os.path.isfile(os.path.join(sl, f)) for f in soubory))
+    ok("--slozka: návod na import složky", "Family Tree Builderu importujte" in out, out)
+    r = spust(d, "--slozka")
+    ok("--slozka: existující export bez --prepsat odmítnut", r.returncode != 0 and "--prepsat" in r.stderr, r.stderr)
+    stary = os.path.join(sl, "media", "stary.jpg")
+    open(stary, "wb").write(b"x")
+    ok("--slozka --prepsat: nahradí media/ (staré obrázky pryč)",
+       spust(d, "--slozka", "--prepsat").returncode == 0 and not os.path.exists(stary))
+    open(os.path.join(sl, "moje_poznamky.txt"), "w").write("x")
+    r = spust(d, "--slozka", "--prepsat")
+    ok("--slozka: složku s cizími soubory nepřepíše ani s --prepsat",
+       r.returncode != 0 and os.path.exists(os.path.join(sl, "moje_poznamky.txt")), r.stderr)
+    export(d, "--slozka", "--koren", "3")
+    ok("--slozka --koren 3: pracovni/rodokmen_koren3/", os.path.isfile(os.path.join(prac, "rodokmen_koren3", "rodokmen.ged")))
+    ok("--slozka s --bez-obrazku odmítnuto", spust(d, "--slozka", "--bez-obrazku").returncode != 0)
+    ok("--slozka s výstupem .zip odmítnuto", spust(d, "--slozka", "--vystup", os.path.join(prac, "a.zip")).returncode != 0)
+    r = spust(d, "--slozka", "--vystup", os.path.join(d, "web"))
+    ok("--slozka: samotná složka web/ odmítnuta", r.returncode != 0 and "web/" in r.stderr, r.stderr)
+
     out = export(d, "--zijici", "--vystup", os.path.join(prac, "OneDrive", "vse.zip"))
     ok("--zijici v cloudové složce: upozornění", "synchronizované do cloudu (OneDrive)" in out, out)
     out = export(d, "--zijici", "--vystup", os.path.join(prac, "vse.zip"))
@@ -174,6 +198,15 @@ def test_ukazka():
     export(d, "--zijici", "--vystup", os.path.join(d, "pracovni", "vse.zip"))
     _, recs2, _ = nacti_zip(os.path.join(d, "pracovni", "vse.zip"))
     ok("--zijici: výchozí osoba se jménem", gi.first(recs2["@I1@"], "NAME") == "Petr /Novák/")
+
+    export(d, "--cp-v-miste", "--vystup", os.path.join(d, "pracovni", "cp.zip"))
+    _, recs_cp, _ = nacti_zip(os.path.join(d, "pracovni", "cp.zip"))
+    birt_cp = first(recs_cp["@I8@"], "BIRT")
+    ok("--cp-v-miste: čp. v místě za obcí", gi.first(birt_cp, "PLAC").startswith("Holice čp. 112, okres Pardubice"),
+       gi.first(birt_cp, "PLAC"))
+    ok("--cp-v-miste: ADDR zůstane", gi.first(birt_cp, "ADDR") == "čp. 112")
+    ok("--cp-v-miste: událost bez čp. beze změny", gi.first(first(recs_cp["@I8@"], "DEAT"), "PLAC").startswith("Holice, okres"))
+    ok("bez --cp-v-miste: místo bez čp.", "čp." not in gi.first(birt, "PLAC"))
 
     out = export(d, "--koren", "3", "--vystup", os.path.join(d, "pracovni", "matka.zip"))
     ged3, recs3, files3 = nacti_zip(os.path.join(d, "pracovni", "matka.zip"))

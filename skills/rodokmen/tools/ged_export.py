@@ -3,12 +3,17 @@
 
 Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py …`):
   python3 -I tools/ged_export.py                  -> pracovni/rodokmen.zip (rodokmen.ged + složka media/ s obrázky)
+  python3 -I tools/ged_export.py --slozka         -> pracovni/rodokmen/ (rodokmen.ged + media/ rovnou rozbalené
+                                                     – k importu ve Family Tree Builderu nebo Gramps)
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
   … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
+  … --cp-v-miste       číslo popisné i do místa události („Holice čp. 112, okres Pardubice, …“) – pro MyHeritage,
+                       který adresu (ADDR) u narození, sňatku a úmrtí nezobrazí; ADDR zůstane pro jiné programy
   … --koren <číslo>    jen tato osoba a její předci (např. --koren 3 = maminčina strana); čísla osob zůstanou,
                        výchozí soubor pracovni/rodokmen_koren3.zip
-  … --vystup <soubor>  jiný výstupní soubor (.zip, s --bez-obrazku .ged; ne ve složce web/)
-  … --prepsat          přepsat existující výstupní soubor (jinak nástroj skončí a nic nezmění)
+  … --vystup <soubor>  jiný výstup (.zip, s --bez-obrazku .ged, s --slozka složka; ne ve složce web/)
+  … --prepsat          přepsat existující výstup (jinak nástroj skončí a nic nezmění; ve složce jen rodokmen.ged
+                       a media/ – složku s jinými soubory nepřepíše nikdy)
   … --zijici           i údaje žijících a nedávno zemřelých – jen na výslovné přání uživatele (Claude se předem
                        zeptá); do cizí služby jen s vědomím, že údaje dostane i ona; nikdy na web
 
@@ -18,7 +23,7 @@ Zápis z matriky cituje u události jen tehdy, když sedí druh i rok (křest sy
 ostatní zápisy cituje u osoby. Žijící a nedávno zemřelí (do 30 let) zůstanou ve stromu jen jako „Žijící osoba“.
 Na konci vypíše souhrn: co v exportu je, co vynechal a co se nepodařilo převést.
 """
-import datetime, json, os, re, sys, unicodedata, zipfile
+import datetime, json, os, re, shutil, sys, unicodedata, zipfile
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)
@@ -253,8 +258,9 @@ def side_protected(n, now):
 # ---------- export ----------
 
 class Export:
-    def __init__(self, with_images=True, full_res=False, living=False, now=None, root=None):
+    def __init__(self, with_images=True, full_res=False, living=False, now=None, root=None, cp_in_place=False):
         self.with_images, self.full_res, self.living, self.root = with_images, full_res, living, root
+        self.cp_in_place = cp_in_place
         self.now = now or datetime.date.today().year
         self.media = {}            # cesta v ZIP → zdrojový soubor
         self.warn, self.unparsed, self.missing = [], [], set()
@@ -477,7 +483,11 @@ class Export:
         if e["date"]:
             out.append(f"{level + 1} DATE {e['date']}")
         if e["plac"]:
-            out += gtext(level + 1, "PLAC", e["plac"])
+            plac = e["plac"]
+            if self.cp_in_place and e["addr"]:   # MyHeritage adresu u události nezobrazí – číslo domu do místa
+                obec, sep, rest = plac.partition(", ")
+                plac = f"{obec} {e['addr']}{sep}{rest}"
+            out += gtext(level + 1, "PLAC", plac)
             pl = e.get("place") or {}
             if "lat" in pl and "lon" in pl:
                 out += [f"{level + 2} MAP", f"{level + 3} LATI {coord(pl['lat'], 'N', 'S')}",
@@ -675,7 +685,8 @@ def main(argv=None):
     for s in (sys.stdout, sys.stderr):
         if hasattr(s, "reconfigure"):
             s.reconfigure(encoding="utf-8", errors="replace")
-    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren", "--prepsat"}
+    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren", "--prepsat", "--slozka",
+             "--cp-v-miste"}
     out, root = None, None
     if "--vystup" in argv:
         i = argv.index("--vystup")
@@ -690,25 +701,50 @@ def main(argv=None):
     bad = [a for a in argv if a.startswith("--") and a not in known]
     if bad:
         sys.exit(f"Neznámá volba {bad[0]}. Nápověda: --help")
+    folder = "--slozka" in argv
+    if folder and "--bez-obrazku" in argv:
+        sys.exit("--slozka a --bez-obrazku nejdou spolu: složka je pro obrázky; samotný .ged dá --bez-obrazku.")
     ex = Export(with_images="--bez-obrazku" not in argv, full_res="--plne-rozliseni" in argv, living="--zijici" in argv,
-                root=root)
-    ext = ".zip" if ex.with_images else ".ged"
+                root=root, cp_in_place="--cp-v-miste" in argv)
+    ext = "" if folder else ".zip" if ex.with_images else ".ged"
     if out is None:
         out = os.path.join(ROOT, "pracovni", "rodokmen" + (f"_koren{root}" if root else "") + ext)
     out = os.path.abspath(out)
-    if not out.lower().endswith(ext):
-        why = "s obrázky je výstup ZIP; samotný .ged dá --bez-obrazku" if ex.with_images \
+    if folder and out.lower().endswith((".zip", ".ged")):
+        sys.exit(f"--vystup {out}: s --slozka je výstup složka (bez přípony .zip/.ged).")
+    if not folder and not out.lower().endswith(ext):
+        why = "s obrázky je výstup ZIP; samotný .ged dá --bez-obrazku, rozbalenou složku --slozka" if ex.with_images \
             else "--bez-obrazku zapisuje samotný GEDCOM"
         sys.exit(f"--vystup {out}: soubor musí mít příponu {ext} ({why}).")
     web = os.path.abspath(os.path.join(ROOT, "web"))
-    if os.path.normcase(out).startswith(os.path.normcase(web + os.sep)):
+    if os.path.normcase(out + os.sep).startswith(os.path.normcase(web + os.sep)):
         sys.exit(f"Výstup {out} je ve složce web/ – odtud by soubor šel s webem ven. Zvolte jiné místo "
                  "(výchozí je pracovni/).")
-    if os.path.exists(out) and "--prepsat" not in argv:
+    if folder:
+        if os.path.exists(out) and not os.path.isdir(out):
+            sys.exit(f"{out} je soubor, ne složka. Zvolte jiný název přes --vystup.")
+        taken = os.path.isdir(out) and os.listdir(out)
+        if taken and "--prepsat" not in argv:
+            sys.exit(f"Složka {out} už existuje a není prázdná. Přepsat export v ní jde volbou --prepsat "
+                     "(nahradí se jen rodokmen.ged a media/), nebo zvolte jiný název přes --vystup.")
+        if taken and set(os.listdir(out)) - {"rodokmen.ged", "media"}:
+            sys.exit(f"Složka {out} obsahuje i jiné soubory než předchozí export – nic nepřepisuji. "
+                     "Zvolte jinou složku přes --vystup.")
+    elif os.path.exists(out) and "--prepsat" not in argv:
         sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
     ged = ex.build()
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    if ex.with_images:
+    os.makedirs(out if folder else os.path.dirname(out), exist_ok=True)
+    if folder:
+        media = os.path.join(out, "media")
+        if os.path.isdir(media):
+            shutil.rmtree(media)
+        with open(os.path.join(out, "rodokmen.ged"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(ged)
+        for path, src in sorted(ex.media.items()):
+            dst = os.path.join(out, *path.split("/"))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(src, dst)
+    elif ex.with_images:
         with zipfile.ZipFile(out, "w") as z:
             z.writestr("rodokmen.ged", ged.encode("utf-8"), compress_type=zipfile.ZIP_DEFLATED)
             for path, src in sorted(ex.media.items()):
@@ -723,9 +759,14 @@ def main(argv=None):
         print(f"  jen osoba č. {ex.root} ({ex.P[ex.root]['n']}) a její předci")
     print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů (svazků), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
-    if ex.with_images:
-        print("  Jak dál: ZIP rozbalte (rodokmen.ged a media/ vedle sebe). Web MyHeritage bere jen .ged a obrázky z něj "
-              "nenačte – s obrázky importujte rodokmen.ged ve Family Tree Builderu a pak Sync. Gramps: importujte .ged.")
+    if folder:
+        print(f"  Jak dál: ve Family Tree Builderu importujte {os.path.join(out, 'rodokmen.ged')} a pak Sync "
+              "(web MyHeritage bere jen .ged a obrázky z něj nenačte). Gramps: importujte týž .ged. Složku nepřesouvejte "
+              "bez media/ – obrázky se hledají vedle .ged.")
+    elif ex.with_images:
+        print("  Jak dál: ZIP rozbalte (rodokmen.ged a media/ vedle sebe), nebo exportujte rovnou s --slozka. Web "
+              "MyHeritage bere jen .ged a obrázky z něj nenačte – s obrázky importujte rodokmen.ged ve Family Tree "
+              "Builderu a pak Sync. Gramps: importujte .ged.")
     if ex.living:
         print("  POZOR: včetně žijících a nedávno zemřelých (--zijici) – jejich údaje dostane každá služba, kam soubor "
               "nahrajete; na web nepatří.")

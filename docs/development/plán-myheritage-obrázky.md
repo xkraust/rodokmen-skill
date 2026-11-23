@@ -32,7 +32,21 @@ Ověřeno (nápověda MyHeritage, článek 12851303 a 12852096):
 5. Vydání: zvýšit verzi (`plugin.json`, `VERZE`, README 2×), `CHANGELOG.md` sekce „Návody/Opravy“, commit,
    `/plugin marketplace update rodokmen-skill`, `/reload-plugins`, push.
 
+## Doplněno (0.12.2, 23. 11. 2026)
+Volba `ged_export.py --slozka`: export rovnou rozbalený do `pracovni/rodokmen[_koren<N>]/` (`rodokmen.ged` + `media/`),
+bez ZIPu, který web MyHeritage odmítá. `--prepsat` nahradí jen `rodokmen.ged` a `media/`; složku s cizími soubory
+nepřepíše. Pro zkoušku ve FTB stačí importovat `.ged` z této složky.
+
+Volba `--cp-v-miste`: číslo popisné i do `PLAC` („Holice čp. 112, okres Pardubice, …“), `ADDR` zůstane. Důvod:
+uživatelův strom z MyHeritage (`dokumenty/strom.ged`, export FTB) nemá žádné `ADDR`, čísla domů jsou v místě
+(„Obora č.21“, „Tlucná č.30“); recenze FTB 8 uvádí, že `ADDR` po importu nezobrazí. Výchozí zůstává čp. jen
+v `ADDR` (čisté místo pro mapy a Gramps).
+
+Ruční zkouška ve FTB (jedním importem): `ged_export.py --koren 3 --slozka --cp-v-miste` → import `.ged` →
+1. jsou u osob a citací výřezy z `media/`? 2. je u narození vidět „čp.“ v místě? 3. má obec špendlík na mapě
+(převezme FTB `MAP`/`LATI`/`LONG`)? Výsledky zapsat sem a do `plán-export-gedcom.md` (otevřená otázka 2).
+
 ## Ověření
-- `tests/gedcom/test_ged_export.py` projde (beze změny formátu `.ged`).
+- `tests/gedcom/test_ged_export.py` projde (beze změny formátu `.ged`; 93 kontrol včetně `--slozka`).
 - Ruční zkouška u uživatele: import rozbaleného ZIPu ukázkového projektu do FTB → fotky u osob viditelné →
   po Sync vidět na webu MyHeritage. Výsledek zapsat do `plán-export-gedcom.md`.

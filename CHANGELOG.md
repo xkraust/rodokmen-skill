@@ -6,6 +6,15 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.2 – 23. 11. 2026
+
+**Nové**
+- `ged_export.py --slozka` zapíše export rovnou rozbalený (`pracovni/rodokmen/` s `rodokmen.ged` a `media/`), připravený
+  k importu ve Family Tree Builderu nebo Gramps – ZIP se nemusí rozbalovat. `--prepsat` v ní nahradí jen předchozí
+  export, složku s jinými soubory nepřepíše.
+- `ged_export.py --cp-v-miste` zapíše číslo popisné i do místa události („Holice čp. 112, okres Pardubice, …“), aby
+  ho bylo vidět v MyHeritage – ten adresu u narození, sňatku a úmrtí nezobrazí.
+
 ## 0.12.1 – 23. 11. 2026
 
 **Návody**

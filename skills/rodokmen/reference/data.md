@@ -184,16 +184,22 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
 ## Export do GEDCOM
 `python3 -I tools/ged_export.py` → `pracovni/rodokmen.zip`: `rodokmen.ged` (GEDCOM 5.5.1, UTF-8) a složka `media/`
 s výřezy zápisů, rodinnými fotkami a portréty. ZIP se **rozbalí** (`rodokmen.ged` a `media/` vedle sebe) a importuje
-se `.ged` – obrázky si program načte podle relativních cest:
+se `.ged` – obrázky si program načte podle relativních cest. **Pro import rovnou použij `--slozka`**: nástroj zapíše
+rozbalenou složku `pracovni/rodokmen/` (s `--koren 3` `pracovni/rodokmen_koren3/`) a ZIP nevznikne.
 - **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): File → Import GEDCOM → rozbalený
   `rodokmen.ged` → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
   se nahrají na web. Web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte nikdy (soubor
   obsahuje jen odkazy na ně); nahrání jen `.ged` na web = strom bez obrázků, fotky pak jen ručně.
+  Pro MyHeritage exportuj s **`--cp-v-miste`**: číslo popisné jde i do místa události („Holice čp. 112, okres …“),
+  protože adresu (`ADDR`) u narození, sňatku a úmrtí MyHeritage nezobrazí (jeho vlastní stromy mají číslo domu
+  v místě, např. „Obora č.21“). Každý dům je pak pro MyHeritage samostatné místo (rozpoznání místa a mapa ho
+  mohou vynechat) – proto to není výchozí; bez volby je čp. jen v adrese (Gramps ji zobrazí).
 - **Gramps:** importovat rozbalený `.ged`.
 Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`,
 `--koren <číslo>` (jen tato osoba a její předci, např. `--koren 3` = maminčina strana jako samostatný strom; čísla osob
 zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky; výchozí soubor `pracovni/rodokmen_koren3.zip`).
 Existující soubor nástroj nepřepíše (jen s `--prepsat`), do `web/` nezapíše a hlídá příponu (`.zip`, s `--bez-obrazku` `.ged`).
+U `--slozka` nahradí `--prepsat` jen `rodokmen.ged` a `media/`; složku s jinými soubory nepřepíše nikdy.
 - Rodiny se odvozují z čísel (otec 2k, matka 2k+1), aliasy `SAME` jsou jedna osoba, zástupní rodiče („otec neuveden“)
   se nevyváží. Fakta se převádějí na události: `*`, `×` (sňatek v rodině), `†`; datum do tvaru GEDCOM (`asi` → ABT,
   `před` → BEF, `po` → AFT, `mezi … a …` → BET), obec podle `mista.json` (název z OpenStreetMap a souřadnice),
