@@ -6,8 +6,9 @@ Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
   … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
   … --vystup <soubor>  jiný výstupní soubor (.zip, s --bez-obrazku .ged)
-  … --zijici           i údaje žijících a nedávno zemřelých – JEN pro vlastní potřebu (záloha, vlastní program),
-                       ne do cizí služby ani na web
+  … --koren <číslo>    jen tato osoba a její předci (např. --koren 3 = maminčina strana); čísla osob zůstanou
+  … --zijici           i údaje žijících a nedávno zemřelých – jen na výslovné přání uživatele (Claude se předem
+                       zeptá); do cizí služby jen s vědomím, že údaje dostane i ona; nikdy na web
 
 Čte data/osoby.py, zaznamy.json, svazky.json, prepisy.json, mista.json, dokumenty.json a obrázky z vyrezy/ (zdroje/).
 Rodiny odvozuje z Kekulého čísel, fakta (`* 14. 2. 1890 Holice čp. 112`) převádí na události GEDCOM.
@@ -249,8 +250,8 @@ def side_protected(n, now):
 # ---------- export ----------
 
 class Export:
-    def __init__(self, with_images=True, full_res=False, living=False, now=None):
-        self.with_images, self.full_res, self.living = with_images, full_res, living
+    def __init__(self, with_images=True, full_res=False, living=False, now=None, root=None):
+        self.with_images, self.full_res, self.living, self.root = with_images, full_res, living, root
         self.now = now or datetime.date.today().year
         self.media = {}            # cesta v ZIP → zdrojový soubor
         self.warn, self.unparsed, self.missing = [], [], set()
@@ -274,10 +275,33 @@ class Export:
                 self.warn.append(f"SAME {a} -> {c}: osoba {c} je zástupná nebo chybí, alias vynechán")
                 del SAME[a]
         self.persons = [k for k in sorted(P) if k not in SAME and not placeholder(P[k])]
+        if self.root is not None:
+            r = SAME.get(self.root, self.root)
+            if r not in P or placeholder(P[r]):
+                sys.exit(f"--koren {self.root}: osoba s tímto číslem v data/osoby.py není (nebo je zástupná).")
+            self.root = r
+            inc = self.subtree(r)
+            self.persons = [k for k in self.persons if k in inc]
         self.pset = set(self.persons)
         self.aliases = {}
         for a, c in SAME.items():
             self.aliases.setdefault(c, []).append(a)
+
+    def subtree(self, r):
+        """Čísla osoby r a všech jejích předků (k >> d == r). Alias SAME uvnitř, jehož hlavní osoba leží v jiné
+        větvi, přidá i ji a její předky – je to tatáž osoba."""
+        def under(k, c):
+            d = k.bit_length() - c.bit_length()
+            return d >= 0 and k >> d == c
+        inc = {k for k in self.P if under(k, r)}
+        changed = True
+        while changed:
+            changed = False
+            for a, c in self.SAME.items():
+                if a in inc and c not in inc:
+                    inc |= {k for k in self.P if under(k, c)}
+                    changed = True
+        return inc
 
     def canon(self, k):
         k = self.SAME.get(k, k)
@@ -648,17 +672,23 @@ def main(argv=None):
     for s in (sys.stdout, sys.stderr):
         if hasattr(s, "reconfigure"):
             s.reconfigure(encoding="utf-8", errors="replace")
-    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup"}
-    out = None
+    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren"}
+    out, root = None, None
     if "--vystup" in argv:
         i = argv.index("--vystup")
         if i + 1 >= len(argv):
             sys.exit("--vystup potřebuje cestu k souboru.")
         out = argv[i + 1]
+    if "--koren" in argv:
+        i = argv.index("--koren")
+        if i + 1 >= len(argv) or not argv[i + 1].isdigit() or int(argv[i + 1]) < 1:
+            sys.exit("--koren potřebuje číslo osoby z data/osoby.py (např. --koren 3).")
+        root = int(argv[i + 1])
     bad = [a for a in argv if a.startswith("--") and a not in known]
     if bad:
         sys.exit(f"Neznámá volba {bad[0]}. Nápověda: --help")
-    ex = Export(with_images="--bez-obrazku" not in argv, full_res="--plne-rozliseni" in argv, living="--zijici" in argv)
+    ex = Export(with_images="--bez-obrazku" not in argv, full_res="--plne-rozliseni" in argv, living="--zijici" in argv,
+                root=root)
     ged = ex.build()
     if out is None:
         out = os.path.join(ROOT, "pracovni", "rodokmen.ged" if not ex.with_images else "rodokmen.zip")
@@ -674,11 +704,13 @@ def main(argv=None):
     st = ex.stats
     n_rec = sum(1 for line in ged.splitlines() if re.match(r"\d+ SOUR @S", line))
     print(f"GEDCOM: {out}")
+    if ex.root is not None:
+        print(f"  jen osoba č. {ex.root} ({ex.P[ex.root]['n']}) a její předci")
     print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů (svazků), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
     if ex.living:
-        print("  POZOR: včetně žijících a nedávno zemřelých (--zijici) – soubor jen pro vlastní potřebu, "
-              "nenahrávejte ho do cizí služby ani na web.")
+        print("  POZOR: včetně žijících a nedávno zemřelých (--zijici) – jejich údaje dostane každá služba, kam soubor "
+              "nahrajete; na web nepatří.")
     else:
         print(f"  chránění (žijící / zemřelí do {PROTECT_DEATH_YEARS} let): {st['protected']} osob jen jako „Žijící osoba“; "
               f"vynechané poznámky {st['notes_skipped']}, příčiny úmrtí {st['causes_skipped']}, "

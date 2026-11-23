@@ -13,7 +13,8 @@ programů – i s výřezy zápisů z matrik, rodinnými fotkami a portréty.
 
 **Nové**
 - `ged_export.py` vyrobí `pracovni/rodokmen.zip` (GEDCOM 5.5.1 a složka s obrázky); `--bez-obrazku` jen samotný `.ged`,
-  `--plne-rozliseni` přidá výřezy v plném rozlišení.
+  `--plne-rozliseni` přidá výřezy v plném rozlišení, `--koren 3` vyexportuje jen jednu větev (např. maminčinu stranu)
+  jako samostatný strom.
 - Data, obce (s plným názvem a souřadnicemi z mapy), čísla domů, sňatky v rodinách a citace zápisů u správných událostí:
   křest syna, ve kterém je zapsaný otec, se u otce cituje jako zápis, ne jako jeho narození.
 - Žijící a nedávno zemřelí jsou v exportu jen jako „Žijící osoba“, bez údajů a fotek. Na konci souhrn, co v exportu je

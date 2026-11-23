@@ -184,7 +184,9 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
 ## Export do GEDCOM
 `python3 -I tools/ged_export.py` → `pracovni/rodokmen.zip`: `rodokmen.ged` (GEDCOM 5.5.1, UTF-8) a složka `media/`
 s výřezy zápisů, rodinnými fotkami a portréty. ZIP se nahrává celý (Gramps: rozbalit a importovat `.ged`).
-Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`.
+Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`,
+`--koren <číslo>` (jen tato osoba a její předci, např. `--koren 3` = maminčina strana jako samostatný strom; čísla osob
+zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky).
 - Rodiny se odvozují z čísel (otec 2k, matka 2k+1), aliasy `SAME` jsou jedna osoba, zástupní rodiče („otec neuveden“)
   se nevyváží. Fakta se převádějí na události: `*`, `×` (sňatek v rodině), `†`; datum do tvaru GEDCOM (`asi` → ABT,
   `před` → BEF, `po` → AFT, `mezi … a …` → BET), obec podle `mista.json` (název z OpenStreetMap a souřadnice),
@@ -196,7 +198,10 @@ Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i vý�
   zůstanou jen jako „Žijící osoba“ (vazby bez údajů, fotek a zápisů). U lidí z posledních ~100 let se vynechá poznámka
   a příčina úmrtí, boční příbuzní z té doby a dokumenty s chráněnou osobou také. Zápis, ve kterém je i chráněná osoba,
   jde bez obrázku a přepisu – souhrn ho vypíše ke kontrole. `udaje_od_rodiny.md` se nevyváží.
-- `--zijici` vyexportuje vše **jen pro vlastní potřebu** (záloha, vlastní program). Takový soubor nenahrávej do cizí
-  služby ani na web; použij ho jen na výslovné přání uživatele.
+- **Před exportem se vždy zeptej, jestli má export obsahovat i žijící osoby** (a kam soubor půjde). Vysvětli rozdíl:
+  bez nich jsou žijící a nedávno zemřelí jen „Žijící osoba“ (údaje si uživatel doplní ručně); s nimi (`--zijici`) jsou
+  v souboru jejich jména, data, místa, poznámky i fotky. Nahráním do cizí služby (MyHeritage, Ancestry…) je dostane
+  i ta služba – u vlastního stromu je MyHeritage ostatním skrývá, ale data u ní budou. Výchozí odpověď je „ne“;
+  `--zijici` použij jen na výslovné „ano“ a připomeň souhlas dotčených (`soukromi.md`). Na web takový soubor nepatří.
 - Projdi s uživatelem souhrn na konci (chránění, vynechané, chybějící obrázky, data, která nešla převést) dřív, než
   soubor nahraje. Nahrání GEDCOM na web MyHeritage vytvoří **nový samostatný strom** (se stávajícím se nesloučí).

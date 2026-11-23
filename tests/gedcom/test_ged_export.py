@@ -143,6 +143,17 @@ def test_ukazka():
     export(d, "--zijici", "--vystup", os.path.join(d, "pracovni", "vse.zip"))
     _, recs2, _ = nacti_zip(os.path.join(d, "pracovni", "vse.zip"))
     ok("--zijici: výchozí osoba se jménem", gi.first(recs2["@I1@"], "NAME") == "Petr /Novák/")
+
+    out = export(d, "--koren", "3", "--vystup", os.path.join(d, "pracovni", "matka.zip"))
+    ged3, recs3, files3 = nacti_zip(os.path.join(d, "pracovni", "matka.zip"))
+    spolecne(ged3, recs3, files3)
+    pod3 = {k for k in cekane if (lambda dd: dd >= 0 and k >> dd == 3)(k.bit_length() - 2)}
+    ids3 = {r["_id"] for r in recs3.values() if r["_type"] == "INDI"}
+    ok("--koren 3: jen matka a její předci", ids3 == {f"@I{k}@" for k in pod3}, sorted(ids3 ^ {f"@I{k}@" for k in pod3}))
+    ok("--koren 3: bez otcovy strany a výchozí osoby", not ({"@I1@", "@I2@", "@I8@"} & ids3))
+    ok("--koren 3: matka bez rodiny s dětmi", not sub(recs3["@I3@"], "FAMS") and sub(recs3["@I3@"], "FAMC"))
+    ok("--koren 3: obrázky jen z větve (Novákovi ne)", files3 == {"rodokmen.ged"}, files3)
+    ok("--koren 3: souhrn jmenuje kořen", "jen osoba č. 3" in out, out)
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 
@@ -231,6 +242,20 @@ def test_umely():
     ok("chráněná výchozí osoba", gi.first(recs["@I1@"], "NAME") == "Žijící osoba")
     sv = [r for r in recs.values() if r["_type"] == "SOUR"]
     ok("signatura v CALN", any(gi.first(first(r, "REPO"), "CALN") == "1234" for r in sv if first(r, "REPO")))
+
+    # --koren 5: rodiče Kateřiny (10, 11) jsou aliasy osob 6 a 7 z jiné větve – vezmou se i ty
+    export(d, "--koren", "5", "--vystup", os.path.join(d, "pracovni", "k5.zip"))
+    _, recs5, files5 = nacti_zip(os.path.join(d, "pracovni", "k5.zip"))
+    ids5 = {r["_id"] for r in recs5.values() if r["_type"] == "INDI"}
+    ok("--koren 5: osoba a předci přes SAME", ids5 == {"@I5@", "@I6@", "@I7@"}, ids5)
+    f5 = fam_of(recs5, "@I6@", "@I7@")
+    ok("--koren 5: rodina rodičů jen s dítětem z větve", f5 is not None and [n["val"] for n in sub(f5, "CHIL")] == ["@I5@"])
+    ok("--koren 5: portrét a křest syna zůstanou", "media/katerina_mala_portret.jpg" in files5
+       and any("Křest Jana" in p for p in page(recs5, recs5["@I5@"])))
+    ok("--koren 5: svatební fotka Jana a Marie ne", "media/svatba_1919.jpg" not in files5)
+    r = subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(d, "tools", "ged_export.py"), "--koren", "99"],
+                       capture_output=True, text=True, encoding="utf-8", cwd=d)
+    ok("--koren s neexistujícím číslem skončí chybou", r.returncode != 0 and "99" in r.stderr, r.stderr)
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 

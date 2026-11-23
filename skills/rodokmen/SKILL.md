@@ -73,7 +73,8 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
   v `reference/data.md` → Import rodinného stromu. Strom, který si rodina vede sama, má stav `fam`; cizí stromy
   z internetu (MyHeritage, Geni, FamilySearch, Smart Match) jsou **jen vodítko**, stav `mh`, nikdy `doc`.
 - **Export do GEDCOM** (rodokmen do MyHeritage, Gramps a jiných programů): `tools/ged_export.py` – postup
-  a soukromí v `reference/data.md` → Export do GEDCOM. Žijící a nedávno zemřelí jsou v exportu jen jako „Žijící osoba“.
+  a soukromí v `reference/data.md` → Export do GEDCOM. **Před spuštěním se zeptej, zda exportovat i žijící osoby**
+  (výchozí ne: žijící a nedávno zemřelí jsou jen „Žijící osoba“; ano = `--zijici`, vysvětli, že údaje dostane cílová služba).
 
 ## Fáze 2 – Matriky, generace po generaci
 Podrobný postup čtení: `reference/matriky.md`. Archivy: `reference/portaly.md`. Sporná ztotožnění, mrtvé body,

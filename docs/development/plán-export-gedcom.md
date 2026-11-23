@@ -22,8 +22,10 @@ Druhá část (sloučení s MyHeritage) stojí na dvou neověřených předpokla
 # Fáze 1: export
 
 **Stav (23. 11. 2026):** implementováno ve verzi 0.12.0 – `tools/ged_export.py`, úprava `ged_import.py` (import bez
-vedlejších efektů), test `tests/gedcom/test_ged_export.py` (63 kontrol), dokumentace v `reference/data.md`, SKILL.md,
-README a CHANGELOG. Zbývá ruční zkouška importu ZIP do Gramps (a volitelně MyHeritage).
+vedlejších efektů), test `tests/gedcom/test_ged_export.py` (76 kontrol), dokumentace v `reference/data.md`, SKILL.md,
+README a CHANGELOG. Navíc volba `--koren <číslo>` (export jedné větve jako samostatného stromu – uživatel chce
+maminčinu stranu Havlíčkovi, č. 3, jako vlastní strom v MyHeritage). Zbývá ruční zkouška importu ZIP do MyHeritage
+(uživatel ho používá) a volitelně do Gramps.
 
 Rozdíly proti návrhu níže (rozhodnuto při implementaci):
 - `PLAC` = plný název z pole `osm` v `mista.json` bez PSČ (např. „Holice, okres Pardubice, Pardubický kraj, Česko“),
@@ -142,8 +144,9 @@ Pro chráněné osoby:
 - zápisy a obrázky matrik se exportují jen když je cituje alespoň jedna **nechráněná** osoba; zápis, který cituje
   i chráněnou osobu (např. sčítací arch), se vypíše v souhrnu k ruční kontrole a `OBJE` se k němu nepřidá.
 
-**Výjimka `--zijici`:** pro osobní použití (záloha, převod do jiného programu) vyexportuje i údaje chráněných osob.
-Bez výslovného zadání se nikdy nepoužije a nástroj při něm vypíše upozornění, že soubor nesmí do cizí služby ani na web.
+**Výjimka `--zijici`:** vyexportuje i údaje chráněných osob. Skill se před každým exportem **zeptá**, zda exportovat
+i žijící osoby (rozhodnutí uživatele 23. 11. 2026), vysvětlí, že údaje dostane cílová služba, a výchozí je „ne“.
+Nástroj při `--zijici` vypíše upozornění; na web takový soubor nepatří.
 
 `udaje_od_rodiny.md` je volný text bez vazby na osoby, do GEDCOM se **neexportuje**. Údaje od rodiny (`st="fam"`)
 jsou v `f` osob a exportují se stejně jako ostatní.
