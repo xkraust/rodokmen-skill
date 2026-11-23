@@ -35,6 +35,9 @@ Rozdíly proti návrhu níže (rozhodnuto při implementaci):
 - Zápis bez svazku ve `svazky.json` má vlastní `SOUR` s názvem zápisu.
 - Sňatek chráněného páru se nevyváží (rodina má `RESN privacy`, jen vazby); fakt `×` nesedící na partnera → `NOTE`.
 - Chybějící obrázky souhrn hlásí jednou větou (počet a příklady), ne po jednom.
+- Výstup: výchozí `pracovni/rodokmen.zip`, s `--koren N` `pracovni/rodokmen_koren<N>.zip`; existující soubor jen
+  s `--prepsat`; výstup do `web/` odmítne; přípona musí odpovídat (`.zip` / `.ged`). S `--zijici` upozorní, že soubor
+  dostane i cloud, je-li složka synchronizovaná (podle názvu cesty: Google Disk / Můj disk, OneDrive, Dropbox, iCloud).
 
 ## Datový model projektu (co export musí zvládnout)
 Data nejsou obecný graf osob, rodin a událostí (viz `reference/data.md`):

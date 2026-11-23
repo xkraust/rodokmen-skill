@@ -5,8 +5,10 @@ Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py
   python3 -I tools/ged_export.py                  -> pracovni/rodokmen.zip (rodokmen.ged + složka media/ s obrázky)
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
   … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
-  … --vystup <soubor>  jiný výstupní soubor (.zip, s --bez-obrazku .ged)
-  … --koren <číslo>    jen tato osoba a její předci (např. --koren 3 = maminčina strana); čísla osob zůstanou
+  … --koren <číslo>    jen tato osoba a její předci (např. --koren 3 = maminčina strana); čísla osob zůstanou,
+                       výchozí soubor pracovni/rodokmen_koren3.zip
+  … --vystup <soubor>  jiný výstupní soubor (.zip, s --bez-obrazku .ged; ne ve složce web/)
+  … --prepsat          přepsat existující výstupní soubor (jinak nástroj skončí a nic nezmění)
   … --zijici           i údaje žijících a nedávno zemřelých – jen na výslovné přání uživatele (Claude se předem
                        zeptá); do cizí služby jen s vědomím, že údaje dostane i ona; nikdy na web
 
@@ -36,6 +38,7 @@ NOT_OCCU = ("dcera", "syn ", "vdova", "vdovec", "bratr", "sestra", "manžel", "n
 PROTECT_DEATH_YEARS = 30    # nedávno zemřelí (stejná lhůta jako u archivu pro úmrtí)
 LIVING_BIRTH_YEARS = 100    # bez úmrtí a narozen v posledních 100 letech = žijící
 RECENT_YEARS = 100          # poznámky a příčiny úmrtí jen u lidí starších než ~100 let
+CLOUD = ("Google Drive", "Můj disk", "My Drive", "GoogleDrive", "OneDrive", "Dropbox", "iCloud", "Mobile Documents")
 
 
 # ---------- pomocné ----------
@@ -672,7 +675,7 @@ def main(argv=None):
     for s in (sys.stdout, sys.stderr):
         if hasattr(s, "reconfigure"):
             s.reconfigure(encoding="utf-8", errors="replace")
-    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren"}
+    known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren", "--prepsat"}
     out, root = None, None
     if "--vystup" in argv:
         i = argv.index("--vystup")
@@ -689,10 +692,22 @@ def main(argv=None):
         sys.exit(f"Neznámá volba {bad[0]}. Nápověda: --help")
     ex = Export(with_images="--bez-obrazku" not in argv, full_res="--plne-rozliseni" in argv, living="--zijici" in argv,
                 root=root)
-    ged = ex.build()
+    ext = ".zip" if ex.with_images else ".ged"
     if out is None:
-        out = os.path.join(ROOT, "pracovni", "rodokmen.ged" if not ex.with_images else "rodokmen.zip")
-    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+        out = os.path.join(ROOT, "pracovni", "rodokmen" + (f"_koren{root}" if root else "") + ext)
+    out = os.path.abspath(out)
+    if not out.lower().endswith(ext):
+        why = "s obrázky je výstup ZIP; samotný .ged dá --bez-obrazku" if ex.with_images \
+            else "--bez-obrazku zapisuje samotný GEDCOM"
+        sys.exit(f"--vystup {out}: soubor musí mít příponu {ext} ({why}).")
+    web = os.path.abspath(os.path.join(ROOT, "web"))
+    if os.path.normcase(out).startswith(os.path.normcase(web + os.sep)):
+        sys.exit(f"Výstup {out} je ve složce web/ – odtud by soubor šel s webem ven. Zvolte jiné místo "
+                 "(výchozí je pracovni/).")
+    if os.path.exists(out) and "--prepsat" not in argv:
+        sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
+    ged = ex.build()
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     if ex.with_images:
         with zipfile.ZipFile(out, "w") as z:
             z.writestr("rodokmen.ged", ged.encode("utf-8"), compress_type=zipfile.ZIP_DEFLATED)
@@ -711,6 +726,10 @@ def main(argv=None):
     if ex.living:
         print("  POZOR: včetně žijících a nedávno zemřelých (--zijici) – jejich údaje dostane každá služba, kam soubor "
               "nahrajete; na web nepatří.")
+        cloud = next((c for c in CLOUD if c.lower() in out.lower()), None)
+        print("  Soubor leží " + (f"ve složce synchronizované do cloudu ({cloud}) – " if cloud else
+                                  "ve složce projektu; synchronizuje-li ji cloud (Google Disk, OneDrive, Dropbox…), ")
+              + "dostane ho i cloud. Po nahrání ho můžete smazat.")
     else:
         print(f"  chránění (žijící / zemřelí do {PROTECT_DEATH_YEARS} let): {st['protected']} osob jen jako „Žijící osoba“; "
               f"vynechané poznámky {st['notes_skipped']}, příčiny úmrtí {st['causes_skipped']}, "

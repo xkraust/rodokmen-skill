@@ -186,7 +186,8 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
 s výřezy zápisů, rodinnými fotkami a portréty. ZIP se nahrává celý (Gramps: rozbalit a importovat `.ged`).
 Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`,
 `--koren <číslo>` (jen tato osoba a její předci, např. `--koren 3` = maminčina strana jako samostatný strom; čísla osob
-zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky).
+zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky; výchozí soubor `pracovni/rodokmen_koren3.zip`).
+Existující soubor nástroj nepřepíše (jen s `--prepsat`), do `web/` nezapíše a hlídá příponu (`.zip`, s `--bez-obrazku` `.ged`).
 - Rodiny se odvozují z čísel (otec 2k, matka 2k+1), aliasy `SAME` jsou jedna osoba, zástupní rodiče („otec neuveden“)
   se nevyváží. Fakta se převádějí na události: `*`, `×` (sňatek v rodině), `†`; datum do tvaru GEDCOM (`asi` → ABT,
   `před` → BEF, `po` → AFT, `mezi … a …` → BET), obec podle `mista.json` (název z OpenStreetMap a souřadnice),
@@ -203,5 +204,7 @@ zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky).
   v souboru jejich jména, data, místa, poznámky i fotky. Nahráním do cizí služby (MyHeritage, Ancestry…) je dostane
   i ta služba – u vlastního stromu je MyHeritage ostatním skrývá, ale data u ní budou. Výchozí odpověď je „ne“;
   `--zijici` použij jen na výslovné „ano“ a připomeň souhlas dotčených (`soukromi.md`). Na web takový soubor nepatří.
+  Když projekt leží ve složce synchronizované do cloudu (Google Disk, OneDrive, Dropbox), řekni, že soubor s žijícími
+  dostane i ten cloud, a nabídni ho po nahrání smazat.
 - Projdi s uživatelem souhrn na konci (chránění, vynechané, chybějící obrázky, data, která nešla převést) dřív, než
   soubor nahraje. Nahrání GEDCOM na web MyHeritage vytvoří **nový samostatný strom** (se stávajícím se nesloučí).

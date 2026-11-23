@@ -37,11 +37,42 @@ def projekt(ukazka):
     return d
 
 
+def spust(d, *args):
+    return subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(d, "tools", "ged_export.py"), *args],
+                          capture_output=True, text=True, encoding="utf-8", cwd=d)
+
+
 def export(d, *args):
-    r = subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(d, "tools", "ged_export.py"), *args],
-                       capture_output=True, text=True, encoding="utf-8", cwd=d)
+    r = spust(d, *args)
     assert r.returncode == 0, r.stdout + r.stderr
     return r.stdout
+
+
+def test_vystup():
+    """Kam se export zapíše: výchozí název podle kořene, nepřepisuje, ne do web/, přípona, upozornění na cloud."""
+    d = projekt(True)
+    prac = os.path.join(d, "pracovni")
+    export(d)
+    zip1 = os.path.join(prac, "rodokmen.zip")
+    cas = os.path.getmtime(zip1)
+    r = spust(d)
+    ok("existující soubor se bez --prepsat nepřepíše", r.returncode != 0 and "--prepsat" in r.stderr
+       and os.path.getmtime(zip1) == cas, r.stderr)
+    ok("--prepsat přepíše", spust(d, "--prepsat").returncode == 0)
+    export(d, "--koren", "3")
+    ok("--koren: výchozí název s číslem kořene", os.path.isfile(os.path.join(prac, "rodokmen_koren3.zip")))
+    r = spust(d, "--vystup", os.path.join(d, "web", "public", "strom.zip"))
+    ok("výstup do web/ odmítnut", r.returncode != 0 and "web/" in r.stderr
+       and not os.path.exists(os.path.join(d, "web", "public", "strom.zip")), r.stderr)
+    r = spust(d, "--vystup", os.path.join(prac, "x.ged"))
+    ok("ZIP do .ged odmítnut", r.returncode != 0 and ".zip" in r.stderr, r.stderr)
+    r = spust(d, "--bez-obrazku", "--vystup", os.path.join(prac, "x.zip"))
+    ok(".ged do .zip odmítnut", r.returncode != 0 and ".ged" in r.stderr, r.stderr)
+    out = export(d, "--zijici", "--vystup", os.path.join(prac, "OneDrive", "vse.zip"))
+    ok("--zijici v cloudové složce: upozornění", "synchronizované do cloudu (OneDrive)" in out, out)
+    out = export(d, "--zijici", "--vystup", os.path.join(prac, "vse.zip"))
+    ok("--zijici jinde: obecné upozornění na cloud", "synchronizuje-li ji cloud" in out, out)
+    shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 
 def nacti_zip(path):
@@ -278,5 +309,6 @@ if __name__ == "__main__":
     test_import_bez_argumentu()
     test_ukazka()
     test_umely()
+    test_vystup()
     print(f"\n{sum(vysledky)}/{len(vysledky)} v pořádku")
     sys.exit(0 if all(vysledky) else 1)
