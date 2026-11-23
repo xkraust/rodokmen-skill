@@ -180,3 +180,23 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
   nejcennější rodinné doklady.
 - Údaje ze stromů (i Smart Match) jsou jen vodítko k zápisu – datum a číslo domu tě dovedou na stránku, ale **jména vždy
   ověř v zápisu** (skutečná chyba: „sňatek“ ze Smart Match byl jiný pár ze stejného domu).
+
+## Export do GEDCOM
+`python3 -I tools/ged_export.py` → `pracovni/rodokmen.zip`: `rodokmen.ged` (GEDCOM 5.5.1, UTF-8) a složka `media/`
+s výřezy zápisů, rodinnými fotkami a portréty. ZIP se nahrává celý (Gramps: rozbalit a importovat `.ged`).
+Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`.
+- Rodiny se odvozují z čísel (otec 2k, matka 2k+1), aliasy `SAME` jsou jedna osoba, zástupní rodiče („otec neuveden“)
+  se nevyváží. Fakta se převádějí na události: `*`, `×` (sňatek v rodině), `†`; datum do tvaru GEDCOM (`asi` → ABT,
+  `před` → BEF, `po` → AFT, `mezi … a …` → BET), obec podle `mista.json` (název z OpenStreetMap a souřadnice),
+  `čp.` do adresy, závorky do poznámky. Ostatní fakta jsou povolání nebo poznámka. `SIDE` → poznámka u osoby,
+  stav `st` → kvalita citací a poznámka „Původ údajů“. `LINES`, `ISSUES` a `HYPOTEZY` se nevyvážejí.
+- Prameny: svazek = `SOUR` (archiv jako `REPO`), zápis = citace se snímkem, shrnutím, přepisem a výřezem. Zápis se cituje
+  u události jen při shodě druhu a roku – křest syna v `r` otce není otcovo narození, ten se cituje u osoby.
+- **Soukromí:** žijící (poznámka „Žijící…“, bez úmrtí a narození v posledních 100 letech) a zemřelí před méně než 30 lety
+  zůstanou jen jako „Žijící osoba“ (vazby bez údajů, fotek a zápisů). U lidí z posledních ~100 let se vynechá poznámka
+  a příčina úmrtí, boční příbuzní z té doby a dokumenty s chráněnou osobou také. Zápis, ve kterém je i chráněná osoba,
+  jde bez obrázku a přepisu – souhrn ho vypíše ke kontrole. `udaje_od_rodiny.md` se nevyváží.
+- `--zijici` vyexportuje vše **jen pro vlastní potřebu** (záloha, vlastní program). Takový soubor nenahrávej do cizí
+  služby ani na web; použij ho jen na výslovné přání uživatele.
+- Projdi s uživatelem souhrn na konci (chránění, vynechané, chybějící obrázky, data, která nešla převést) dřív, než
+  soubor nahraje. Nahrání GEDCOM na web MyHeritage vytvoří **nový samostatný strom** (se stávajícím se nesloučí).

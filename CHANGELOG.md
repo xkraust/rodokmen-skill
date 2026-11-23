@@ -6,6 +6,22 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.0 – 23. 11. 2026
+
+Hlavní novinka: **export rodokmenu do GEDCOM.** Rodokmen jde přenést do Gramps, MyHeritage a dalších rodokmenových
+programů – i s výřezy zápisů z matrik, rodinnými fotkami a portréty.
+
+**Nové**
+- `ged_export.py` vyrobí `pracovni/rodokmen.zip` (GEDCOM 5.5.1 a složka s obrázky); `--bez-obrazku` jen samotný `.ged`,
+  `--plne-rozliseni` přidá výřezy v plném rozlišení.
+- Data, obce (s plným názvem a souřadnicemi z mapy), čísla domů, sňatky v rodinách a citace zápisů u správných událostí:
+  křest syna, ve kterém je zapsaný otec, se u otce cituje jako zápis, ne jako jeho narození.
+- Žijící a nedávno zemřelí jsou v exportu jen jako „Žijící osoba“, bez údajů a fotek. Na konci souhrn, co v exportu je
+  a co vynechal.
+
+**Opravy**
+- `ged_import.py` jde použít i z jiných nástrojů (nápověda a nastavení výstupu jsou až při spuštění).
+
 ## 0.11.2 – 18. 11. 2026
 
 Sloučení novinek z původního repozitáře (verze 0.10.1 a 0.10.2, popis níže) se sčítáním lidu a portréty z tohoto forku.

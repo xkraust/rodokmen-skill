@@ -72,6 +72,8 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
 - **Rodinný strom** (GEDCOM `.ged`, záloha MyHeritage `.ftb`): `tools/ged_import.py`, `tools/ftb_export.py` – postup
   v `reference/data.md` → Import rodinného stromu. Strom, který si rodina vede sama, má stav `fam`; cizí stromy
   z internetu (MyHeritage, Geni, FamilySearch, Smart Match) jsou **jen vodítko**, stav `mh`, nikdy `doc`.
+- **Export do GEDCOM** (rodokmen do MyHeritage, Gramps a jiných programů): `tools/ged_export.py` – postup
+  a soukromí v `reference/data.md` → Export do GEDCOM. Žijící a nedávno zemřelí jsou v exportu jen jako „Žijící osoba“.
 
 ## Fáze 2 – Matriky, generace po generaci
 Podrobný postup čtení: `reference/matriky.md`. Archivy: `reference/portaly.md`. Sporná ztotožnění, mrtvé body,
@@ -253,6 +255,7 @@ a `zdroje/` (výřezy pro web / plné rozlišení), `dokumenty/` (originály od 
 | `mapa_knihy.py` | mapa knihy po vsích a montáž sloupce jmen (`matriky.md`) |
 | `cache.py` | sdílená mezipaměť snímků; uložení snímku z prohlížeče |
 | `ged_import.py`, `ftb_export.py` | rodinný strom (GEDCOM, záloha MyHeritage) – `data.md` |
+| `ged_export.py` | export rodokmenu do GEDCOM (ZIP s obrázky) – `data.md` |
 | `vyrez.py`, `ramecek.py`, `overit.py` | výřez zápisu (zlomky stránky), rámeček (zlomky výřezu, `--pozn` poznámka), ověření čtení na dvou polovinách |
 | `zapis.py` | zápis do `data/*.json` a odkazů `r` v `osoby.py` beze změny formátu |
 | `mista.py` | místa pro mapu (OpenStreetMap) |

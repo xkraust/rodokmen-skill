@@ -21,6 +21,19 @@ Druhá část (sloučení s MyHeritage) stojí na dvou neověřených předpokla
 
 # Fáze 1: export
 
+**Stav (23. 11. 2026):** implementováno ve verzi 0.12.0 – `tools/ged_export.py`, úprava `ged_import.py` (import bez
+vedlejších efektů), test `tests/gedcom/test_ged_export.py` (63 kontrol), dokumentace v `reference/data.md`, SKILL.md,
+README a CHANGELOG. Zbývá ruční zkouška importu ZIP do Gramps (a volitelně MyHeritage).
+
+Rozdíly proti návrhu níže (rozhodnuto při implementaci):
+- `PLAC` = plný název z pole `osm` v `mista.json` bez PSČ (např. „Holice, okres Pardubice, Pardubický kraj, Česko“),
+  když začíná názvem obce; jinak jen název obce. `dotaz` je dotaz pro OpenStreetMap, ne název.
+- Zápis ↔ událost: u narození a úmrtí tolerance ±1 rok (křest či pohřeb až další rok), u sňatku přesná shoda roku.
+- `OBJE` jsou vložené přímo u citací a osob (ne sdílené záznamy `0 @M…@ OBJE`) – širší podpora v programech.
+- Zápis bez svazku ve `svazky.json` má vlastní `SOUR` s názvem zápisu.
+- Sňatek chráněného páru se nevyváží (rodina má `RESN privacy`, jen vazby); fakt `×` nesedící na partnera → `NOTE`.
+- Chybějící obrázky souhrn hlásí jednou větou (počet a příklady), ne po jednom.
+
 ## Datový model projektu (co export musí zvládnout)
 Data nejsou obecný graf osob, rodin a událostí (viz `reference/data.md`):
 - `osoby.py`: `P` podle Kekulého čísel; rodiny a vztahy se **odvozují z čísel** (otec 2k, matka 2k+1, dítě k).
