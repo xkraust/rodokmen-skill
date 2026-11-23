@@ -183,7 +183,13 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
 
 ## Export do GEDCOM
 `python3 -I tools/ged_export.py` → `pracovni/rodokmen.zip`: `rodokmen.ged` (GEDCOM 5.5.1, UTF-8) a složka `media/`
-s výřezy zápisů, rodinnými fotkami a portréty. ZIP se nahrává celý (Gramps: rozbalit a importovat `.ged`).
+s výřezy zápisů, rodinnými fotkami a portréty. ZIP se **rozbalí** (`rodokmen.ged` a `media/` vedle sebe) a importuje
+se `.ged` – obrázky si program načte podle relativních cest:
+- **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): File → Import GEDCOM → rozbalený
+  `rodokmen.ged` → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
+  se nahrají na web. Web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte nikdy (soubor
+  obsahuje jen odkazy na ně); nahrání jen `.ged` na web = strom bez obrázků, fotky pak jen ručně.
+- **Gramps:** importovat rozbalený `.ged`.
 Volby: `--bez-obrazku` (jen `pracovni/rodokmen.ged`), `--plne-rozliseni` (i výřezy ze `zdroje/`), `--vystup <soubor>`,
 `--koren <číslo>` (jen tato osoba a její předci, např. `--koren 3` = maminčina strana jako samostatný strom; čísla osob
 zůstanou, aliasy `SAME` z jiné větve se přiberou i s předky; výchozí soubor `pracovni/rodokmen_koren3.zip`).

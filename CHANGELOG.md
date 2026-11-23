@@ -6,6 +6,13 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.1 – 23. 11. 2026
+
+**Návody**
+- Export GEDCOM do MyHeritage: web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte. Strom
+  i s výřezy zápisů a fotkami se do MyHeritage dostane přes program Family Tree Builder: ZIP rozbalit, importovat
+  `rodokmen.ged` a pak Sync. `ged_export.py` tento postup vypíše na konci exportu.
+
 ## 0.12.0 – 23. 11. 2026
 
 Hlavní novinka: **export rodokmenu do GEDCOM.** Rodokmen jde přenést do Gramps, MyHeritage a dalších rodokmenových

@@ -1,0 +1,38 @@
+# Plán: obrázky z exportu GEDCOM do MyHeritage (přes Family Tree Builder)
+
+## Context
+Uživatel nahrál na web MyHeritage `pracovni/rodokmen.zip` z `ged_export.py` a web ZIP odmítl („umí jen .ged“).
+Ověřeno (nápověda MyHeritage, článek 12851303 a 12852096):
+- Web přijímá jen soubor `.ged`. GEDCOM obsahuje jen odkazy na obrázky, ne obrázky samotné, a lokální cesty
+  (`media/…jpg`) web nedosáhne. **Nahráním na web se fotky nepřenesou nikdy.** Navíc vznikne nový samostatný strom.
+- Cesta s obrázky: desktopový **Family Tree Builder (FTB, zdarma)** – import `.ged` z rozbaleného ZIPu
+  (FTB načte soubory podle `OBJE/FILE`), pak **Sync** s MyHeritage nahraje strom i fotky na web.
+- Skill to dnes popisuje špatně: `reference/data.md:186` říká „ZIP se nahrává celý“ a otevřená otázka 2
+  v `docs/development/plán-export-gedcom.md:189` zůstala neověřená.
+
+## Okamžitá rada uživateli (bez úprav kódu)
+1. Rozbalit `pracovni/rodokmen.zip` do vlastní složky (`rodokmen.ged` + `media/` vedle sebe).
+2. Nainstalovat Family Tree Builder, přihlásit se účtem MyHeritage.
+3. FTB: File → Import GEDCOM → `rodokmen.ged` → nový projekt (nebo „Merge into project“ do stávajícího stromu).
+4. Zkontrolovat, že osoby mají fotky / výřezy zápisů; pak Sync → strom i s obrázky je na webu.
+5. Alternativa bez FTB: nahrát jen `rodokmen.ged` na web a fotky přidat ručně u osob.
+
+## Úpravy skillu (repo `Documents\VSCode\rodokmen-skill`)
+1. **`tools/ged_export.py`** (ř. ~429, `FILE {path}`): přidat volbu `--absolutni-cesty`? – NE, nejdřív ověřit FTB
+   s relativními cestami (krok Ověření). Pokud FTB relativní cesty nenačte, přidat výpis cest relativně ke složce
+   `.ged` a do souhrnu na konci text „ZIP rozbal; pro MyHeritage importuj `.ged` ve Family Tree Builderu“.
+   Jinak kód neměnit – stačí upravit závěrečnou zprávu nástroje (najít, kde tiskne souhrn) o tento návod.
+2. **`skills/rodokmen/reference/data.md`** sekce „Export do GEDCOM“ (ř. 184–210): nahradit „ZIP se nahrává celý“
+   přesným postupem: web MyHeritage = jen `.ged`, bez fotek; s fotkami = rozbalit ZIP → FTB import → Sync;
+   Gramps = rozbalit a importovat `.ged`.
+3. **`skills/rodokmen/SKILL.md`** (tabulka nástrojů, řádek ged_export) a **README.md:152–154**: opravit „ZIP pro MyHeritage“
+   na zmínku o FTB.
+4. **`docs/development/plán-export-gedcom.md`**: otevřenou otázku 2 (ř. 189) uzavřít – web: ne (ověřeno nápovědou);
+   FTB: výsledek ruční zkoušky. Tento plán uložit i jako `docs/development/plán-myheritage-obrázky.md` (pravidlo CLAUDE.md).
+5. Vydání: zvýšit verzi (`plugin.json`, `VERZE`, README 2×), `CHANGELOG.md` sekce „Návody/Opravy“, commit,
+   `/plugin marketplace update rodokmen-skill`, `/reload-plugins`, push.
+
+## Ověření
+- `tests/gedcom/test_ged_export.py` projde (beze změny formátu `.ged`).
+- Ruční zkouška u uživatele: import rozbaleného ZIPu ukázkového projektu do FTB → fotky u osob viditelné →
+  po Sync vidět na webu MyHeritage. Výsledek zapsat do `plán-export-gedcom.md`.

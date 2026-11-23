@@ -723,6 +723,9 @@ def main(argv=None):
         print(f"  jen osoba č. {ex.root} ({ex.P[ex.root]['n']}) a její předci")
     print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů (svazků), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
+    if ex.with_images:
+        print("  Jak dál: ZIP rozbalte (rodokmen.ged a media/ vedle sebe). Web MyHeritage bere jen .ged a obrázky z něj "
+              "nenačte – s obrázky importujte rodokmen.ged ve Family Tree Builderu a pak Sync. Gramps: importujte .ged.")
     if ex.living:
         print("  POZOR: včetně žijících a nedávno zemřelých (--zijici) – jejich údaje dostane každá služba, kam soubor "
               "nahrajete; na web nepatří.")

@@ -187,6 +187,8 @@ Omezení MyHeritage (ověřeno v nápovědě, 11/2026):
 1. Obsahuje GEDCOM z MyHeritage `_UID` a zachová ho FTB při importu a merge? Jak stabilní jsou `@I…@` mezi dvěma
    exporty téhož stromu? (Ověřit na exportu uživatele, rozhodne o párování osob.)
 2. Převezme FTB i webový import MyHeritage obrázky z `OBJE` s relativní cestou v ZIPu? Ověřit na zkušebním projektu.
+   **Web: ne** (ověřeno 23. 11. 2026 – ZIP odmítne, bere jen `.ged`; podle nápovědy MyHeritage GEDCOM obrázky
+   nepřenáší, jen odkazy). **FTB:** čeká na ruční zkoušku – viz `plán-myheritage-obrázky.md`.
 Výsledky zapsat sem; podle nich se upraví návrh níže.
 
 ## Předpoklad: vazba osob na původní GEDCOM
