@@ -7,43 +7,154 @@ Uživatel se ptal, zda plugin `rodokmen` umí export do GEDCOM. Prověřeno: neu
 - `tools/export_web.py` exportuje jen data pro web (JSON do Astro šablony), ne GEDCOM.
 - CHANGELOG zmiňuje GEDCOM jen u importu.
 
-## Doporučený postup
-Napsat nový nástroj `tools/ged_export.py`, který převede data rodokmenu (`data/osoby.py`, `data/zaznamy.json`, `data/mista.json`) na GEDCOM 5.5.1 (UTF-8).
+Cesty `tools/`, `reference/`, `template/` v tomto plánu jsou relativní ke `skills/rodokmen/`.
 
-1. Přečíst `reference/data.md` a `template/data/osoby.py` – struktura osob, rodin, událostí a zdrojů.
-2. Převzít zápis GEDCOM z `ftb_export.py` (CONC dělení řádků nad 255 znaků, hlavička, INDI/FAM bloky).
-3. Mapování: osoba → INDI (NAME, SEX, BIRT, DEAT), rodina → FAM (HUSB, WIFE, CHIL, MARR), zdroje z matrik → SOUR/NOTE.
-4. Soukromí: podle `reference/soukromi.md` vynechat údaje žijících osob (nebo je zeptat uživatele).
-5. Obrázky a dokumenty – viz sekce níže.
-6. Zapojit do SKILL.md (tabulka nástrojů) a doplnit CHANGELOG.
+Export se dělá jako nový nástroj uvnitř stávajícího skillu `rodokmen` (ne jako samostatný skill), protože navazuje na `ged_import.py`, čte data projektu a `novy_projekt.py` ho zkopíruje do projektů spolu s ostatními nástroji.
+
+## Rozdělení do dvou verzí
+Druhá část (sloučení s MyHeritage) stojí na dvou neověřených předpokladech (viz „Otevřené otázky“), proto se dělá zvlášť:
+- **Fáze 1 – export:** `tools/ged_export.py` (osoby, rodiny, zdroje, obrázky, soukromí). Nezávislá, hned testovatelná.
+- **Fáze 2 – sloučení:** vazba osob na původní GEDCOM (`ged`), rozdílový režim, přehled změn, návod pro FTB.
+  Začíná dvěma zkouškami (viz „Otevřené otázky“), teprve podle výsledku se implementuje.
+
+---
+
+# Fáze 1: export
+
+## Datový model projektu (co export musí zvládnout)
+Data nejsou obecný graf osob, rodin a událostí (viz `reference/data.md`):
+- `osoby.py`: `P` podle Kekulého čísel; rodiny a vztahy se **odvozují z čísel** (otec 2k, matka 2k+1, dítě k).
+  Fakta `f` jsou **volný text** (`"* 14. 2. 1890 Holice čp. 112"`, `"† 1855 Holice, na choleru"`,
+  `"* 1895 Dolní Roveň čp. 7 (datum podle sčítání 1921)"`), ne strukturované události.
+- `SAME` (alias → hlavní číslo): předek v rodokmenu dvakrát = jedna osoba.
+- `SIDE`: boční příbuzní jako volný text (`n`, `t`), bez dat.
+- Zástupné osoby („otec neuveden“, `st="unk"`) nejsou osoby.
+- Žijící osoba nemá v datech žádné pole, jen konvenci `note="Žijící – údaje jen základní."`.
+
+## Postup
+Nový nástroj `tools/ged_export.py`, který převede `data/osoby.py`, `data/zaznamy.json`, `data/svazky.json`,
+`data/prepisy.json`, `data/mista.json`, `data/dokumenty.json` na GEDCOM 5.5.1 (UTF-8).
+
+1. Přečíst `reference/data.md`, `template/ukazka/osoby.py` a v `export_web.py` logiku rodin (ř. 333–358: spojení
+   rodin přes `SAME`, zástupné osoby) a portrétů (`document_lists()`, `is_portrait()`).
+2. Převzít zápis GEDCOM z `ftb_export.py` (`chunks()`/`gtext()` pro CONC/CONT, hlavička, INDI/FAM bloky).
+3. Mapování podle níže, soukromí podle „Soukromí“, obrázky podle „Obrázky“.
+4. Zapojit do SKILL.md (tabulka nástrojů, ř. ~255), `reference/data.md` (nová sekce „Export do GEDCOM“),
+   README (zmínka o GEDCOM, ř. ~152) a CHANGELOG.
+
+### Technické předpoklady (udělat jako první)
+- `ged_import.py` jde dnes importovat jen s úpravou: hned po načtení volá `sys.exit(__doc__)`, když v `argv` není
+  soubor (a na `-h`), a mění `stdout`. Kontrolu argumentů a `reconfigure` přesunout do `main()`, aby šlo
+  `from ged_import import read`.
+- `python -I` nepřidává složku skriptu do `sys.path`. Sourozenecké moduly importovat přes
+  `sys.path.insert(0, <složka tools>)`, jako [aron_img.py:20](../../skills/rodokmen/tools/aron_img.py#L20).
+  Platí i pro `export_web.py` (portréty) – nebo logiku portrétů v `ged_export.py` krátce zopakovat.
+- Výstup do `pracovni/` (nejde na web): `pracovni/rodokmen.zip`, resp. `pracovni/rodokmen.ged` s `--bez-obrazku`.
+  Ověřit, že `.gitignore` v šabloně `pracovni/` ignoruje (ZIP obsahuje osobní údaje).
+
+### Mapování: osoby a rodiny
+- **Osoba → `INDI`.** Zástupné osoby (`placeholder()` z `export_web.py`) a aliasy z `SAME` se jako `INDI` nevyváží;
+  alias se promítne do `FAMS` hlavní osoby.
+- **`NAME`:** `n` rozdělit na `GIVN` / `SURN` (poslední slovo = příjmení, bez `()?`; ženy rodným příjmením).
+  Fakt `provd. Nováková` → druhé `NAME` s `TYPE married` (jako v `ftb_export.py`).
+- **`SEX`:** z parity čísla (sudá M, lichá F), u čísla 1 z pole `sex`.
+- **Rodina → `FAM`:** pro každé k, jehož otec nebo matka existuje: `HUSB` 2k, `WIFE` 2k+1, `CHIL` k. Stejný pár
+  potkaný dvakrát (přes `SAME`) = jedna `FAM` s více `CHIL`. Zástupný rodič se vynechá (`FAM` má jen jednoho).
+  `FAMC` / `FAMS` doplnit u osob.
+- **Fakta (volný text) → události.** `*` → `BIRT`, `†` → `DEAT`, `×` → `MARR` v `FAM`, jiný text → `OCCU` (krátký) nebo
+  `NOTE`. Parser faktu:
+  - datum: `14. 2. 1890` → `14 FEB 1890`; `asi` → `ABT`, `před` → `BEF`, `po` → `AFT`, `mezi X a Y` → `BET … AND …`;
+    zápis `datum` v `zaznamy.json` má i tvar `3/1867` (měsíc/rok) a `1797`. Co se nepodaří převést →
+    `DATE (původní text)` (fráze v závorkách);
+  - místo: odděl `čp. N` a závorkové poznámky (→ `NOTE` u události), zbytek je obec. Obec najít v `mista.json`
+    (výraz `re`) a do `PLAC` dát plný název (`dotaz`, např. „Holice, Česko“) a `MAP` (`LATI`, `LONG`); neznámá obec
+    → `PLAC` tak, jak je. Místa s `hypoteza: true` se nepoužijí;
+  - příčina úmrtí (`† 1855 Holice, na choleru`) → `CAUS` jen u nežijících a jen když soukromí povolí (viz níže);
+  - fakt, který se nepodařilo rozebrat, jde celý do `NOTE` u osoby (nic se neztratí) a nástroj ho vypíše do souhrnu.
+- **Jistota údaje (`st`):** `doc` → `QUAY 3`, `prob` → `QUAY 2`, `fam`/`mh`/`unk` → bez `QUAY`, ale k osobě
+  `NOTE` „Původ údajů: od rodiny / jen z cizího rodokmenu“. Stejně `note` osoby (kromě žijících) → `NOTE`.
+- **Neexportuje se:** `LINES`, `ISSUES`, `HYPOTEZY`, `zvyrazneni.json`. `SIDE` → `NOTE` u osoby `k`
+  („Příbuzný: Josef Novák (1865–1920) – text“), protože jde o volný text bez dat.
+
+### Mapování: zdroje a citace
+Zápis (`zaznamy.json`) ≠ osoba. **Seznam `r` u osoby obsahuje i zápisy jejích dětí a rodičů** (v ukázce má Václav Novák (16)
+v `r` křest svého syna Jana, Josef Pokorný (18) sňatek své dcery). Pravidlo „`druh` N/O/Z = událost této osoby“ proto
+neplatí. Postup:
+1. Pro každý fakt `*`, `×`, `†` osoby najít v jejím `r` zápis odpovídajícího druhu (N→`BIRT`, O→`MARR`, Z→`DEAT`),
+   jehož `datum` se shoduje **v roce** s rokem faktu (u sňatku s rokem sňatku obou manželů).
+2. Shoda → citace u té události (sňatek pod `MARR` v záznamu `FAM`, ne u `INDI`).
+3. Zápis bez shody (druhy I, S, J, nebo zápis cizí události) → citace přímo u `INDI` s `PAGE` a poznámkou
+   „zápis se týká i jiné osoby / události“. Nic se neuhaduje.
+
+Struktura záznamů:
+- **`SOUR` jeden na svazek** (`svazky.json`): `TITL` = `svazek`, `CALN` = signatura, `REPO` odkazem na samostatný
+  záznam `REPO` (`NAME` = `archiv`). Odkaz na svazek (`url`) jako `NOTE` (5.5.1 nemá tag pro URL).
+- **Citace zápisu** (úroveň 2/3 u události): `PAGE` = „snímek N“ + `nazev`, `DATA` / `TEXT` = `shrnuti`
+  (případně přepis `orig` a `cs` z `prepisy.json`), `OBJE` na výřez. Odkaz `odkaz` jako `NOTE`.
+- Pokud se při zkoušce ukáže, že Gramps/MyHeritage `OBJE` u citace nepřevezmou, použít záložní řešení
+  „jeden `SOUR` na zápis“ s `OBJE` u `SOUR` (`PAGE` pak dát jen do citace). Rozhodnout po zkoušce, ne dopředu.
+- Sčítací arch (`S`) je jeden zápis pro více osob – `SOUR`/`OBJE` se zapíše jednou, citují ho všichni členové.
 
 ## Obrázky matrik, fotky a dokumenty
-GEDCOM 5.5.1 obrázky nevkládá, jen na ně odkazuje záznamem `OBJE` (`FILE` + `FORM jpg` + `TITL`).
-Výstupem proto bude ZIP: `rodokmen.ged` a vedle něj složka `media/` s kopiemi obrázků a relativními cestami
-v `FILE media/<soubor>.jpg`, aby je MyHeritage, Gramps aj. po importu našly.
+GEDCOM 5.5.1 obrázky nevkládá, jen na ně odkazuje: `1 OBJE` / `2 FILE media/<soubor>.jpg` / `3 FORM jpeg` / `2 TITL …`.
+Výstupem proto bude ZIP: `rodokmen.ged` a vedle něj složka `media/` s kopiemi obrázků a relativními cestami.
+Že cesty z ZIPu správně načte **webový import MyHeritage, není ověřeno** (viz „Otevřené otázky“); Gramps ano.
 
 Zdroje dat (podle `reference/data.md`):
-- **Zápisy z matrik** (`zaznamy.json`): `klic` je zároveň název obrázku. Každý zápis → `SOUR` (`TITL` = `nazev`,
-  `TEXT` = `shrnuti`, případně přepis `orig`/`cs` z `prepisy.json`, `PAGE` = snímek, `REPO`/`NOTE` ze `svazky.json`
-  včetně `odkaz`/`url`) a k němu `OBJE` na výřez `vyrezy/<klic>.jpg`; plný snímek `zdroje/<klic>.jpg` volitelně
-  jako druhý `OBJE`. Osoby odkazují na zápis přes `r` → u příslušné události (BIRT/MARR/DEAT podle `druh`
-  N/O/Z) citace `SOUR @Sx@`, ostatní druhy (I, S, J) jako citace přímo u `INDI`.
-- **Rodinné fotky a dokumenty** (`dokumenty.json`): `img` → `OBJE` (`TITL` = `popis`), připojený ke každé osobě
-  z `osoby`. Skupinová fotka tak bude u všech zobrazených osob.
-- **Portréty** (`img` obsahuje `portret` bez ohledu na diakritiku a velikost písmen): `OBJE` u osoby s `_PRIM Y`
-  (MyHeritage/Ancestry ho použijí jako profilovou fotku). Výběr portrétu převzít z logiky `export_web.py`
-  (první existující v pořadí `dokumenty.json`).
-- **Zvýraznění** (`zvyrazneni.json`): do GEDCOM nejde; exportovat výřezy bez rámečků.
+- **Zápisy z matrik** (`zaznamy.json`): `klic` je zároveň název obrázku. `OBJE` na výřez `vyrezy/<klic>.jpg`;
+  výřez v plném rozlišení `zdroje/<klic>.jpg` volitelně jako druhý `OBJE` (volba `--plne-rozliseni`).
+  (`zdroje/` není „plný snímek stránky“, ale týž výřez ve vyšším rozlišení.)
+- **Rodinné fotky a dokumenty** (`dokumenty.json`): `img` → `OBJE` (`TITL` = `popis`) u každé osoby z `osoby`
+  (u aliasu `SAME` jednou u hlavní osoby). Skupinová fotka tak bude u všech zobrazených osob.
+- **Portréty** (`img` obsahuje `portret` bez ohledu na diakritiku a velikost písmen, viz `is_portrait()`): `OBJE` u osoby
+  s `_PRIM Y` (MyHeritage/Ancestry ho použijí jako profilovou fotku). Výběr portrétu z `document_lists()`
+  (první existující v pořadí `dokumenty.json`, jedna osoba = jeden portrét).
+- **Zvýraznění** (`zvyrazneni.json`): do GEDCOM nejde; výřezy se kopírují bez rámečků.
 - Chybějící soubor obrázku přeskočit a vypsat varování (stejně jako `export_web.py`).
 
-Volby příkazu: `--bez-obrazku` (jen `.ged`, bez ZIP), `--plne-snimky` (přidat i `zdroje/`).
+Volby příkazu: `--bez-obrazku` (jen `.ged`, bez ZIP), `--plne-rozliseni` (přidat i `zdroje/`), `--zijici` (viz níže).
 
 ## Soukromí
-Podle `reference/soukromi.md`: žijícím osobám vynechat data i fotky a dokumenty (jen jméno nebo „Žijící osoba“);
-údaje od rodiny (`udaje_od_rodiny.md`) exportovat jen s `--vcetne-rodiny`. Před uložením vypsat souhrn,
-co v exportu je (počet osob, zápisů, obrázků, vynechaných žijících).
+Export míří do cizích služeb (MyHeritage, Gramps…), proto je výchozí nastavení přísné; `reference/soukromi.md`
+platí i pro něj.
 
-## Sloučení s existujícím stromem (MyHeritage)
+**Jak se pozná chráněná osoba** (v datech není pole, proto pravidlo – návrh k potvrzení uživatelem):
+1. `note` začíná „Žijící“, nebo
+2. nemá fakt `†` a narodila se později než (letos − 100 let) nebo rok narození neznáme a `st` je `fam`, nebo
+3. zemřela před méně než 30 lety (stejná lhůta jako u archivu pro úmrtí; `soukromi.md` chrání i nedávno zemřelé).
+
+Pro chráněné osoby:
+- v GEDCOM zůstanou jen jako uzel stromu: `NAME` „Žijící osoba“ (příp. s křestním jménem jen s `--zijici`), `SEX`,
+  `RESN privacy`, vazby `FAMC`/`FAMS`; žádná data, místa, `note`, `CAUS`, `OBJE` (portrét, dokumenty);
+- zápisy a obrázky matrik se exportují jen když je cituje alespoň jedna **nechráněná** osoba; zápis, který cituje
+  i chráněnou osobu (např. sčítací arch), se vypíše v souhrnu k ruční kontrole a `OBJE` se k němu nepřidá.
+
+**Výjimka `--zijici`:** pro osobní použití (záloha, převod do jiného programu) vyexportuje i údaje chráněných osob.
+Bez výslovného zadání se nikdy nepoužije a nástroj při něm vypíše upozornění, že soubor nesmí do cizí služby ani na web.
+
+`udaje_od_rodiny.md` je volný text bez vazby na osoby, do GEDCOM se **neexportuje**. Údaje od rodiny (`st="fam"`)
+jsou v `f` osob a exportují se stejně jako ostatní.
+
+Před uložením vypsat souhrn: počet osob, rodin, zápisů, obrázků, chráněných osob (vynechaných/zjednodušených),
+faktů, které se nepodařilo rozebrat, chybějících obrázků a zápisů citovaných i chráněnou osobou.
+Kontrola `CITLIVÉ` v `kontrola.py` hlídá jen web; export proto `note` a příčiny úmrtí u osob z posledních ~100 let
+vynechá stejně jako u chráněných osob.
+
+## Ověření (fáze 1)
+- Test v `tests/gedcom/` zakládá **dočasný projekt přes `novy_projekt.py --ukazka`** (nástroj čte `data/`, `vyrezy/`,
+  `zdroje/` v kořeni projektu, ne `template/ukazka*`) a nad ním spustí
+  `python -I -X utf8 tools/ged_export.py`. Ukázka má jen 3 obrázky k 20+ zápisům (vyzkouší varování o chybějících
+  souborech) a osoby 1–3 jsou žijící (vyzkouší soukromí).
+- Kontroly: každý `FILE` v `.ged` existuje v `media/`, žádný obrázek chráněné osoby; křest syna se necituje jako
+  narození otce; sňatek je citován pod `MARR` v `FAM`; datum `14. 2. 1890` → `14 FEB 1890`, `asi 1720` → `ABT 1720`.
+- Round-trip: výstup načíst `ged_import.py` (`read()`) a porovnat s **očekávaným** počtem: osoby − zástupné − aliasy
+  `SAME`, rodiny podle odvozených párů (chráněné osoby zůstávají jako uzly).
+- Nahrát ZIP do Gramps a ověřit, že se u událostí zobrazí výřezy matrik a portréty (MyHeritage viz fáze 2).
+- Test na jednoduchém stromu s aliasem `SAME` a zástupným rodičem.
+
+---
+
+# Fáze 2: sloučení s existujícím stromem (MyHeritage)
 Cíl: na začátku bádání stažený GEDCOM z MyHeritage rozšířit o nová zjištění a vrátit zpět na MyHeritage,
 aniž by se ztratil stávající strom.
 
@@ -53,24 +164,41 @@ Omezení MyHeritage (ověřeno v nápovědě, 11/2026):
   s webem. Stejné osoby se ale **nespojí automaticky** – vzniknou duplicity, které se spojují ručně
   (Merge people / Tools → hledání duplicit).
 
-### Předpoklad: vazba osob na původní GEDCOM
-`ged_import.py --osoby` dnes zahazuje identifikátory osob (`@I123@`). Doplnit:
-- do kostry `osoby.py` pole `ged="@I123@"` (a `uid`, pokud export MyHeritage obsahuje `_UID` – ověřit na
-  skutečném souboru), u `SIDE` totéž;
-- původní `.ged` ponechat v `dokumenty/` a jeho cestu zapsat do `data/STAV.md`;
-- `kontrola.py`: upozornit na osobu se `st="fam"` bez `ged` (nelze ji spárovat).
+## Nejdřív zkoušky (před implementací)
+1. Obsahuje GEDCOM z MyHeritage `_UID` a zachová ho FTB při importu a merge? Jak stabilní jsou `@I…@` mezi dvěma
+   exporty téhož stromu? (Ověřit na exportu uživatele, rozhodne o párování osob.)
+2. Převezme FTB i webový import MyHeritage obrázky z `OBJE` s relativní cestou v ZIPu? Ověřit na zkušebním projektu.
+Výsledky zapsat sem; podle nich se upraví návrh níže.
 
-### Doporučený postup: rozdílový GEDCOM přes FTB (varianta B)
+## Předpoklad: vazba osob na původní GEDCOM
+`ged_import.py --osoby` dnes zahazuje identifikátory osob (`@I123@`). Doplnit:
+- do kostry `osoby.py` pole `ged="@I123@"` (a `uid`, pokud export obsahuje `_UID`), u `SIDE` totéž;
+- původní `.ged` ponechat v `dokumenty/` a jeho cestu a datum stažení zapsat do `data/STAV.md`;
+- **migrace stávajících projektů:** projekty, které strom už importovaly, nemají `ged` vůbec. Nový příkaz
+  (např. `ged_import.py strom.ged "Výchozí osoba" --ged-id`) projde strom od stejné výchozí osoby (stejné Kekulé číslo =
+  stejná osoba), ověří jméno a rok narození a vypíše dvojice `číslo → @I…@` k doplnění přes `zapis.py`. Neshody jen hlásí;
+- `kontrola.py`: hlásit osoby bez `ged` **jen když `STAV.md` eviduje původní `.ged`** (`st="fam"` neznamená „z GEDCOM“,
+  v ukázce by to hlásilo falešné poplachy; nově zjištěný předek bez `ged` je v pořádku, kontrola je jen informační).
+
+## Doporučený postup: rozdílový GEDCOM přes FTB
 Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
 1. Načíst původní strom (`read()` z `ged_import.py`) a data projektu, spárovat osoby přes `ged`/`uid`.
-2. Roztřídit: **nové osoby** (bez `ged`), **změněné** (nové/odlišné fakty, nové zápisy, obrázky) a **kotvy**
-   (existující osoby, na které se nové připojují jako rodiče/děti/partneři).
+2. Roztřídit: **nové osoby** (bez `ged`), **změněné** a **kotvy** (existující osoby, na které se nové připojují jako
+   rodiče/děti/partneři; v datech jde vždy o přímé předky, protože nová osoba je buď předek, nebo dítě předka k//2).
+   „Změněné“ = jen to, co jde spolehlivě porovnat: **nový zdroj/zápis**, **nový obrázek**, **nový údaj** (datum,
+   místo, povolání, který původní osoba nemá). Rozdílné údaje se jen označí, neřeší se obecný diff volného textu.
 3. Vyrobit GEDCOM jen s novými, změněnými a kotvami; změněné a kotvy s původním jménem a ID v `NOTE`
    („Sloučit s @I123@ v MyHeritage“), aby šly v FTB snadno najít a spojit.
+   **Soukromí:** kotva, která je chráněná osoba (typicky rodiče výchozí osoby), se v tomto režimu neanonymizuje na
+   „Žijící osoba“ (nešla by spojit), ale vyexportuje se s původním jménem a ID z `ged` a **bez dalších údajů**
+   (jen jméno, ID, vazby). Vyžaduje to zapnutou volbu `--zijici-kotvy` a upozornění, že soubor jde jen do vlastního FTB.
 4. Vypsat čitelný **přehled změn** (`pracovni/zmeny_pro_myheritage.md`): u každé osoby co přibylo/změnilo se,
    zdroj a obrázek; slouží jako kontrolní seznam pro slučování duplicit v FTB.
 5. Návod pro uživatele (do `reference/data.md`): FTB → otevřít projekt synchronizovaný s webem → Import
    GEDCOM → „Merge into project“ → spojit duplicity podle přehledu → Sync.
+6. **Další kolo:** po Sync a spojení stáhnout z MyHeritage čerstvý GEDCOM, doplnit `ged` novým osobám (příkaz
+   z migrace) a původní `.ged` v `dokumenty/` nahradit novým. Bez toho by se nové osoby při dalším `--rozdil` znovu
+   tvářily jako nové a vznikly by duplicity.
 
 Výhody: zůstane stávající strom včetně Smart Matches, Record Matches, online fotek a **propojení DNA testů**.
 Ruční práce jen se slučováním kotev a změněných osob.
@@ -81,31 +209,29 @@ v FTB (File → Backup). Neautomatizovat: FTB nemá API ani příkazovou řádku
 zápis přímo do `.ftb` riskuje poškození synchronizace a úpravy webu přes prohlížeč porušují `soukromi.md`
 (zkušenost se zablokovaným účtem).
 
-### Varianty (nepreferované)
-- **A. Celý nový strom** (`--sloucit`): původní `.ged` + nová zjištění → kompletní GEDCOM, nahrát jako nový
+### Další možnosti (nepreferované)
+- **Celý nový strom** (`--sloucit`): původní `.ged` + nová zjištění → kompletní GEDCOM, nahrát jako nový
   strom a starý smazat. Čisté, ale ztratí se Smart/Record Matches, online fotky, spolupracovníci a vazba DNA.
-  Jen pro stromy bez DNA a bez hodnotných online dat.
-- **C. Jen přehled změn** (`--jen-prehled`): bez GEDCOM, ruční zadání na webu. Nejbezpečnější, nejvíc práce.
+  Jen pro stromy bez DNA a bez hodnotných online dat. **Zatím neimplementovat** (až bude potřeba, doplnit i test).
+- **Jen přehled změn** (`--jen-prehled`): bez GEDCOM, ruční zadání na webu. Nejbezpečnější, nejvíc práce.
   Vzniká stejně v kroku 4, takže stačí volba.
 
-### Otevřené otázky
-- Obsahuje GEDCOM z MyHeritage `_UID` a zachová ho FTB při importu/merge? (Ověřit na exportu uživatele.)
-- Převezme FTB při importu obrázky z `OBJE` (relativní cesty v ZIPu)? Ověřit na zkušebním projektu.
-- Rozpor údajů (jiné datum v MyHeritage a v matrice): v přehledu změn označit a jako výchozí doporučit
-  údaj doložený zápisem (`st="doc"`).
+### Rozpor údajů
+Jiné datum v MyHeritage a v matrice: v přehledu změn označit a jako výchozí doporučit údaj doložený zápisem
+(`st="doc"`).
 
-## Ověření
-- Spustit nad ukázkovými daty (`template/ukazka`, obsahují i obrázky v `ukazka_vyrezy/` a `ukazka_zdroje/`)
-  přes `python -I -X utf8 tools/ged_export.py`.
-- Round-trip: výstup načíst `ged_import.py` a porovnat počet osob a rodin.
-- Zkontrolovat ZIP: každý `FILE` v `.ged` existuje v `media/`, žádný obrázek žijící osoby.
-- Nahrát ZIP do Gramps (a volitelně MyHeritage) a ověřit, že se zobrazí výřezy matrik u událostí a portréty.
-- Přidat test do `tests/` (malý strom s obrázkem, kontrola `OBJE` a cest).
-- Sloučení: test s malým původním `.ged` + projektem s jednou novou osobou, jednou změněnou a jednou beze změny
-  → rozdílový GEDCOM obsahuje novou, změněnou a kotvu, ne nezměněnou; přehled změn je odpovídá.
+## Ověření (fáze 2)
+- Test s malým původním `.ged` + projektem s jednou novou osobou, jednou změněnou a jednou beze změny → rozdílový
+  GEDCOM obsahuje novou, změněnou a kotvu, ne nezměněnou; přehled změn odpovídá.
+- Test migrace: stávající projekt s importovaným stromem dostane správné `ged`, neshoda jména se ohlásí.
+- Test druhého kola: po doplnění `ged` novým osobám je `--rozdil` prázdný.
 - Ruční zkouška v FTB na kopii projektu (ne na synchronizovaném stromu): import s „Merge into project“,
   spojení duplicit, kontrola výsledku před Sync.
 
+---
+
 ## Poznámka
 Úpravy dělat v klonu `C:\Users\tomas\Documents\VSCode\rodokmen-skill` (ne v cache pluginu) a postupovat podle
-„Postup po každé úpravě skillu“ v `CLAUDE.md` (zvýšit verzi, commit, `/plugin marketplace update`).
+„Postup po každé úpravě skillu“ a „Vydání verze“ v `CLAUDE.md` (zvýšit verzi na třech místech, README, CHANGELOG,
+commit, `/plugin marketplace update`). Fáze 1 a fáze 2 vyjdou jako dvě samostatné verze; mění-li fáze 2 formát
+`osoby.py` (pole `ged`), otestovat i aktualizaci projektu založeného předchozí verzí.
