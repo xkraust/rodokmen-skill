@@ -201,6 +201,24 @@ Výsledky zapsat sem; podle nich se upraví návrh níže.
 - `kontrola.py`: hlásit osoby bez `ged` **jen když `STAV.md` eviduje původní `.ged`** (`st="fam"` neznamená „z GEDCOM“,
   v ukázce by to hlásilo falešné poplachy; nově zjištěný předek bez `ged` je v pořádku, kontrola je jen informační).
 
+## Otevřený bod: boční příbuzní (`SIDE`) jako osoby
+**Stav (24. 11. 2026):** Fáze 1 vyváží `SIDE` jen jako poznámku u předka (`1 NOTE Příbuzný: <n> – <t>`,
+`ged_export.py` ř. ~556), nikoli jako `INDI`. Na MyHeritage proto sourozenci a další příbuzní z webové sekce
+„Příbuzní mimo přímou linii“ nemají vlastní kartu (nejsou ve stromu, nejdou k nim přidat fotky), jejich data jsou
+jen volný text a jejich zápisy (`r`) se necitují (kromě zápisů, které má i předek). Ověřeno zkušebním exportem
+skutečného projektu: 16 `SIDE` → 15 poznámek, 1 vynechán kvůli soukromí.
+
+Možné řešení: `SIDE` jako `INDI` – dítě v `FAM` rodičů předka (je-li `t` „sourozenec“), roky narození a úmrtí
+z `n`, zbytek `t` jako `NOTE`, citace zápisů z `r`. Překážky:
+- `SIDE` nemá strukturovaná data (jen `n`/`t` textem); pohlaví, přesné datum, vztah k předkovi (sourozenec ×
+  bratranec × švagr) ani manžele nelze spolehlivě určit – vyžadovalo by to strukturovaná pole v `SIDE`
+  (např. `vztah`, `pohlavi`, `nar`, `zem`), jejich doplnění v existujících projektech a úpravu webu.
+- Ochrana soukromí: `side_protected` bere roky z `n`; záznam bez roku projde. U `INDI` by bylo nutné bez roku chránit.
+- Sloučení přes FTB: strom z MyHeritage sourozence předků často už má → další duplicity k ručnímu spojení.
+  Párování `SIDE` s osobami původního stromu (`ged`, viz výše) by to vyřešilo, proto rozhodnout až spolu s ním.
+
+Rozhodnutí zatím: ponechat jako poznámku; řešit ve fázi 2 po zkoušce 1 (`_UID`, stabilita `@I…@`).
+
 ## Doporučený postup: rozdílový GEDCOM přes FTB
 Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
 1. Načíst původní strom (`read()` z `ged_import.py`) a data projektu, spárovat osoby přes `ged`/`uid`.
