@@ -75,7 +75,7 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
 - **Export do GEDCOM** (rodokmen do MyHeritage, Gramps a jiných programů; do vlastního stromu na MyHeritage
   rozdílově `--rozdil`, přehled změn projdi s uživatelem před importem): `tools/ged_export.py` – postup
   a soukromí v `reference/data.md` → Export do GEDCOM. **Před spuštěním se zeptej, zda exportovat i žijící osoby**
-  (výchozí ne: žijící a nedávno zemřelí jsou jen „Žijící osoba“; ano = `--zijici`, vysvětli, že údaje dostane cílová služba).
+  (výchozí ne: žijící a nedávno zemřelí jsou jen „Žijící / Chráněná osoba“; ano = `--zijici`, vysvětli, že údaje dostane cílová služba).
 
 ## Fáze 2 – Matriky, generace po generaci
 Podrobný postup čtení: `reference/matriky.md`. Archivy: `reference/portaly.md`. Sporná ztotožnění, mrtvé body,

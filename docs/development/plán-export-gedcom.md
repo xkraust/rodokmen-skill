@@ -324,7 +324,8 @@ i `--bez-obrazku`, s `--koren`):
   osoby ze stromu se zápisem nebo obrázkem. Rodiny jen ty s novou osobou. Rozhodnutí uživatele: změněné ve výchozím
   stavu jen v přehledu, do souboru volbou **`--se-zmenenymi`** (bez rodinných vazeb, jen ke spojení).
 - Kotva (`anchor_lines`): `NAME` s `GIVN`/`SURN`/`_MARNM`, `SEX`, `BIRT`/`DEAT` (datum, místo) **ze stromu** + `NOTE`
-  „KOTVA…“ + vazby; chráněná kotva „Žijící osoba“, s **`--zijici-kotvy`** jméno ze stromu bez dat. Kotva se změnami
+  „KOTVA…“ + vazby; **i chráněná kotva má jméno a data ze stromu** (rozhodnutí uživatele 24. 11. 2026: kotva jen
+  vrací do stromu, co v něm je; volba `--zijici-kotvy` zrušena). Zemřelí do 30 let jsou „Chráněná osoba“, ne „Žijící osoba“. Kotva se změnami
   (se `--se-zmenenymi`) a změněná osoba: plné údaje projektu, jméno ze stromu, `NOTE` „ZMĚNA…“ (`changed_lines`).
 - **Obsazené místo** (nové za zkoušky na projektu Krausovi): nová osoba na pozici rodiče osoby ze stromu, kde strom
   už rodiče má (jiný předek – č. 128/129, nebo nespárovaná tatáž osoba – č. 75 Rozálie/Rosalie). Přehled to uvede u kotvy

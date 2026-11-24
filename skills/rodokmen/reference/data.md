@@ -226,11 +226,11 @@ U `--slozka` nahradí `--prepsat` jen `rodokmen.ged` a `media/`; složku s jiný
 - Prameny: svazek = `SOUR` (archiv jako `REPO`), zápis = citace se snímkem, shrnutím, přepisem a výřezem. Zápis se cituje
   u události jen při shodě druhu a roku – křest syna v `r` otce není otcovo narození, ten se cituje u osoby.
 - **Soukromí:** žijící (poznámka „Žijící…“, bez úmrtí a narození v posledních 100 letech) a zemřelí před méně než 30 lety
-  zůstanou jen jako „Žijící osoba“ (vazby bez údajů, fotek a zápisů). U lidí z posledních ~100 let se vynechá poznámka
+  zůstanou jen jako „Žijící osoba“, resp. „Chráněná osoba“ u zemřelých (vazby bez údajů, fotek a zápisů). U lidí z posledních ~100 let se vynechá poznámka
   a příčina úmrtí, boční příbuzní z té doby a dokumenty s chráněnou osobou také. Zápis, ve kterém je i chráněná osoba,
   jde bez obrázku a přepisu – souhrn ho vypíše ke kontrole. `udaje_od_rodiny.md` se nevyváží.
 - **Před exportem se vždy zeptej, jestli má export obsahovat i žijící osoby** (a kam soubor půjde). Vysvětli rozdíl:
-  bez nich jsou žijící a nedávno zemřelí jen „Žijící osoba“ (údaje si uživatel doplní ručně); s nimi (`--zijici`) jsou
+  bez nich jsou žijící a nedávno zemřelí jen „Žijící / Chráněná osoba“ (údaje si uživatel doplní ručně); s nimi (`--zijici`) jsou
   v souboru jejich jména, data, místa, poznámky i fotky. Nahráním do cizí služby (MyHeritage, Ancestry…) je dostane
   i ta služba – u vlastního stromu je MyHeritage ostatním skrývá, ale data u ní budou. Výchozí odpověď je „ne“;
   `--zijici` použij jen na výslovné „ano“ a připomeň souhlas dotčených (`soukromi.md`). Na web takový soubor nepatří.
@@ -254,7 +254,7 @@ GEDCOM do existujícího stromu nesloučí a obrázky nenačte.
    a **kotvy** – osoby ze stromu, ke kterým se nové připojují (rodiče, dítě, partner); kotva má jméno (i `_MARNM`) a data
    převzatá ze stromu, aby ji FTB v Kontrole duplicit našel. Osoby ze stromu s novými zápisy a obrázky jsou jen
    v přehledu; s **`--se-zmenenymi`** jdou i do souboru (každá = jedno spojení navíc – nabídni podle počtu).
-   Chráněná (žijící) kotva je „Žijící osoba“; s `--zijici-kotvy` má jméno ze stromu (bez dat) – zeptej se jako u `--zijici`.
+   Kotva má jméno a data ze stromu i u chráněné osoby – vrací jen to, co strom už má; z projektu u ní nic není.
 3. **Projdi s uživatelem přehled před importem**, hlavně „POZOR“: nová osoba na místě, kde strom už někoho má
    (výzkum našel jiného předka → po importu rozhodnout ve FTB; tatáž osoba jinak zapsaná → `zapis.py ged <číslo> <@I…@>`
    a export zopakovat), a rozpory dat (strom × doložený zápis).

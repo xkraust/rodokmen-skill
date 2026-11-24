@@ -186,20 +186,17 @@ def test_rozdil():
     ok("--rozdil: osoba 1 (ve stromu, bez nových rodičů) v souboru není", "@I1@" not in osoby_v, sorted(osoby_v)[:10])
     ok("--rozdil: kotvy 2 a 3 (k nim se připojují noví rodiče) v souboru jsou", {"@I2@", "@I3@"} <= set(osoby_v))
     ok("--rozdil: všechny nové osoby v souboru", nove <= set(osoby_v), nove - set(osoby_v))
-    ok("--rozdil: chráněná kotva bez --zijici-kotvy jen „Žijící osoba“",
-       "1 NAME Žijící osoba" in osoby_v["@I2@"] and "KOTVA" in osoby_v["@I2@"], osoby_v["@I2@"])
+    ok("--rozdil: kotva i u chráněné osoby se jménem a daty ze stromu (vrací jen to, co strom má)",
+       "1 NAME Josef Karel /Novák/" in osoby_v["@I2@"] and "2 DATE 12 MAR 1952" in osoby_v["@I2@"]
+       and "KOTVA" in osoby_v["@I2@"] and "FAMC" in osoby_v["@I2@"], osoby_v["@I2@"])
+    ok("--rozdil: nová chráněná osoba dál bez údajů", all("RESN privacy" in b for k, b in osoby_v.items()
+       if k not in ("@I2@", "@I3@") and ("Žijící osoba" in b or "Chráněná osoba" in b)))
     ok("--rozdil: přehled – kotvy, nové, postup", "## 1. Kotvy" in prehled and "## 2. Nové osoby" in prehled
        and "Kontrola duplicit" in prehled and "--ged-id --zapsat" in prehled, prehled[:600])
     ok("--rozdil: nová osoba na obsazeném místě ve stromu (4 × František Novák, jiný rok)",
        "Ve stromu je na tomto místě František Novák" in prehled and "zapis.py ged 4 @I4@" in prehled, prehled)
-    ok("--rozdil: souhrn hlásí obsazená místa a chráněné kotvy", "na místě, kde strom už někoho má" in r.stdout
-       and "--zijici-kotvy" in r.stdout, r.stdout)
-
-    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku", "--zijici-kotvy", "--prepsat")
-    osoby_v = indi(open(os.path.join(prac, "rozdil.ged"), encoding="utf-8").read())
-    ok("--zijici-kotvy: kotva se jménem ze stromu, bez dat", "1 NAME Josef Karel /Novák/" in osoby_v["@I2@"]
-       and "BIRT" not in osoby_v["@I2@"], osoby_v["@I2@"])
-    ok("--zijici-kotvy: rodina kotvy s novými rodiči", "FAMC" in osoby_v["@I2@"], osoby_v["@I2@"])
+    ok("--rozdil: souhrn hlásí obsazená místa", "na místě, kde strom už někoho má" in r.stdout, r.stdout)
+    ok("--rozdil: přehled uvádí dvojice ID ke spojení", "spojit **ID " in prehled and "× ID 2**" in prehled, prehled)
     r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku", "--prepsat", "--se-zmenenymi")
     prehled = open(os.path.join(prac, "rozdil_zmeny.md"), encoding="utf-8").read()
     ok("--se-zmenenymi: přehled uvádí, že změněné jsou v souboru", r.returncode == 0 and "– v souboru, spojit" in prehled,

@@ -25,12 +25,12 @@ Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py
                        stromu, ke kterým se nové připojují; jméno a data ze stromu) + přehled pracovni/rozdil_zmeny.md
                        (výchozí výstup pracovni/rozdil…); vazbu ged dá ged_import.py --ged-id
   … --se-zmenenymi     s --rozdil i osoby ze stromu s novými zápisy a obrázky (každá = ruční spojení ve FTB)
-  … --zijici-kotvy     s --rozdil: chráněná (žijící) kotva se jménem ze stromu, bez dalších údajů
 
 Čte data/osoby.py, zaznamy.json, svazky.json, prepisy.json, mista.json, dokumenty.json a obrázky z vyrezy/ (zdroje/).
 Rodiny odvozuje z Kekulého čísel, fakta (`* 14. 2. 1890 Holice čp. 112`) převádí na události GEDCOM.
 Zápis z matriky cituje u události jen tehdy, když sedí druh i rok (křest syna v `r` otce není otcovo narození);
-ostatní zápisy cituje u osoby. Žijící a nedávno zemřelí (do 30 let) zůstanou ve stromu jen jako „Žijící osoba“.
+ostatní zápisy cituje u osoby. Žijící zůstanou ve stromu jen jako „Žijící osoba“, zemřelí do 30 let jako „Chráněná
+osoba“ (bez údajů). Kotva v --rozdil má i u chráněné osoby jméno a data ze stromu (vrací jen to, co strom už má).
 Na konci vypíše souhrn: co v exportu je, co vynechal a co se nepodařilo převést.
 """
 import datetime, json, os, re, shutil, sys, unicodedata, zipfile
@@ -283,7 +283,6 @@ class Export:
         self.source_per_record = False  # s --slozka: zdroj = jeden zápis s výřezem (FTB dá obrázek ke zdroji, ne k citaci)
         self.diff_path = None      # --rozdil <strom.ged>: jen nové osoby, kotvy (a se --se-zmenenymi změněné)
         self.with_changed = False
-        self.living_anchors = False   # --zijici-kotvy: chráněná kotva se jménem ze stromu (jinak „Žijící osoba“)
         self.warn, self.unparsed, self.missing = [], [], set()
         self.stats = dict(protected=0, notes_skipped=0, side_skipped=0, docs_skipped=0,
                           rec_protected=set(), causes_skipped=0)
@@ -379,9 +378,9 @@ class Export:
                 if e is not None and not e["date_ok"]:
                     self.unparsed.append(f"{k} {p['n']}: datum „{e['date_text']}“ ve faktu „{f}“")
             prot = not self.living and is_protected(p, events, self.now)
-            by, dy, _ = life_years(p, events)
+            by, dy, died = life_years(p, events)
             recent = not self.living and (dy or by or 0) > self.now - RECENT_YEARS
-            self.info[k] = dict(events=events, free=free, marr=marr, protected=prot, recent=recent)
+            self.info[k] = dict(events=events, free=free, marr=marr, protected=prot, recent=recent, died=died)
             if prot:
                 self.stats["protected"] += 1
                 self.stats["rec_protected"].update(self.records_of(k))
@@ -550,8 +549,8 @@ class Export:
         L = [f"0 @I{k}@ INDI"]
         if self.personal_photo:
             L.append(f"1 RIN MH:I{k}")   # bez RIN osoby FTB osobní fotku (_PARENTRIN) nepřiřadí
-        if inf["protected"]:
-            L += ["1 NAME Žijící osoba", f"1 SEX {self.sex(k)}", "1 RESN privacy"]
+        if inf["protected"]:   # zemřelí do 30 let nejsou „žijící“ – jen chránění
+            L += [f"1 NAME {'Chráněná osoba' if inf['died'] else 'Žijící osoba'}", f"1 SEX {self.sex(k)}", "1 RESN privacy"]
             L += [f"1 FAMC {x}" for x in self.famc.get(k, [])] + [f"1 FAMS {x}" for x in self.fams_of.get(k, [])]
             return L
         clean = re.sub(r"\s+", " ", re.sub(r"\([^)]*\)", "", p["n"]).replace("?", "")).strip()
@@ -823,21 +822,17 @@ class Export:
         """Kotva: osoba ze stromu jen tak, jak ji strom zná (jméno, pohlaví, narození, úmrtí) – po importu ji Kontrola
         duplicit ve FTB najde a spojí s originálem; nové osoby se připojí přes ni."""
         ind = self.tree_ind[self.P[k]["ged"]]
-        prot = self.info[k]["protected"] and not self.living_anchors
         L = [f"0 @I{k}@ INDI"]
         if self.personal_photo:
             L.append(f"1 RIN MH:I{k}")
-        if prot:   # chráněná kotva bez --zijici-kotvy: jen uzel, spojit ručně podle přehledu
-            L += ["1 NAME Žijící osoba", f"1 SEX {self.sex(k)}", "1 RESN privacy"]
-        else:
-            L += self.tree_name_lines(ind) or [f"1 NAME {self.P[k]['n']}"]
-            sx = [n["val"].strip() for n in self.tree_sub(ind, "SEX")]
-            L.append(f"1 SEX {sx[0] if sx else self.sex(k)}")
-            if not self.info[k]["protected"]:
-                for tag in ("BIRT", "DEAT"):
-                    for e in self.tree_sub(ind, tag)[:1]:
-                        L.append(f"1 {tag}" + (f" {e['val'].strip()}" if e["val"].strip() else ""))
-                        L += [f"2 {s['tag']} {s['val'].strip()}" for s in e["_sub"] if s["tag"] in ("DATE", "PLAC")]
+        # I u chráněné osoby: kotva jen vrací do stromu, co v něm už je (jméno, data ze stromu) – nic z projektu.
+        L += self.tree_name_lines(ind) or [f"1 NAME {self.P[k]['n']}"]
+        sx = [n["val"].strip() for n in self.tree_sub(ind, "SEX")]
+        L.append(f"1 SEX {sx[0] if sx else self.sex(k)}")
+        for tag in ("BIRT", "DEAT"):
+            for e in self.tree_sub(ind, tag)[:1]:
+                L.append(f"1 {tag}" + (f" {e['val'].strip()}" if e["val"].strip() else ""))
+                L += [f"2 {s['tag']} {s['val'].strip()}" for s in e["_sub"] if s["tag"] in ("DATE", "PLAC")]
         L += gtext(1, "NOTE", f"KOTVA pro sloučení: tato osoba už je ve stromu ({self.P[k]['ged']}). Po importu ji "
                               "spojte s originálem (Nástroje → Kontrola duplicit, nebo Osoba → Sloučit osoby).")
         L += [f"1 FAMC {x}" for x in self.famc.get(k, [])] + [f"1 FAMS {x}" for x in self.fams_of.get(k, [])]
@@ -919,10 +914,8 @@ class Export:
         for k in anchors:
             novi = sorted({m for f in self.fams if k in (f["h"], f["w"], *f["c"]) for m in (f["h"], f["w"], *f["c"])
                            if m and m in d["new"]})
-            prot = " – **chráněná osoba (žijící), v souboru jen „Žijící osoba“: spojte ručně**" \
-                if self.info[k]["protected"] and not self.living_anchors else ""
             L.append(f"- **{self.P[k]['n']}** ({life(k)}): spojit **ID {fid(k)} × ID {tid(self.P[k]['ged'])}** "
-                     f"({tname(k)} ve stromu); připojují se: {', '.join(self.P[m]['n'] for m in novi)}{prot}")
+                     f"({tname(k)} ve stromu); připojují se: {', '.join(self.P[m]['n'] for m in novi)}")
             jini = [f"{'otce' if m % 2 == 0 else 'matku'} {oname(d['occupied'][m])} ({d['occupied'][m]['_id']})"
                     for m in novi if m in d["occupied"] and m // 2 == k]
             if jini:
@@ -1007,7 +1000,7 @@ def main(argv=None):
         if hasattr(s, "reconfigure"):
             s.reconfigure(encoding="utf-8", errors="replace")
     known = {"--bez-obrazku", "--plne-rozliseni", "--zijici", "--vystup", "--koren", "--prepsat", "--slozka",
-             "--cp-v-miste", "--rozdil", "--se-zmenenymi", "--zijici-kotvy"}
+             "--cp-v-miste", "--rozdil", "--se-zmenenymi"}
     out, root = None, None
     if "--vystup" in argv:
         i = argv.index("--vystup")
@@ -1027,8 +1020,8 @@ def main(argv=None):
         diff = os.path.abspath(argv[i + 1])
         if not os.path.isfile(diff):
             sys.exit(f"--rozdil: soubor {argv[i + 1]} neexistuje.")
-    elif "--se-zmenenymi" in argv or "--zijici-kotvy" in argv:
-        sys.exit("--se-zmenenymi a --zijici-kotvy patří k --rozdil <strom.ged>.")
+    elif "--se-zmenenymi" in argv:
+        sys.exit("--se-zmenenymi patří k --rozdil <strom.ged>.")
     bad = [a for a in argv if a.startswith("--") and a not in known]
     if bad:
         sys.exit(f"Neznámá volba {bad[0]}. Nápověda: --help")
@@ -1038,7 +1031,7 @@ def main(argv=None):
     ex = Export(with_images="--bez-obrazku" not in argv, full_res="--plne-rozliseni" in argv, living="--zijici" in argv,
                 root=root, cp_in_place="--cp-v-miste" in argv)
     if diff:
-        ex.diff_path, ex.with_changed, ex.living_anchors = diff, "--se-zmenenymi" in argv, "--zijici-kotvy" in argv
+        ex.diff_path, ex.with_changed = diff, "--se-zmenenymi" in argv
         if not any(p.get("ged") for p in load_people()["P"].values()):
             sys.exit("--rozdil: žádná osoba v data/osoby.py nemá vazbu na strom (ged). Nejdřív "
                      "python3 -I tools/ged_import.py <strom.ged> \"Výchozí osoba\" --ged-id --zapsat.")
@@ -1121,10 +1114,6 @@ def main(argv=None):
             print(f"  POZOR: {len(dd['occupied'])} nových osob je na místě, kde strom už někoho má (jiný předek, nebo "
                   f"nespárovaná tatáž osoba): {', '.join(map(str, sorted(dd['occupied'])))} – projděte s uživatelem "
                   "v přehledu změn, než soubor naimportuje.")
-        prot = [k for k in dd["anchors"] if ex.info[k]["protected"]]
-        if prot and not ex.living_anchors:
-            print(f"  POZOR: kotvy {', '.join(map(str, prot))} jsou chráněné (žijící) – v souboru jen „Žijící osoba“, "
-                  "Kontrola duplicit je nenajde; spojte ručně, nebo export s --zijici-kotvy (jméno ze stromu, bez údajů).")
     print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů ({'zápisů' if ex.source_per_record else 'svazků'}), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
     if folder:
@@ -1145,7 +1134,7 @@ def main(argv=None):
                                   "ve složce projektu; synchronizuje-li ji cloud (Google Disk, OneDrive, Dropbox…), ")
               + "dostane ho i cloud. Po nahrání ho můžete smazat.")
     else:
-        print(f"  chránění (žijící / zemřelí do {PROTECT_DEATH_YEARS} let): {st['protected']} osob jen jako „Žijící osoba“; "
+        print(f"  chránění (žijící / zemřelí do {PROTECT_DEATH_YEARS} let): {st['protected']} osob jen jako „Žijící / Chráněná osoba“; "
               f"vynechané poznámky {st['notes_skipped']}, příčiny úmrtí {st['causes_skipped']}, "
               f"boční příbuzní {st['side_skipped']}, dokumenty s chráněnou osobou {st['docs_skipped']}")
         shared = sorted(r for r in st["rec_protected"]
