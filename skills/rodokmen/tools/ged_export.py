@@ -737,6 +737,8 @@ class Export:
         sys.path.insert(0, TOOLS)
         import ged_import
         self.tree = ged_import.read(self.diff_path)
+        self.tree_date = datetime.date.fromtimestamp(os.path.getmtime(self.diff_path))
+        self.tree_age_days = (datetime.date.today() - self.tree_date).days
         self.tree_ind = {r["_id"]: r for r in self.tree.values() if r["_type"] == "INDI"}
         in_tree = set()
         for k in self.persons:
@@ -770,8 +772,36 @@ class Export:
                 there = fa if k % 2 == 0 else mo
                 if there:
                     occupied[k] = there
+        # nová osoba, která už ve stromu je jinde (strom ji má, jen ne na tomto místě): stejné jméno, rok ±2 nebo neznámý
+        linked = {self.P[k].get("ged") for k in in_tree}
+        similar = {}
+        def tyear(ind, tags):
+            return next((ged_import.year(d) for t, d, pl, x in ged_import.events(ind, self.tree)
+                         if t in tags and ged_import.year(d)), None)
+
+        for k in new:
+            ev = self.info[k]["events"]
+            nb = next((e["year"] for e in ev if e["tag"] == "BIRT" and e.get("year")), None)
+            nd = next((e["year"] for e in ev if e["tag"] == "DEAT" and e.get("year")), None)
+            married = [m for f in self.P[k].get("f", []) for m in re.findall(r"provd\.\s+(\S+)", str(f))]
+            one_word = len(ged_import.tokens(self.P[k]["n"])) < 2   # „Kateřina“, „Markéta“ – jen se shodou roku
+            hits, occ = [], occupied.get(k)
+            for gid, ind in self.tree_ind.items():
+                if gid in linked or (occ and gid == occ["_id"]):
+                    continue
+                if not ged_import.same_name(self.P[k]["n"], ged_import.name(ind), married):
+                    continue
+                tb, td = tyear(ind, ("BIRT", "CHR")), tyear(ind, ("DEAT", "BURI"))
+                if (nb and tb and abs(nb - tb) > 2) or (nd and td and abs(nd - td) > 2) \
+                        or (nd and tb and tb > nd) or (nb and td and td < nb):
+                    continue   # roky se k sobě nehodí (narozen po smrti, zemřel před narozením…)
+                if one_word and not ((nb and tb) or (nd and td)):
+                    continue
+                hits.append(ind)
+            if hits:
+                similar[k] = hits
         self.diff = dict(new=sorted(new), anchors=sorted(anchors), changed=sorted(changed), in_tree=in_tree,
-                         occupied=occupied)
+                         occupied=occupied, similar=similar)
         self.stats["protected"] = sum(1 for k in sel if self.info[k]["protected"])
 
     def tree_name_lines(self, ind):
@@ -864,7 +894,9 @@ class Export:
 
         anchors = [k for k in d["anchors"] if k in self.persons]
         L = [f"# Změny pro MyHeritage – {datetime.date.today():%d. %m. %Y}", "",
-             f"Původní strom: `{tree_name}`. Soubor k importu: `{ged_out}`.", "",
+             f"Původní strom: `{tree_name}` (stažen {self.tree_date:%d. %m. %Y}). Soubor k importu: `{ged_out}`.", "",
+             *(["**POZOR: strom je starší než týden** – osoby, které do něj mezitím přibyly, tady nejsou vidět a po importu "
+                "by vznikly duplicity. Stáhněte čerstvý GEDCOM a export zopakujte.", ""] if self.tree_age_days > 7 else []),
              "Postup ve Family Tree Builderu (na projektu synchronizovaném s MyHeritage; předtím Soubor → Záloha):",
              "1. Soubor → Import GEDCOM → tento soubor → **Merge into project**; pak FTB restartujte (obrázky).",
              "2. Nástroje → **Kontrola duplicit** – spojte dvojice ze seznamu kotev (a změněných osob, jsou-li v souboru);",
@@ -891,6 +923,9 @@ class Export:
         L += ["", f"## 2. Nové osoby ({len(d['new'])})", ""]
         for k in d["new"]:
             L.append(f"- {k} **{self.P[k]['n']}** ({life(k)})" + (f" – {rel(k)}" if rel(k) else ""))
+            for o in d["similar"].get(k, []):
+                L.append(f"  - **Možná už ve stromu jinde: {oname(o)} ({o['_id']}).** Tatáž osoba? Pak `zapis.py ged {k} "
+                         f"{o['_id']}` a export zopakujte (jinak duplicita); jiná – nechte.")
             if k in d["occupied"]:
                 o = d["occupied"][k]
                 L.append(f"  - **Ve stromu je na tomto místě {oname(o)} ({o['_id']}).** Jiná osoba (výzkum našel jiného "
@@ -1065,6 +1100,13 @@ def main(argv=None):
               f"{sum(1 for k in dd['anchors'] if k in ex.persons)}, osob ve stromu s novými údaji {len(dd['changed'])} "
               + ("(v souboru)" if ex.with_changed else "(jen v přehledu; do souboru --se-zmenenymi)"))
         print(f"  Přehled změn a postup: {report}")
+        if ex.tree_age_days > 7:
+            print(f"  POZOR: strom {os.path.basename(diff)} je z {ex.tree_date:%d. %m. %Y} ({ex.tree_age_days} dní) – mezitím "
+                  "mohly ve stromu přibýt osoby (Smart Match, ruční úpravy) a vznikly by duplicity. Stáhněte čerstvý GEDCOM "
+                  "(MyHeritage → Rodokmen → Export GEDCOM, nebo FTB → Soubor → Export GEDCOM), --ged-id --zapsat a export zopakujte.")
+        if dd["similar"]:
+            print(f"  POZOR: {len(dd['similar'])} nových osob možná už ve stromu je jinde (stejné jméno a rok): "
+                  f"{', '.join(map(str, sorted(dd['similar'])))} – ověřte v přehledu změn.")
         if dd["occupied"]:
             print(f"  POZOR: {len(dd['occupied'])} nových osob je na místě, kde strom už někoho má (jiný předek, nebo "
                   f"nespárovaná tatáž osoba): {', '.join(map(str, sorted(dd['occupied'])))} – projděte s uživatelem "

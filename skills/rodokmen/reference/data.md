@@ -242,7 +242,9 @@ U `--slozka` nahradí `--prepsat` jen `rodokmen.ged` a `media/`; složku s jiný
 ### Sloučení se stromem na MyHeritage (rozdílový export)
 Když má uživatel vlastní strom na MyHeritage (stažený `dokumenty/strom.ged`) a chce do něj dostat, co skill zjistil,
 **neposílej celý export** – vznikl by druhý strom nebo stovky duplicit. Postup:
-1. Vazba osob na strom (`ged` u osob, viz Import rodinného stromu): `ged_import.py dokumenty/strom.ged "Výchozí osoba"
+1. **Čerstvý GEDCOM** z MyHeritage (web: Rodokmen → Export GEDCOM, nebo FTB → Soubor → Export GEDCOM) do
+   `dokumenty/` – starší strom nezná osoby přidané mezitím (Smart Match) a vznikly by duplicity; nástroj na strom
+   starší než týden upozorní. Vazba osob na strom (`ged` u osob, viz Import rodinného stromu): `ged_import.py dokumenty/strom.ged "Výchozí osoba"
    --ged-id --zapsat`; neshody projdi s uživatelem.
 2. `python3 -I tools/ged_export.py --rozdil dokumenty/strom.ged --slozka --cp-v-miste` → `pracovni/rozdil/`
    (`rodokmen.ged` + `media/`) a **přehled `pracovni/rozdil_zmeny.md`**. V souboru jsou **nové osoby** (bez `ged`)
@@ -254,7 +256,8 @@ Když má uživatel vlastní strom na MyHeritage (stažený `dokumenty/strom.ged
    (výzkum našel jiného předka → po importu rozhodnout ve FTB; tatáž osoba jinak zapsaná → `zapis.py ged <číslo> <@I…@>`
    a export zopakovat), a rozpory dat (strom × doložený zápis).
 4. Uživatel ve FTB (zálohu předem): Import GEDCOM → **Merge into project** do projektu synchronizovaného s MyHeritage →
-   restart FTB → **Nástroje → Kontrola duplicit** → spojit kotvy podle přehledu (ostatní nálezy nechat) → Sync.
+   restart FTB → spojit kotvy podle přehledu (Kontrola duplicit najde jen některé – ověřeno 1 z 12; ostatní ručně:
+   importovaná kotva má nové rodiče/děti z přehledu, originál ne) → Sync.
    FTB při importu nic sám nespojí (ověřeno: ani podle `_UID`), spojení kotev je vždy ruční.
 5. Po Sync stáhnout nový GEDCOM z MyHeritage do `dokumenty/`, znovu `--ged-id --zapsat` (nové osoby dostanou `ged`)
    a do `data/STAV.md` zapsat, který strom platí. Bez toho by se příště tvářily jako nové.
