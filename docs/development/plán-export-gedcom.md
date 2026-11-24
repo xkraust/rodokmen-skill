@@ -296,7 +296,10 @@ Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
    kotev co nejméně (jen nejbližší existující osoba, ke které se nová připojuje – každá = jedno ruční spojení);
    v přehledu změn u každé kotvy dvojice „<jméno> (rok, z importu) → spojit s <jméno ve stromu> (rok)“ a pořadí
    spojování (nejdřív kotvy, pak kontrola nových osob). Ověřit dodatečnou zkouškou: najde hledání duplicit kotvu,
-   když má stejné jméno a data jako ve stromu?
+   když má stejné jméno a data jako ve stromu? FTB ukládá příjmení po sňatku jako `2 _MARNM Krausová` pod `NAME`
+   a zobrazuje ho (export FTB) – kotva má proto převzít z původního `.ged` celé `NAME` včetně `_MARNM`, `SEX`
+   a `BIRT`/`DEAT` (datum, místo). Zkouška 2: `zkouska_slouceni2.ged` (Anna s `_MARNM` a daty jako ve stromu + Václav
+   Landa) do kopie s „Merge into project“ → najde ji hledání duplicit?
    **Soukromí:** kotva, která je chráněná osoba (typicky rodiče výchozí osoby), se v tomto režimu neanonymizuje na
    „Žijící osoba“ (nešla by spojit), ale vyexportuje se s původním jménem a ID z `ged` a **bez dalších údajů**
    (jen jméno, ID, vazby). Vyžaduje to zapnutou volbu `--zijici-kotvy` a upozornění, že soubor jde jen do vlastního FTB.
