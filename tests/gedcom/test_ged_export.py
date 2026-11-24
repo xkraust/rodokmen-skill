@@ -78,6 +78,36 @@ def test_vystup():
     ok("--slozka: FILE je absolutní cesta do media/ této složky",
        all(os.path.isabs(f) and os.path.normcase(f).startswith(os.path.normcase(os.path.join(sl, "media") + os.sep))
            for f in soubory), soubory[:3])
+    # FTB obrázky z citací zahodí – ve složce jsou výřezy zápisů i přímo u osoby (1 OBJE), každý u osoby jednou
+    klice = {z["klic"] for z in json.load(open(os.path.join(d, "data", "zaznamy.json"), encoding="utf-8"))}
+
+    def vyrezy_u_osob(text):
+        u_osob = {}
+        for blok in re.split(r"(?m)^(?=0 )", text):
+            m = re.match(r"0 (@I\d+@) INDI", blok)
+            if m:
+                fs = [os.path.splitext(os.path.basename(f.replace("\\", "/")))[0]
+                      for f in re.findall(r"(?m)^1 OBJE\n2 FILE (.+)$", blok)]
+                u_osob[m[1]] = [f for f in fs if f in klice]
+        return u_osob
+    slozka_vyrezy = vyrezy_u_osob(ged)
+    ok("--slozka: výřezy zápisů i přímo u osob", sum(map(len, slozka_vyrezy.values())) > 0)
+    ok("--slozka: výřez u osoby nejvýš jednou", all(len(v) == len(set(v)) for v in slozka_vyrezy.values()),
+       {k: v for k, v in slozka_vyrezy.items() if len(v) != len(set(v))})
+    zip_ged = zipfile.ZipFile(os.path.join(prac, "rodokmen.zip")).read("rodokmen.ged").decode("utf-8")
+    ok("ZIP: výřezy zápisů jen v citacích, ne u osob", sum(map(len, vyrezy_u_osob(zip_ged).values())) == 0)
+
+    # FTB dá obrázek ke zdroji (ne k citaci) – ve složce je zdroj = jeden zápis s jeho výřezem
+    def zdroje(text):
+        return [b for b in re.split(r"(?m)^(?=0 )", text) if re.match(r"0 @S\d+@ SOUR", b)]
+    zs = zdroje(ged)
+    obr = [re.findall(r"(?m)^1 OBJE\n2 FILE (.+)$", b) for b in zs]
+    ok("--slozka: zdroj = zápis, nejvýš jeden výřez", zs and all(len(o) <= 1 for o in obr) and any(obr))
+    ok("--slozka: zdroj-zápis má archiv svazku (REPO)", any("\n1 REPO @R" in b for b in zs))
+    ok("--slozka: výřez zdroje je výřez téhož zápisu",
+       all(os.path.splitext(os.path.basename(o[0].replace("\\", "/")))[0] in klice for o in obr if o))
+    ok("ZIP: zdroj = svazek, bez obrázků", all("\n1 OBJE" not in b for b in zdroje(zip_ged))
+       and len(zdroje(zip_ged)) < len(zs))
     ok("--slozka: návod na import složky", "Family Tree Builderu importujte" in out, out)
     r = spust(d, "--slozka")
     ok("--slozka: existující export bez --prepsat odmítnut", r.returncode != 0 and "--prepsat" in r.stderr, r.stderr)

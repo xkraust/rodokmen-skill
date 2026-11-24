@@ -5,7 +5,9 @@ Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py
   python3 -I tools/ged_export.py                  -> pracovni/rodokmen.zip (rodokmen.ged + složka media/ s obrázky)
   python3 -I tools/ged_export.py --slozka         -> pracovni/rodokmen/ (rodokmen.ged + media/ rovnou rozbalené
                                                      – k importu ve Family Tree Builderu nebo Gramps; cesty
-                                                     k obrázkům absolutní, FTB relativní nenačte)
+                                                     k obrázkům absolutní, FTB relativní nenačte; výřezy
+                                                     zápisů i přímo u osoby a zdroj = jeden zápis s výřezem,
+                                                     FTB obrázky z citací zahodí)
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
   … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
   … --cp-v-miste       číslo popisné i do místa události („Holice čp. 112, okres Pardubice, …“) – pro MyHeritage,
@@ -265,6 +267,9 @@ class Export:
         self.now = now or datetime.date.today().year
         self.media = {}            # cesta v ZIP → zdrojový soubor
         self.file_base = None      # s --slozka: FILE jako absolutní cesta do této složky (FTB relativní nenačte)
+        self.cutouts_on_person = False  # s --slozka: výřezy zápisů i přímo u osoby (FTB obrázky z citací zahodí)
+        self._cited = None         # výřezy zapsané v citacích právě zpracovávané osoby
+        self.source_per_record = False  # s --slozka: zdroj = jeden zápis s výřezem (FTB dá obrázek ke zdroji, ne k citaci)
         self.warn, self.unparsed, self.missing = [], [], set()
         self.stats = dict(protected=0, notes_skipped=0, side_skipped=0, docs_skipped=0,
                           rec_protected=set(), causes_skipped=0)
@@ -461,7 +466,10 @@ class Export:
             if text:
                 out += gtext(level + 2, "TEXT", text)
         if not hidden:
-            out += self.obje(level + 1, key, z.get("nazev", key))
+            img = self.obje(level + 1, key, z.get("nazev", key))
+            if img and self._cited is not None:
+                self._cited.append(key)
+            out += img
             if self.full_res and os.path.isfile(os.path.join(ZDROJE, key + ".jpg")):
                 out += self.obje(level + 1, key, z.get("nazev", key) + " (plné rozlišení)", ZDROJE, "plne/")
         if z.get("odkaz"):
@@ -475,7 +483,7 @@ class Export:
     def sour_id(self, key):
         z = self.recs[key]
         sv = z.get("svazek") or ""
-        sk = sv if sv in self.svazky else "zapis:" + key
+        sk = sv if sv in self.svazky and not self.source_per_record else "zapis:" + key
         if sk not in self.sources:
             self.sources[sk] = f"@S{len(self.sources) + 1}@"
         return self.sources[sk]
@@ -517,6 +525,7 @@ class Export:
         if surname:
             L.append(f"2 SURN {surname}")
         st = p.get("st", "unk")
+        self._cited = []
         by_event, used = self.match_records(k)
         free_out = []
         for f in inf["free"]:
@@ -570,6 +579,14 @@ class Export:
             kind = self.recs[r].get("druh")
             note = "Osoba je v zápisu jiné události (např. dítěte nebo rodičů)." if kind in KIND_EVENT else ""
             L += self.citation(1, r, st, note)
+        cited, self._cited = self._cited, None
+        if self.cutouts_on_person:
+            # Family Tree Builder obrázky z citací zahodí (formulář citace pole pro obrázek nemá) a MyHeritage
+            # ukazuje u osoby jen její fotky – výřez zápisu proto i přímo u osoby, každý jednou (i výřez sňatku).
+            own_marr = [r for f in self.fams if k in (f["h"], f["w"]) for r in f.get("mrecs", [])
+                        if not (r in self.stats["rec_protected"] and not self.living)]
+            for r in dict.fromkeys(cited + own_marr):
+                L += self.obje(1, r, self.recs[r].get("nazev", r))
         L += self.portrait.get(k, [])
         L += self.doc_links.get(k, [])
         L += [f"1 FAMC {x}" for x in self.famc.get(k, [])] + [f"1 FAMS {x}" for x in self.fams_of.get(k, [])]
@@ -631,23 +648,40 @@ class Export:
             L.append(f"0 {sid} SOUR")
             if sk.startswith("zapis:"):
                 key = sk[len("zapis:"):]
-                L += gtext(1, "TITL", self.recs[key].get("nazev", key))
+                z = self.recs[key]
+                sv = self.svazky.get(z.get("svazek") or "")
+                title = z.get("nazev", key)
+                if sv:
+                    title += ", " + (sv.get("svazek") or z["svazek"])
+                    if z.get("snimek") not in (None, ""):
+                        title += f", snímek {z['snimek']}"
+                L += gtext(1, "TITL", title)
+                if sv:
+                    L += self.volume_lines(sv, repos)
+                if self.source_per_record and not (key in self.stats["rec_protected"] and not self.living):
+                    L += self.obje(1, key, z.get("nazev", key))
                 continue
             sv = self.svazky[sk]
             L += gtext(1, "TITL", sv.get("svazek") or sk)
-            if sv.get("archiv"):
-                rid = repos.setdefault(sv["archiv"], f"@R{len(repos) + 1}@")
-                L.append(f"1 REPO {rid}")
-                m = re.search(r"sign\.\s*([^,;]+)", sv.get("svazek", ""))
-                if m and m[1].strip(" .…"):
-                    L.append(f"2 CALN {m[1].strip()}")
-            note = "; ".join(x for x in (sv.get("popis", ""), ("portál " + sv["portal"]) if sv.get("portal") else "",
-                                         ("odkaz: " + sv["url"]) if sv.get("url") else "") if x)
-            if note:
-                L += gtext(1, "NOTE", note)
+            L += self.volume_lines(sv, repos)
         for name, rid in repos.items():
             L.append(f"0 {rid} REPO")
             L += gtext(1, "NAME", name)
+        return L
+
+    def volume_lines(self, sv, repos):
+        """Archiv (REPO, signatura) a popis svazku – u zdroje-svazku i u zdroje-zápisu."""
+        L = []
+        if sv.get("archiv"):
+            rid = repos.setdefault(sv["archiv"], f"@R{len(repos) + 1}@")
+            L.append(f"1 REPO {rid}")
+            m = re.search(r"sign\.\s*([^,;]+)", sv.get("svazek", ""))
+            if m and m[1].strip(" .…"):
+                L.append(f"2 CALN {m[1].strip()}")
+        note = "; ".join(x for x in (sv.get("popis", ""), ("portál " + sv["portal"]) if sv.get("portal") else "",
+                                     ("odkaz: " + sv["url"]) if sv.get("url") else "") if x)
+        if note:
+            L += gtext(1, "NOTE", note)
         return L
 
     def build(self):
@@ -736,7 +770,7 @@ def main(argv=None):
     elif os.path.exists(out) and "--prepsat" not in argv:
         sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
     if folder:
-        ex.file_base = out
+        ex.file_base, ex.cutouts_on_person, ex.source_per_record = out, True, True
     ged = ex.build()
     os.makedirs(out if folder else os.path.dirname(out), exist_ok=True)
     if folder:
@@ -762,7 +796,7 @@ def main(argv=None):
     print(f"GEDCOM: {out}")
     if ex.root is not None:
         print(f"  jen osoba č. {ex.root} ({ex.P[ex.root]['n']}) a její předci")
-    print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů (svazků), {n_rec} citací zápisů, "
+    print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů ({'zápisů' if ex.source_per_record else 'svazků'}), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
     if folder:
         print(f"  Jak dál: ve Family Tree Builderu importujte {os.path.join(out, 'rodokmen.ged')} a pak Sync "

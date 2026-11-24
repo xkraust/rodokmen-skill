@@ -12,6 +12,10 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - Export s `ged_export.py --slozka` zapisuje cesty k obrázkům celé (absolutní). Family Tree Builder relativní cesty
   nenačte – u osob pak místo fotek a výřezů zápisů ukázal jen „Failed to Load Image“. Složku s exportem před importem
   nepřesouvejte; po přesunu export zopakujte.
+- Výřezy zápisů z matrik jsou s `--slozka` i přímo u osoby (jako její fotky, výřez sňatku u obou manželů). Family Tree
+  Builder obrázky připojené k citaci při importu zahodí, takže výřezy u osob chyběly.
+- S `--slozka` je každý zápis z matriky vlastní zdroj („Křest Václava Havlíčka (1888), Němčice 16, …, snímek 35“)
+  s výřezem ve „Zdrojích fotografií“ – Family Tree Builder umí obrázek dát ke zdroji, ne k citaci.
 
 ## 0.12.2 – 23. 11. 2026
 

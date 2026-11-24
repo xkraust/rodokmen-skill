@@ -55,8 +55,22 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   cesta s diakritikou a na Google Disku nevadí).
 - Oprava 0.12.3: `--slozka` zapisuje `FILE` jako absolutní cestu do `media/` výstupní složky (`Export.file_base`);
   ZIP a `--bez-obrazku` beze změny (relativní, pro Gramps a přenos). Test: „FILE je absolutní cesta“ (98 kontrol).
-- Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u citací,
-  portrét jako hlavní fotka (`_PRIM`), a Sync na web s obrázky.
+- **Obrázky v citacích (`2 SOUR` → `3 OBJE`): FTB zahodí.** Formulář citace ve FTB nemá pole pro obrázek (jen zdroj,
+  stránka, hodnověrnost, datum, text, poznámky); u osob byly vidět jen 4 obrázky připojené přímo k osobě, 95 výřezů
+  z citací chybělo. Oprava 0.12.3: s `--slozka` (`Export.cutouts_on_person`) jde výřez každého citovaného zápisu
+  i jako `1 OBJE` k osobě (každý jednou; výřez sňatku u obou manželů, chráněné zápisy ne). V citaci zůstává (Gramps).
+  Havlíčkovi: 108 obrázků u osob.
+- **FTB umí obrázek u zdroje** („Upravit zdroj“ → „Zdroje fotografií…“, tj. `0 @S@ SOUR` → `1 OBJE`), ne u citace.
+  Zvolena varianta „zdroj = zápis“ (proti „výřezy ke svazku“ – u svazku by nebylo poznat, který výřez patří ke které
+  citaci): s `--slozka` (`Export.source_per_record`) má každý citovaný zápis vlastní `SOUR` s titulem
+  „<název zápisu>, <svazek>, snímek N“, `REPO`/`CALN`/popisem svazku (`volume_lines`) a jedním `OBJE` s výřezem
+  (chráněný zápis bez výřezu). ZIP beze změny (zdroj = svazek). Havlíčkovi: 20 zdrojů-zápisů, každý s výřezem.
+  Testy 105 kontrol.
+- Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
+  vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
+- Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,
+  portrét jako hlavní fotka (`_PRIM`), hodnověrnost citace (FTB ukázal u `QUAY 2` „Sporná hodnověrnost důkazu“ –
+  ověřit, jak FTB čísla 0–3 pojmenovává), a Sync na web s obrázky.
 - Drobnost: fakt „* 10. 6. 1922 Zbyslav (?), okres Klatovy“ dal u narození navíc poznámky „?“ a „okres Klatovy“ –
   okres za čárkou se nebere jako součást místa. Řešit samostatně.
 

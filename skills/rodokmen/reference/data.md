@@ -187,7 +187,10 @@ s výřezy zápisů, rodinnými fotkami a portréty. ZIP se **rozbalí** (`rodok
 se `.ged` – obrázky si program načte podle relativních cest (Gramps ano, **Family Tree Builder ne**). **Pro import
 rovnou použij `--slozka`**: nástroj zapíše rozbalenou složku `pracovni/rodokmen/` (s `--koren 3`
 `pracovni/rodokmen_koren3/`), ZIP nevznikne a cesty k obrázkům jsou **absolutní** – Family Tree Builder je načte.
-Složku před importem nepřesouvej (po přesunu export zopakuj).
+Složku před importem nepřesouvej (po přesunu export zopakuj). Výřez zápisu je v citaci u události a se `--slozka`
+i přímo u osoby (FTB obrázky z citací zahodí – formulář citace pole pro obrázek nemá). Se `--slozka` je navíc
+zdrojem jeden zápis (titul „zápis, svazek, snímek“, archiv svazku) s výřezem – FTB ho ukáže ve „Zdrojích fotografií“;
+bez `--slozka` je zdrojem svazek.
 - **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): export s `--slozka`, File → Import GEDCOM →
   `rodokmen.ged` z té složky (z ručně rozbaleného ZIPu FTB obrázky nenačte – „Failed to Load Image“) → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
   se nahrají na web. Web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte nikdy (soubor
