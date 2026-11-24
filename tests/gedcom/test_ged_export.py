@@ -392,6 +392,10 @@ def test_umely():
     ok("--slozka: portrét = fotka (_PRIM_CUTOUT) + osobní fotka (_CUTOUT, _PARENTRIN)",
        rodic and osobni and osobni[3] == rodic[2] and int(rodic[2]) > 500000
        and os.path.isfile(rodic[1]) and os.path.isfile(osobni[1]), kat_s)
+    rins = re.findall(r"(?m)^\d+ _PHOTO_RIN MH:P(\d+)$", text)
+    ok("--slozka: každý obrázek má vlastní _PHOTO_RIN a _FILESIZE (jako export FTB)",
+       len(rins) == text.count(" OBJE\n") == len(re.findall(r"(?m)^\d+ _FILESIZE \d+$", text))
+       and len(set(rins)) == len(rins) and min(map(int, rins)) > 500000, (len(rins), text.count(" OBJE\n")))
     ok("ZIP: bez osobní fotky FTB", not any(gi.first(o, "_CUTOUT") or gi.first(o, "_PRIM_CUTOUT") for o in sub(kat, "OBJE")))
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 

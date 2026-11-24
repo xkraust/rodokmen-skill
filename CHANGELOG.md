@@ -6,6 +6,12 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.6 – 24. 11. 2026
+
+**Opravy**
+- Export s `ged_export.py --slozka`: Family Tree Builder po verzi 0.12.5 nenačetl výřezy zápisů a fotky (jen portrét
+  v okénku osoby). Každý obrázek má teď číslo fotky a velikost jako v exportu z Family Tree Builderu.
+
 ## 0.12.5 – 24. 11. 2026
 
 **Nové**

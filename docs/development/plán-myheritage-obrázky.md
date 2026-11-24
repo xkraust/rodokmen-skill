@@ -100,6 +100,14 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   Oprava v 0.12.5: s `--slozka` (`personal_photo`) portrét = dvojice, výřez = kopie `media/<klíč>_osobni.jpg`, čísla
   od `MH:P500001`, `1 RIN MH:I<číslo>` u každé osoby. Titulek zůstal dlouhý (T11 měl krátký – ověřit při zkoušce
   vydání). Testy 112 kontrol.
+- **Zkouška 0.12.5 ve FTB:** portrét v okénku ano, čp. v místě ano (mapu FTB ukáže jen u synchronizovaného stromu),
+  ale **ostatní obrázky (Václav: výřezy i pomník) ne** – uvedené, bez náhledu i detailu. Zkoušky:
+  T12 = 0.12.5 s `vyrezy/` – portrét ano, ostatní ne; T13 = plné rozlišení bez `RIN` a osobní fotky – nic;
+  T14 = T12 + `_PHOTO_RIN`/`_FILESIZE` u každého obrázku – ne; **T15 = plné rozlišení + `_PHOTO_RIN`/`_FILESIZE` u každého
+  obrázku – ano.** Závěr: když má `_PHOTO_RIN` jen dvojice portrétu, FTB ostatní obrázky nenačte; s ním u všech ano.
+  T13 a T14 si přímo neodpovídají (0.12.4 s `vyrezy/` bez `_PHOTO_RIN` fungovala) – možná FTB zpracovává fotky po importu
+  asynchronně; nevysvětleno. Oprava 0.12.6: s `--slozka` má každý `OBJE` `_PHOTO_RIN MH:P<číslo>` (od 500001, společná
+  řada s dvojicí portrétu) a `_FILESIZE` – přesně podle T15. Testy 113 kontrol.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,

@@ -450,6 +450,11 @@ class Export:
         file = os.path.join(self.file_base, *path.split("/")) if self.file_base else path
         out = [f"{level} OBJE", f"{level + 1} FILE {file}", f"{level + 2} FORM jpeg"]
         out += gtext(level + 1, "TITL", title)
+        if self.personal_photo and not prim:
+            # Jako export FTB: číslo fotky a velikost u každého obrázku. Když je má jen dvojice portrétu, FTB ostatní
+            # obrázky nenačte (zkoušky T12/T15, plán-myheritage-obrázky.md).
+            self.photo_rin += 1
+            out += [f"{level + 1} _PHOTO_RIN MH:P{self.photo_rin}", f"{level + 1} _FILESIZE {os.path.getsize(src)}"]
         if prim:
             out.append(f"{level + 1} _PRIM Y")
             if self.personal_photo:
