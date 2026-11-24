@@ -317,6 +317,27 @@ Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
    z migrace) a původní `.ged` v `dokumenty/` nahradit novým. Bez toho by se nové osoby při dalším `--rozdil` znovu
    tvářily jako nové a vznikly by duplicity.
 
+**Stav (24. 11. 2026, verze 0.13.0): implementováno** `ged_export.py --rozdil <strom.ged>` (s `--slozka`, ZIP
+i `--bez-obrazku`, s `--koren`):
+- Roztřídění (`diff_classify`): ve stromu = `ged` osoby je v původním `.ged`; **nové** = ostatní (osoba s `ged`, které ve
+  stromu není → nová + varování); **kotvy** = osoby ze stromu v rodině (`FAM`) s novou osobou; **změněné** = ostatní
+  osoby ze stromu se zápisem nebo obrázkem. Rodiny jen ty s novou osobou. Rozhodnutí uživatele: změněné ve výchozím
+  stavu jen v přehledu, do souboru volbou **`--se-zmenenymi`** (bez rodinných vazeb, jen ke spojení).
+- Kotva (`anchor_lines`): `NAME` s `GIVN`/`SURN`/`_MARNM`, `SEX`, `BIRT`/`DEAT` (datum, místo) **ze stromu** + `NOTE`
+  „KOTVA…“ + vazby; chráněná kotva „Žijící osoba“, s **`--zijici-kotvy`** jméno ze stromu bez dat. Kotva se změnami
+  (se `--se-zmenenymi`) a změněná osoba: plné údaje projektu, jméno ze stromu, `NOTE` „ZMĚNA…“ (`changed_lines`).
+- **Obsazené místo** (nové za zkoušky na projektu Krausovi): nová osoba na pozici rodiče osoby ze stromu, kde strom
+  už rodiče má (jiný předek – č. 128/129, nebo nespárovaná tatáž osoba – č. 75 Rozálie/Rosalie). Přehled to uvede u kotvy
+  („po spojení by měl dvoje rodiče“) i u nové osoby (kdo je ve stromu, `zapis.py ged …` když tatáž), souhrn to hlásí.
+- Přehled `pracovni/rozdil[_koren<N>]_zmeny.md` (`diff_report`): postup ve FTB (záloha, Merge into project, restart,
+  Kontrola duplicit, Sync, nový GEDCOM a `--ged-id --zapsat`), 1. kotvy (dvojice ke spojení), 2. nové osoby se vztahem,
+  3. osoby ve stromu s novými údaji (zápisy, obrázky, rozpory), 4. rozpory dat u ostatních (strom × projekt, „doloženo
+  zápisem“). Přepis jen s `--prepsat`. Bez jakékoli vazby `ged` nástroj skončí s radou `--ged-id`.
+- Ověřeno na kopii projektu Krausovi: 91 nových, 12 kotev, 30 změněných (jen v přehledu), 3 obsazená místa, 1 chráněná
+  kotva (č. 7). Testy `tests/gedcom/test_ged_vazba.py` (33 kontrol).
+- **Zbývá:** ruční zkouška celého postupu ve FTB na kopii projektu (import `pracovni/rozdil`, spojení 12 kotev
+  v Kontrole duplicit, kontrola nových osob a fotek); `SIDE` beze změny (poznámky); rozpor údajů jen hlásí.
+
 Výhody: zůstane stávající strom včetně Smart Matches, Record Matches, online fotek a **propojení DNA testů**.
 Ruční práce jen se slučováním kotev a změněných osob.
 

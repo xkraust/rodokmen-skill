@@ -14,6 +14,11 @@ Začátek sloučení rodokmenu se stromem na MyHeritage: osoby si pamatují, kdo
 - Kostra osob z importu stromu (`ged_import.py --osoby`) má u každé osoby ID z původního stromu (`ged`, `uid`).
 - `ged_import.py <strom.ged> "Výchozí osoba" --ged-id` doplní tuto vazbu do projektu, který strom importoval dřív:
   porovná jméno (i příjmení po sňatku) a rok narození, vypíše shody a neshody, s `--zapsat` shody zapíše.
+- Rozdílový export pro vlastní strom na MyHeritage: `ged_export.py --rozdil dokumenty/strom.ged --slozka` vyrobí
+  jen nové osoby a „kotvy“ (osoby ze stromu, ke kterým se nové připojují) a přehled `pracovni/rozdil_zmeny.md`
+  s postupem pro Family Tree Builder: import „Merge into project“, spojení kotev v Kontrole duplicit, Sync. Přehled
+  upozorní na místa, kde strom už má jiného předka, a na rozpory dat. `--se-zmenenymi` přidá i osoby s novými
+  zápisy a obrázky, `--zijici-kotvy` jméno žijící kotvy.
 - `zapis.py ged <číslo> <@I…@> [<uid>]` zapíše vazbu jedné osobě; `kontrola.py` hlídá tvar a duplicity a vypíše
   osoby bez vazby (nově zjištěné předky).
 

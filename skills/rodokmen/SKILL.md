@@ -72,7 +72,8 @@ Cíl: znát co nejvíc o 3–4 generacích nazpět, než sáhneš do matrik.
 - **Rodinný strom** (GEDCOM `.ged`, záloha MyHeritage `.ftb`): `tools/ged_import.py`, `tools/ftb_export.py` – postup
   v `reference/data.md` → Import rodinného stromu. Pole `ged`/`uid` z importu u osob nech (vazba pro sloučení s MyHeritage). Strom, který si rodina vede sama, má stav `fam`; cizí stromy
   z internetu (MyHeritage, Geni, FamilySearch, Smart Match) jsou **jen vodítko**, stav `mh`, nikdy `doc`.
-- **Export do GEDCOM** (rodokmen do MyHeritage, Gramps a jiných programů): `tools/ged_export.py` – postup
+- **Export do GEDCOM** (rodokmen do MyHeritage, Gramps a jiných programů; do vlastního stromu na MyHeritage
+  rozdílově `--rozdil`, přehled změn projdi s uživatelem před importem): `tools/ged_export.py` – postup
   a soukromí v `reference/data.md` → Export do GEDCOM. **Před spuštěním se zeptej, zda exportovat i žijící osoby**
   (výchozí ne: žijící a nedávno zemřelí jsou jen „Žijící osoba“; ano = `--zijici`, vysvětli, že údaje dostane cílová služba).
 

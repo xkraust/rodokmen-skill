@@ -158,9 +158,61 @@ def test_ged_id_dict():
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 
+def indi(ged_text):
+    import re
+    return {m: b for m, b in ((re.match(r"0 (@I\d+@)", b)[1], b) for b in re.split(r"(?m)^(?=0 )", ged_text)
+                              if re.match(r"0 @I\d+@ INDI", b))}
+
+
+def test_rozdil():
+    """Rozdílový export proti stromu: ukázka, vazba 1–3 zapsaná (4 a 5 nesedí → nové na obsazeném místě)."""
+    d = projekt(True)
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku")
+    ok("--rozdil bez vazby ged odmítnut s radou", r.returncode != 0 and "--ged-id" in r.stderr, r.stderr)
+    r = spust(d, "ged_export.py", "--se-zmenenymi", "--bez-obrazku")
+    ok("--se-zmenenymi bez --rozdil odmítnuto", r.returncode != 0, r.stderr)
+    spust(d, "ged_import.py", "dokumenty/strom.ged", "Petr Novák", "--ged-id", "--zapsat")
+    P = osoby(d)["P"]
+
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku")
+    prac = os.path.join(d, "pracovni")
+    ok("--rozdil: výstup pracovni/rozdil.ged a přehled rozdil_zmeny.md", r.returncode == 0
+       and os.path.isfile(os.path.join(prac, "rozdil.ged")) and os.path.isfile(os.path.join(prac, "rozdil_zmeny.md")),
+       r.stdout + r.stderr)
+    ged = open(os.path.join(prac, "rozdil.ged"), encoding="utf-8").read()
+    prehled = open(os.path.join(prac, "rozdil_zmeny.md"), encoding="utf-8").read()
+    osoby_v = indi(ged)
+    nove = {f"@I{k}@" for k, p in P.items() if not p.get("ged") and not p.get("n", "").startswith(("otec neuveden", "matka neuvedena"))}
+    ok("--rozdil: osoba 1 (ve stromu, bez nových rodičů) v souboru není", "@I1@" not in osoby_v, sorted(osoby_v)[:10])
+    ok("--rozdil: kotvy 2 a 3 (k nim se připojují noví rodiče) v souboru jsou", {"@I2@", "@I3@"} <= set(osoby_v))
+    ok("--rozdil: všechny nové osoby v souboru", nove <= set(osoby_v), nove - set(osoby_v))
+    ok("--rozdil: chráněná kotva bez --zijici-kotvy jen „Žijící osoba“",
+       "1 NAME Žijící osoba" in osoby_v["@I2@"] and "KOTVA" in osoby_v["@I2@"], osoby_v["@I2@"])
+    ok("--rozdil: přehled – kotvy, nové, postup", "## 1. Kotvy" in prehled and "## 2. Nové osoby" in prehled
+       and "Kontrola duplicit" in prehled and "--ged-id --zapsat" in prehled, prehled[:600])
+    ok("--rozdil: nová osoba na obsazeném místě ve stromu (4 × František Novák, jiný rok)",
+       "Ve stromu je na tomto místě František Novák" in prehled and "zapis.py ged 4 @I4@" in prehled, prehled)
+    ok("--rozdil: souhrn hlásí obsazená místa a chráněné kotvy", "na místě, kde strom už někoho má" in r.stdout
+       and "--zijici-kotvy" in r.stdout, r.stdout)
+
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku", "--zijici-kotvy", "--prepsat")
+    osoby_v = indi(open(os.path.join(prac, "rozdil.ged"), encoding="utf-8").read())
+    ok("--zijici-kotvy: kotva se jménem ze stromu, bez dat", "1 NAME Josef Karel /Novák/" in osoby_v["@I2@"]
+       and "BIRT" not in osoby_v["@I2@"], osoby_v["@I2@"])
+    ok("--zijici-kotvy: rodina kotvy s novými rodiči", "FAMC" in osoby_v["@I2@"], osoby_v["@I2@"])
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku", "--prepsat", "--se-zmenenymi")
+    prehled = open(os.path.join(prac, "rozdil_zmeny.md"), encoding="utf-8").read()
+    ok("--se-zmenenymi: přehled uvádí, že změněné jsou v souboru", r.returncode == 0 and "– v souboru, spojit" in prehled,
+       r.stdout + r.stderr)
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku")
+    ok("--rozdil: existující výstup bez --prepsat odmítnut", r.returncode != 0, r.stderr)
+    shutil.rmtree(os.path.dirname(d), ignore_errors=True)
+
+
 if __name__ == "__main__":
     test_kostra()
     test_ged_id_ukazka()
     test_ged_id_dict()
+    test_rozdil()
     print(f"\n{sum(vysledky)}/{len(vysledky)} v pořádku")
     sys.exit(0 if all(vysledky) else 1)

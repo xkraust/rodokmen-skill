@@ -238,3 +238,23 @@ U `--slozka` nahradí `--prepsat` jen `rodokmen.ged` a `media/`; složku s jiný
   dostane i ten cloud, a nabídni ho po nahrání smazat.
 - Projdi s uživatelem souhrn na konci (chránění, vynechané, chybějící obrázky, data, která nešla převést) dřív, než
   soubor nahraje. Nahrání GEDCOM na web MyHeritage vytvoří **nový samostatný strom** (se stávajícím se nesloučí).
+
+### Sloučení se stromem na MyHeritage (rozdílový export)
+Když má uživatel vlastní strom na MyHeritage (stažený `dokumenty/strom.ged`) a chce do něj dostat, co skill zjistil,
+**neposílej celý export** – vznikl by druhý strom nebo stovky duplicit. Postup:
+1. Vazba osob na strom (`ged` u osob, viz Import rodinného stromu): `ged_import.py dokumenty/strom.ged "Výchozí osoba"
+   --ged-id --zapsat`; neshody projdi s uživatelem.
+2. `python3 -I tools/ged_export.py --rozdil dokumenty/strom.ged --slozka --cp-v-miste` → `pracovni/rozdil/`
+   (`rodokmen.ged` + `media/`) a **přehled `pracovni/rozdil_zmeny.md`**. V souboru jsou **nové osoby** (bez `ged`)
+   a **kotvy** – osoby ze stromu, ke kterým se nové připojují (rodiče, dítě, partner); kotva má jméno (i `_MARNM`) a data
+   převzatá ze stromu, aby ji FTB v Kontrole duplicit našel. Osoby ze stromu s novými zápisy a obrázky jsou jen
+   v přehledu; s **`--se-zmenenymi`** jdou i do souboru (každá = jedno spojení navíc – nabídni podle počtu).
+   Chráněná (žijící) kotva je „Žijící osoba“; s `--zijici-kotvy` má jméno ze stromu (bez dat) – zeptej se jako u `--zijici`.
+3. **Projdi s uživatelem přehled před importem**, hlavně „POZOR“: nová osoba na místě, kde strom už někoho má
+   (výzkum našel jiného předka → po importu rozhodnout ve FTB; tatáž osoba jinak zapsaná → `zapis.py ged <číslo> <@I…@>`
+   a export zopakovat), a rozpory dat (strom × doložený zápis).
+4. Uživatel ve FTB (zálohu předem): Import GEDCOM → **Merge into project** do projektu synchronizovaného s MyHeritage →
+   restart FTB → **Nástroje → Kontrola duplicit** → spojit kotvy podle přehledu (ostatní nálezy nechat) → Sync.
+   FTB při importu nic sám nespojí (ověřeno: ani podle `_UID`), spojení kotev je vždy ruční.
+5. Po Sync stáhnout nový GEDCOM z MyHeritage do `dokumenty/`, znovu `--ged-id --zapsat` (nové osoby dostanou `ged`)
+   a do `data/STAV.md` zapsat, který strom platí. Bez toho by se příště tvářily jako nové.
