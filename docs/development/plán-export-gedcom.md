@@ -300,6 +300,9 @@ Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
    a zobrazuje ho (export FTB) – kotva má proto převzít z původního `.ged` celé `NAME` včetně `_MARNM`, `SEX`
    a `BIRT`/`DEAT` (datum, místo). Zkouška 2: `zkouska_slouceni2.ged` (Anna s `_MARNM` a daty jako ve stromu + Václav
    Landa) do kopie s „Merge into project“ → najde ji hledání duplicit?
+   **Výsledek zkoušky 2 (24. 11. 2026): nenašlo** – ani se stejným `NAME`, `_MARNM`, `SEX` a `BIRT`/`DEAT` se kotva
+   nespojila a hledání duplicit ji nenabídlo. Spojení kotev je proto **vždy ruční podle přehledu změn**; převzetí
+   jména a dat ze stromu nechat (usnadní ruční spojení – obě karty vypadají stejně), ale nespoléhat na něj.
    **Soukromí:** kotva, která je chráněná osoba (typicky rodiče výchozí osoby), se v tomto režimu neanonymizuje na
    „Žijící osoba“ (nešla by spojit), ale vyexportuje se s původním jménem a ID z `ged` a **bez dalších údajů**
    (jen jméno, ID, vazby). Vyžaduje to zapnutou volbu `--zijici-kotvy` a upozornění, že soubor jde jen do vlastního FTB.
