@@ -220,6 +220,15 @@ Omezení MyHeritage (ověřeno v nápovědě, 11/2026):
    postavit. **Zbývá:** zachová FTB `_UID` (a `RIN`) osob při importu s „Merge into project“ a po Sync? Zkouška na kopii
    projektu: import malého GEDCOM s `_UID` existující osoby → spojí ji FTB, nebo vytvoří duplicitu, a jaké `_UID`
    má výsledek v dalším exportu?
+   **Výsledek zkoušky (24. 11. 2026):** kopie stromu = import exportu GEDCOM z FTB jako nový projekt „Kraus Family Tree
+   Kopie“ (258 osob, 84 rodin, stejná ID a `_UID`). Do ní Import GEDCOM → „Merge into project“ souboru s kotvou
+   Anna Landová (`@I500004@`, `RIN MH:I500004`, `_UID` jako ve stromu) a novým otcem Václavem Landou. Výsledek:
+   260 osob, 85 rodin – **FTB přidal obě osoby jako nové** (Anna Landová ID 259, Václav Landa ID 260, spolu jako
+   samostatná rodina); původní Anna (ve FTB zobrazená jako Anna Krausová, ID 4) zůstala beze změny a bez rodičů.
+   **FTB při sloučení osoby podle `@I…@`, `RIN` ani `_UID` nepáruje** a jeho hledání duplicit dvojici nenašlo
+   (původní vedená pod příjmením po sňatku, importovaná pod rodným). Párování na straně FTB tedy není – každá kotva
+   = ruční spojení (Osoba → Sloučit osoby). Pro skill platí dál: `ged`/`uid` slouží k tomu, aby **skill** poznal, co je
+   ve stromu nové a co je kotva, a v přehledu změn uvedl přesnou dvojici ke spojení.
 2. Převezme FTB i webový import MyHeritage obrázky z `OBJE` s relativní cestou v ZIPu? Ověřit na zkušebním projektu.
    **Web: ne** (ověřeno 23. 11. 2026 – ZIP odmítne, bere jen `.ged`; podle nápovědy MyHeritage GEDCOM obrázky
    nepřenáší, jen odkazy). **FTB: relativní cesty ne, absolutní ano** (ověřeno 24. 11. 2026; `--slozka` od 0.12.3 zapisuje absolutní –
@@ -282,6 +291,12 @@ Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
    místo, povolání, který původní osoba nemá). Rozdílné údaje se jen označí, neřeší se obecný diff volného textu.
 3. Vyrobit GEDCOM jen s novými, změněnými a kotvami; změněné a kotvy s původním jménem a ID v `NOTE`
    („Sloučit s @I123@ v MyHeritage“), aby šly v FTB snadno najít a spojit.
+   **Podle zkoušky 1 (FTB nepáruje, hledání duplicit kotvu nenašlo):** kotvu zapsat **pod jménem, které má ve stromu**
+   (`NAME` z původního `.ged`, u žen i příjmení po sňatku, jak ho strom zobrazuje), aby ji spíš našlo i hledání duplicit;
+   kotev co nejméně (jen nejbližší existující osoba, ke které se nová připojuje – každá = jedno ruční spojení);
+   v přehledu změn u každé kotvy dvojice „<jméno> (rok, z importu) → spojit s <jméno ve stromu> (rok)“ a pořadí
+   spojování (nejdřív kotvy, pak kontrola nových osob). Ověřit dodatečnou zkouškou: najde hledání duplicit kotvu,
+   když má stejné jméno a data jako ve stromu?
    **Soukromí:** kotva, která je chráněná osoba (typicky rodiče výchozí osoby), se v tomto režimu neanonymizuje na
    „Žijící osoba“ (nešla by spojit), ale vyexportuje se s původním jménem a ID z `ged` a **bez dalších údajů**
    (jen jméno, ID, vazby). Vyžaduje to zapnutou volbu `--zijici-kotvy` a upozornění, že soubor jde jen do vlastního FTB.
