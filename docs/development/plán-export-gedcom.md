@@ -1,4 +1,4 @@
-# Plán: export rodokmenu do GEDCOM (navrženo pro 0.11.2, fáze 1 vydána v 0.12.0–0.12.2)
+# Plán: export rodokmenu do GEDCOM (navrženo pro 0.11.2, fáze 1 vydána v 0.12.0–0.12.6)
 
 ## Context
 Uživatel se ptal, zda plugin `rodokmen` umí export do GEDCOM. Prověřeno: neumí.
@@ -30,6 +30,29 @@ maminčinu stranu Havlíčkovi, č. 3, jako vlastní strom v MyHeritage). Zbýv�
 **Stav (24. 11. 2026, verze 0.12.2):** web MyHeritage ZIP odmítá a obrázky z GEDCOM nenačte – návod přes Family Tree
 Builder (0.12.1), volby `--slozka` a `--cp-v-miste` (0.12.2), viz `plán-myheritage-obrázky.md`. Zkouška ve FTB 24. 11. 2026:
 obrázky jen s absolutními cestami → oprava v 0.12.3. Zbývá čp. v místě, mapa, Sync a volitelně Gramps.
+
+**Stav (24. 11. 2026, verze 0.12.6) – fáze 1 hotová.** Export do složky (`--slozka`) pro Family Tree Builder ověřen
+importem větve Havlíčkovi (52 osob, 27 rodin): data a místa (čp. v místě s `--cp-v-miste`), zdroje a citace, výřezy
+a fotky v plném rozlišení u osob i zdrojů, portrét v okénku osoby ve stromu; obrázky FTB ukáže až **po restartu**.
+Pro FTB se proti návrhu níže zavedlo (jen s `--slozka`; ZIP a `--bez-obrazku` beze změny, podrobně
+`plán-myheritage-obrázky.md`):
+- absolutní cesty k obrázkům, soubor UTF-8 s BOM a CRLF (bez BOM FTB nenačte cestu s diakritikou);
+- **záložní řešení „jeden `SOUR` na zápis“** (viz Mapování: zdroje a citace) – FTB obrázky z citací zahodí, ale umí je
+  u zdroje; zdroj = zápis (titul „zápis, svazek, snímek N“, archiv svazku) s výřezem;
+- výřez každého citovaného zápisu i přímo u osoby (`1 OBJE`), výřez sňatku u obou manželů;
+- obrázky v plném rozlišení ze `zdroje/` (jinak `vyrezy/`), `--plne-rozliseni` pak nepřidá druhou kopii;
+- portrét jako osobní fotka FTB (dvojice `OBJE` s `_PRIM_CUTOUT`/`_CUTOUT`/`_PARENTRIN`), `1 RIN MH:I<číslo>` u osob,
+  `_PHOTO_RIN MH:P500001…` a `_FILESIZE` u každého obrázku.
+Testy 113 kontrol (`tests/gedcom/test_ged_export.py`), včetně round-tripu přes `ged_import.read()` a stromu s aliasem
+`SAME` a zástupným rodičem.
+
+Zbývá z fáze 1:
+- **Sync na MyHeritage** – přenesou se fotky, výřezy, portrét do okénka a špendlíky na mapě (`MAP`/`LATI`/`LONG`; FTB mapu
+  ukáže jen u synchronizovaného stromu)? Zkouší uživatel.
+- **Import do Gramps** (bod Ověření) – nezkoušeno.
+- Drobnosti: `QUAY 2` ukazuje FTB jako „Sporná hodnověrnost důkazu“ (ověřit pořadí voleb ve FTB); fakt
+  „Zbyslav (?), okres Klatovy“ dává u události navíc poznámky „?“ a „okres Klatovy“; absolutní cesta může u hluboko
+  vnořené složky překročit 255 znaků na řádek `FILE` (nejde dělit).
 
 Rozdíly proti návrhu níže (rozhodnuto při implementaci):
 - `PLAC` = plný název z pole `osm` v `mista.json` bez PSČ (např. „Holice, okres Pardubice, Pardubický kraj, Česko“),
@@ -190,6 +213,13 @@ Omezení MyHeritage (ověřeno v nápovědě, 11/2026):
 ## Nejdřív zkoušky (před implementací)
 1. Obsahuje GEDCOM z MyHeritage `_UID` a zachová ho FTB při importu a merge? Jak stabilní jsou `@I…@` mezi dvěma
    exporty téhož stromu? (Ověřit na exportu uživatele, rozhodne o párování osob.)
+   **Částečně ověřeno (24. 11. 2026):** export z webu MyHeritage (`dokumenty/strom.ged`, 28. 10. 2026, 213 osob) má
+   u každé osoby `1 RIN MH:I…` a `1 _UID` (32 hex znaků; `_UID` mají i rodiny a události). Export GEDCOM z FTB
+   synchronizovaného projektu téhož stromu (24. 11. 2026) má u téže osoby **stejné** `@I500001@`, `RIN MH:I500001`
+   i `_UID 56B453DD…` – ID a `_UID` jsou mezi exporty (web i FTB, s odstupem měsíce) stálé, párování na nich jde
+   postavit. **Zbývá:** zachová FTB `_UID` (a `RIN`) osob při importu s „Merge into project“ a po Sync? Zkouška na kopii
+   projektu: import malého GEDCOM s `_UID` existující osoby → spojí ji FTB, nebo vytvoří duplicitu, a jaké `_UID`
+   má výsledek v dalším exportu?
 2. Převezme FTB i webový import MyHeritage obrázky z `OBJE` s relativní cestou v ZIPu? Ověřit na zkušebním projektu.
    **Web: ne** (ověřeno 23. 11. 2026 – ZIP odmítne, bere jen `.ged`; podle nápovědy MyHeritage GEDCOM obrázky
    nepřenáší, jen odkazy). **FTB: relativní cesty ne, absolutní ano** (ověřeno 24. 11. 2026; `--slozka` od 0.12.3 zapisuje absolutní –
