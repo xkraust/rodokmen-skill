@@ -335,6 +335,12 @@ i `--bez-obrazku`, s `--koren`):
   zápisem“). Přepis jen s `--prepsat`. Bez jakékoli vazby `ged` nástroj skončí s radou `--ged-id`.
 - Ověřeno na kopii projektu Krausovi: 91 nových, 12 kotev, 30 změněných (jen v přehledu), 3 obsazená místa, 1 chráněná
   kotva (č. 7). Testy `tests/gedcom/test_ged_vazba.py` (33 kontrol).
+- **Zkouška na kopii (24. 11. 2026, čerstvý strom z FTB, 258 osob):** 84 nových, 10 kotev; Kontrola duplicit našla
+  **2 z 10 kotev** (Martin Vopat, Matěj Sinkule – oba s úplným datem narození i úmrtí ve stromu, shoda 60 %); Anna
+  Landová (strom: jen rok úmrtí) ani kotvy bez dat nalezeny nebyly; jeden falešný nález nové osoby (Barbora Hubková ×
+  Lukšíková 30 %). Přehled proto u každé kotvy uvádí „Kontrola duplicit ji nejspíš najde“ / „spojte ručně“.
+  Dřívější starý strom (28. 10.) neznal osoby přidané později (Adam Koča, Matěj Vopat Šafařík) → upozornění na strom
+  starší než týden a hledání možných shod nových osob v celém stromu (jméno, pohlaví, roky).
 - **Zbývá:** ruční zkouška celého postupu ve FTB na kopii projektu (import `pracovni/rozdil`, spojení 12 kotev
   v Kontrole duplicit, kontrola nových osob a fotek); `SIDE` beze změny (poznámky); rozpor údajů jen hlásí.
 

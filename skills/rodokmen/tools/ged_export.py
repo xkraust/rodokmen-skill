@@ -902,8 +902,9 @@ class Export:
                 "by vznikly duplicity. Stáhněte čerstvý GEDCOM a export zopakujte.", ""] if self.tree_age_days > 7 else []),
              "Postup ve Family Tree Builderu (na projektu synchronizovaném s MyHeritage; předtím Soubor → Záloha):",
              "1. Soubor → Import GEDCOM → tento soubor → **Merge into project**; pak FTB restartujte (obrázky).",
-             "2. Nástroje → **Kontrola duplicit** – spojte dvojice ze seznamu kotev (a změněných osob, jsou-li v souboru);",
-             "   ostatní nálezy kontroly nechte, ty tam byly už dřív.",
+             "2. Spojte kotvy (oddíl 1): Nástroje → **Kontrola duplicit** najde jen kotvy s úplnými daty ve stromu (ověřeno 2 z 10),",
+             "   ostatní spojte ručně – importovaná kotva má nové rodiče/děti z přehledu, originál ne. Ostatní nálezy",
+             "   Kontroly duplicit nechte (byly tam už dřív, nebo jde o jiné osoby).",
              "3. Zkontrolujte nové osoby (jsou připojené ke kotvám), pak **Sync**.",
              "4. Po Sync ve FTB znovu Soubor → Export GEDCOM do `dokumenty/` (`strom_<datum>.ged`) a spusťte "
              "`ged_import.py <nový strom> \"Výchozí osoba\" --ged-id --zapsat` – jinak by se nové osoby příště tvářily jako nové.",
@@ -915,8 +916,13 @@ class Export:
                            if m and m in d["new"]})
             prot = " – **chráněná osoba (žijící), v souboru jen „Žijící osoba“: spojte ručně**" \
                 if self.info[k]["protected"] and not self.living_anchors else ""
+            ind = self.tree_ind[self.P[k]["ged"]]
+            full = all(any(s["tag"] == "DATE" and re.search(r"\d{1,2} \w{3} \d{4}", s["val"]) for e in self.tree_sub(ind, tag)
+                           for s in e["_sub"]) for tag in ("BIRT", "DEAT"))
+            how = ("Kontrola duplicit ji nejspíš najde" if full and not prot else
+                   "**spojte ručně** (Kontrola duplicit ji nenajde – strom nemá úplná data)")
             L.append(f"- **{self.P[k]['n']}** ({life(k)}) → spojit s **{tname(k)}** ve stromu ({self.P[k]['ged']}); "
-                     f"připojují se: {', '.join(self.P[m]['n'] for m in novi)}{prot}")
+                     f"připojují se: {', '.join(self.P[m]['n'] for m in novi)} – {how}{prot}")
             jini = [f"{'otce' if m % 2 == 0 else 'matku'} {oname(d['occupied'][m])} ({d['occupied'][m]['_id']})"
                     for m in novi if m in d["occupied"] and m // 2 == k]
             if jini:
