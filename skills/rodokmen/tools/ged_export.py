@@ -791,6 +791,9 @@ class Export:
                     continue
                 if not ged_import.same_name(self.P[k]["n"], ged_import.name(ind), married):
                     continue
+                sx = ged_import.first(ind, "SEX")
+                if sx in ("M", "F") and sx != self.sex(k):
+                    continue
                 tb, td = tyear(ind, ("BIRT", "CHR")), tyear(ind, ("DEAT", "BURI"))
                 if (nb and tb and abs(nb - tb) > 2) or (nd and td and abs(nd - td) > 2) \
                         or (nd and tb and tb > nd) or (nb and td and td < nb):
