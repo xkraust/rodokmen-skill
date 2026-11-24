@@ -6,6 +6,30 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.1 – 24. 11. 2026
+
+Sloučení novinek z původního repozitáře (verze 0.11.0): nový postup pro **ZA Opava a AHMP Praha**, které nástroje
+ani Playwright nepouštějí – čtení v Claude in Chrome, celý snímek z mezipaměti prohlížeče. Export GEDCOM zůstává
+ve verzi tohoto forku (0.13.0).
+
+**Nové**
+- `cache.py z-chromu` složí celý snímek ZA Opava nebo AHMP z dlaždic, které si prohlížeč snímků sám načetl do
+  mezipaměti Chromu – archiv nedostane žádný dotaz navíc.
+
+**Opravy**
+- Brzda už nezastaví Českou digitální knihovnu (`api.ceskadigitalniknihovna.cz`) kvůli 403 u neveřejného díla.
+- `ahmp_scan.py` a `ahmp_search.sh` po sobě mažou dočasné složky – v `/tmp` jich dřív zůstávaly tisíce (#220).
+- `napady.py` už nebere datum zdroje v závorce za datum události („dožil se 131 let“).
+- Hlídač sítě pozná i `python3.11` a podobné.
+- `policie_prihlasky.py` najde i karty s příponou `.JPG`.
+
+**Návody**
+- **ZA Opava:** jen v Claude in Chrome (Playwright od listopadu ochrana proti robotům nepustí). Čtení ze snímku
+  obrazovky přiblíženého zápisu, celý snímek volitelně z mezipaměti prohlížeče. Tlačítko „Uložit obrázek“
+  v badatelně nefunguje (chyba na straně archivu).
+- **AHMP Praha:** starý katalog katalog.ahmp.cz archiv 30. 11. 2026 ukončuje – do té doby fungují nástroje, pak nový
+  Archivní katalog digi.ahmp.cz jen v Claude in Chrome (stejný postup jako ZA Opava).
+
 ## 0.13.0 – 24. 11. 2026
 
 Začátek sloučení rodokmenu se stromem na MyHeritage: osoby si pamatují, kdo jsou v původním stromu.

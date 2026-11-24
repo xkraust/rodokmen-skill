@@ -92,7 +92,7 @@ Základní smyčka pro každou osobu:
    dostane kdokoli, mladší jen rodina (`matriky.md` → Lhůty); zapiš do `data/archivni_dotazy.md`. Narození
    po ~1910 a celou domácnost často ukáže sčítání lidu 1921 – znáš-li obec a dům, zkus ho dřív (`reference/scitani.md`).
 3. **Najdi svazek**: podle obce → farnost → archiv. ARON: `python3 -I tools/aron_search.py "Obec"`, SOA Plzeň:
-   `python3 -I tools/portafontium.py obec "Obec"`, Praha: `tools/ahmp_search.sh`; SOA Praha, MZA Brno a SOA Třeboň
+   `python3 -I tools/portafontium.py obec "Obec"`, Praha: `tools/ahmp_search.sh` (do 30. 11. 2026, pak prohlížeč); SOA Praha, MZA Brno a SOA Třeboň
    jen v prohlížeči, ostatní v `reference/portaly.md`. Sňatek hledej nejdřív ve farnosti nevěsty. Je-li ke svazku
    rejstřík, začni jím.
 4. **Stáhni snímek** do `pracovni/<svazek>/` a nech ho tam – před dalším stažením se podívej, jestli ho už nemáš.
@@ -249,7 +249,7 @@ a `zdroje/` (výřezy pro web / plné rozlišení), `dokumenty/` (originály od 
 | `aron_search.py`, `aron_img.py` | ARON (SOA Zámrsk): hledání svazků; snímek, trvalý odkaz, zápis svazku |
 | `portafontium.py` | SOA Plzeň (Porta fontium) bez prohlížeče |
 | `ebadatelna.py` | SOA Praha: trvalý odkaz, náhled a výřez ze snímku uloženého z prohlížeče (stahovat nesmí) |
-| `ahmp_search.sh`, `ahmp_scan.py` | matriky Prahy (AHMP) |
+| `ahmp_search.sh`, `ahmp_scan.py` | matriky Prahy (AHMP) – jen do 30. 11. 2026, pak prohlížeč (`portaly.md`) |
 | `policie_prihlasky.py` | pražské policejní přihlášky 1850–1914 |
 | `soal_zoomify.py` | snímek SOA Litoměřice (knihu najdi v prohlížeči); ZA Opava jen v prohlížeči (`portaly.md`) |
 | `matricula_dl.sh`, `matricula_batch.sh` | snímky z Matriculy (Rakousko, Bavorsko, Polsko…) |
