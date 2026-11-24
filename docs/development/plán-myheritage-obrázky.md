@@ -108,6 +108,10 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   T13 a T14 si přímo neodpovídají (0.12.4 s `vyrezy/` bez `_PHOTO_RIN` fungovala) – možná FTB zpracovává fotky po importu
   asynchronně; nevysvětleno. Oprava 0.12.6: s `--slozka` má každý `OBJE` `_PHOTO_RIN MH:P<číslo>` (od 500001, společná
   řada s dvojicí portrétu) a `_FILESIZE` – přesně podle T15. Testy 113 kontrol.
+- **Zkouška 0.12.6 ve FTB: v pořádku** – portrét v okénku, fotky a výřezy v plném rozlišení u osob i zdrojů, čp. v místě.
+  Obrázky ale byly vidět **až po restartu FTB** (hned po importu ne) – FTB je zpracovává po importu; to nejspíš
+  vysvětluje i rozporné T13/T14. Do návodu (data.md, závěrečná zpráva nástroje, CHANGELOG) doplněno „po importu FTB
+  restartovat“. Zbývá: Sync na MyHeritage (přenesou se fotky? mapa) a volitelně Gramps.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,

@@ -834,7 +834,8 @@ def main(argv=None):
     print(f"  {len(ex.persons)} osob, {len(ex.fams)} rodin, {len(ex.sources)} pramenů ({'zápisů' if ex.source_per_record else 'svazků'}), {n_rec} citací zápisů, "
           f"{len(ex.media)} obrázků")
     if folder:
-        print(f"  Jak dál: ve Family Tree Builderu importujte {os.path.join(out, 'rodokmen.ged')} a pak Sync "
+        print(f"  Jak dál: ve Family Tree Builderu importujte {os.path.join(out, 'rodokmen.ged')}, program restartujte "
+              "(fotky jsou vidět až po restartu) a pak Sync "
               "(web MyHeritage bere jen .ged a obrázky z něj nenačte). Gramps: importujte týž .ged. Cesty k obrázkům jsou "
               "absolutní (Family Tree Builder relativní nenačte) – složku před importem nepřesouvejte ani "
               "nepřejmenovávejte; po přesunu export zopakujte.")
