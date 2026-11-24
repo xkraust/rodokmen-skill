@@ -905,7 +905,7 @@ class Export:
              "2. Nástroje → **Kontrola duplicit** – spojte dvojice ze seznamu kotev (a změněných osob, jsou-li v souboru);",
              "   ostatní nálezy kontroly nechte, ty tam byly už dřív.",
              "3. Zkontrolujte nové osoby (jsou připojené ke kotvám), pak **Sync**.",
-             "4. Po Sync stáhněte z MyHeritage nový GEDCOM do `dokumenty/` a spusťte "
+             "4. Po Sync ve FTB znovu Soubor → Export GEDCOM do `dokumenty/` (`strom_<datum>.ged`) a spusťte "
              "`ged_import.py <nový strom> \"Výchozí osoba\" --ged-id --zapsat` – jinak by se nové osoby příště tvářily jako nové.",
              "", f"## 1. Kotvy – spojit s originálem ({len(anchors)})", ""]
         if not anchors:
@@ -1106,7 +1106,7 @@ def main(argv=None):
         if ex.tree_age_days > 7:
             print(f"  POZOR: strom {os.path.basename(diff)} je z {ex.tree_date:%d. %m. %Y} ({ex.tree_age_days} dní) – mezitím "
                   "mohly ve stromu přibýt osoby (Smart Match, ruční úpravy) a vznikly by duplicity. Stáhněte čerstvý GEDCOM "
-                  "(MyHeritage → Rodokmen → Export GEDCOM, nebo FTB → Soubor → Export GEDCOM), --ged-id --zapsat a export zopakujte.")
+                  "(FTB: synchronizovaný projekt → Sync → Soubor → Export GEDCOM), --ged-id --zapsat a export zopakujte.")
         if dd["similar"]:
             print(f"  POZOR: {len(dd['similar'])} nových osob možná už ve stromu je jinde (stejné jméno a rok): "
                   f"{', '.join(map(str, sorted(dd['similar'])))} – ověřte v přehledu změn.")
