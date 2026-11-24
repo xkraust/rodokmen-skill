@@ -341,6 +341,12 @@ i `--bez-obrazku`, s `--koren`):
   Lukšíková 30 %). Přehled proto u každé kotvy uvádí „Kontrola duplicit ji nejspíš najde“ / „spojte ručně“.
   Dřívější starý strom (28. 10.) neznal osoby přidané později (Adam Koča, Matěj Vopat Šafařík) → upozornění na strom
   starší než týden a hledání možných shod nových osob v celém stromu (jméno, pohlaví, roky).
+- **Kontrola duplicit se sníženou citlivostí** (po importu, 52 nálezů): **8 z 10 kotev** (40–60 %); nenašla Jana
+  Krause (kotva s dvojicí rodičů navíc) a Jiřinu (chráněná „Žijící osoba“). Nálezů je ale mnoho i mimo import (starší
+  podobnosti ve stromu) a jeden chybný návrh (nová osoba Václav Kraus × 500222 – rozhodnuto „jiná“). **ID ve FTB po
+  importu = pořadí osoby v souboru** (1, 2, 43…; strom má 500…) – ověřeno shodou všech 8 dvojic. Přehled proto uvádí
+  u kotvy „spojit ID N × ID 500…“, u nové osoby její ID a u možných shod „dvojici … nespojujte“. Odhad „najde / ručně“
+  podle dat ve stromu zrušen (při snížené citlivosti neplatí).
 - **Zbývá:** ruční zkouška celého postupu ve FTB na kopii projektu (import `pracovni/rozdil`, spojení 12 kotev
   v Kontrole duplicit, kontrola nových osob a fotek); `SIDE` beze změny (poznámky); rozpor údajů jen hlásí.
 

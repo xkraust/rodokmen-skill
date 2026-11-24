@@ -872,6 +872,10 @@ class Export:
         def life(k):
             return self.P[k].get("y") or "?"
 
+        order = {k: i for i, k in enumerate(self.persons, 1)}
+        fid = lambda k: order.get(k, "?")   # FTB dá importovaným osobám ID podle pořadí v souboru (strom má 500…)
+        tid = lambda g: re.sub(r"\D", "", g) or g
+
         def oname(ind):   # osoba ze stromu podle záznamu
             n = next((x for x in self.tree_sub(ind, "NAME")), None)
             by = next((year(s["val"]) for e in self.tree_sub(ind, "BIRT") for s in e["_sub"] if s["tag"] == "DATE"), None)
@@ -902,9 +906,10 @@ class Export:
                 "by vznikly duplicity. Stáhněte čerstvý GEDCOM a export zopakujte.", ""] if self.tree_age_days > 7 else []),
              "Postup ve Family Tree Builderu (na projektu synchronizovaném s MyHeritage; předtím Soubor → Záloha):",
              "1. Soubor → Import GEDCOM → tento soubor → **Merge into project**; pak FTB restartujte (obrázky).",
-             "2. Spojte kotvy (oddíl 1): Nástroje → **Kontrola duplicit** najde jen kotvy s úplnými daty ve stromu (ověřeno 2 z 10),",
-             "   ostatní spojte ručně – importovaná kotva má nové rodiče/děti z přehledu, originál ne. Ostatní nálezy",
-             "   Kontroly duplicit nechte (byly tam už dřív, nebo jde o jiné osoby).",
+             "2. Spojte kotvy (oddíl 1) – dvojice ID: importovaná osoba dostane ve FTB ID podle pořadí v souboru (1, 2, 3…),",
+             "   originál má ID ze stromu (500…). Nástroje → **Kontrola duplicit** se sníženou citlivostí (kolem 40 %) najde",
+             "   většinu kotev (ověřeno 8 z 10); spojujte **jen dvojice z oddílu 1**, ostatní nálezy nechte (starší podobnosti",
+             "   ve stromu, nebo jiné osoby – u nových osob s upozorněním „nespojujte“). Co Kontrola nenajde, spojte ručně.",
              "3. Zkontrolujte nové osoby (jsou připojené ke kotvám), pak **Sync**.",
              "4. Po Sync ve FTB znovu Soubor → Export GEDCOM do `dokumenty/` (`strom_<datum>.ged`) a spusťte "
              "`ged_import.py <nový strom> \"Výchozí osoba\" --ged-id --zapsat` – jinak by se nové osoby příště tvářily jako nové.",
@@ -916,13 +921,8 @@ class Export:
                            if m and m in d["new"]})
             prot = " – **chráněná osoba (žijící), v souboru jen „Žijící osoba“: spojte ručně**" \
                 if self.info[k]["protected"] and not self.living_anchors else ""
-            ind = self.tree_ind[self.P[k]["ged"]]
-            full = all(any(s["tag"] == "DATE" and re.search(r"\d{1,2} \w{3} \d{4}", s["val"]) for e in self.tree_sub(ind, tag)
-                           for s in e["_sub"]) for tag in ("BIRT", "DEAT"))
-            how = ("Kontrola duplicit ji nejspíš najde" if full and not prot else
-                   "**spojte ručně** (Kontrola duplicit ji nenajde – strom nemá úplná data)")
-            L.append(f"- **{self.P[k]['n']}** ({life(k)}) → spojit s **{tname(k)}** ve stromu ({self.P[k]['ged']}); "
-                     f"připojují se: {', '.join(self.P[m]['n'] for m in novi)} – {how}{prot}")
+            L.append(f"- **{self.P[k]['n']}** ({life(k)}): spojit **ID {fid(k)} × ID {tid(self.P[k]['ged'])}** "
+                     f"({tname(k)} ve stromu); připojují se: {', '.join(self.P[m]['n'] for m in novi)}{prot}")
             jini = [f"{'otce' if m % 2 == 0 else 'matku'} {oname(d['occupied'][m])} ({d['occupied'][m]['_id']})"
                     for m in novi if m in d["occupied"] and m // 2 == k]
             if jini:
@@ -931,10 +931,11 @@ class Export:
                          "osoba → zapsat vazbu a export zopakovat).")
         L += ["", f"## 2. Nové osoby ({len(d['new'])})", ""]
         for k in d["new"]:
-            L.append(f"- {k} **{self.P[k]['n']}** ({life(k)})" + (f" – {rel(k)}" if rel(k) else ""))
+            L.append(f"- {k} **{self.P[k]['n']}** ({life(k)}), ve FTB ID {fid(k)}" + (f" – {rel(k)}" if rel(k) else ""))
             for o in d["similar"].get(k, []):
-                L.append(f"  - **Možná už ve stromu jinde: {oname(o)} ({o['_id']}).** Tatáž osoba? Pak `zapis.py ged {k} "
-                         f"{o['_id']}` a export zopakujte (jinak duplicita); jiná – nechte.")
+                L.append(f"  - **Možná už ve stromu jinde: {oname(o)} (ID {tid(o['_id'])}).** Tatáž osoba? Pak `zapis.py ged {k} "
+                         f"{o['_id']}` a export zopakujte (jinak duplicita); jiná – v Kontrole duplicit dvojici ID {fid(k)} × "
+                         f"{tid(o['_id'])} **nespojujte**.")
             if k in d["occupied"]:
                 o = d["occupied"][k]
                 L.append(f"  - **Ve stromu je na tomto místě {oname(o)} ({o['_id']}).** Jiná osoba (výzkum našel jiného "

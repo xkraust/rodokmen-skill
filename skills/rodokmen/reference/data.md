@@ -259,8 +259,10 @@ GEDCOM do existujícího stromu nesloučí a obrázky nenačte.
    (výzkum našel jiného předka → po importu rozhodnout ve FTB; tatáž osoba jinak zapsaná → `zapis.py ged <číslo> <@I…@>`
    a export zopakovat), a rozpory dat (strom × doložený zápis).
 4. Uživatel ve FTB (předem Soubor → Záloha): Import GEDCOM → **Merge into project** do synchronizovaného projektu →
-   restart FTB → spojit kotvy podle přehledu (Kontrola duplicit najde jen kotvy s úplným datem narození
-   i úmrtí ve stromu – ověřeno 2 z 10, přehled u každé kotvy uvede; ostatní ručně:
+   restart FTB → spojit kotvy podle přehledu: přehled uvádí **dvojice ID** (importovaná osoba dostane ve FTB ID podle
+   pořadí v souboru 1, 2, 3…, originál má ID ze stromu 500…). Nástroje → Kontrola duplicit se sníženou citlivostí
+   (~40 %) najde většinu kotev (ověřeno 8 z 10) – spojovat jen dvojice z přehledu, ostatní nálezy ne (u nových osob
+   s upozorněním „nespojujte“); ostatní ručně:
    importovaná kotva má nové rodiče/děti z přehledu, originál ne) → Sync.
    FTB při importu nic sám nespojí (ověřeno: ani podle `_UID`), spojení kotev je vždy ruční.
 5. Po Sync znovu Export GEDCOM z FTB do `dokumenty/` (`strom_<datum>.ged`), znovu `--ged-id --zapsat` (nové osoby dostanou `ged`)
