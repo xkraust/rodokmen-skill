@@ -71,7 +71,11 @@ def test_vystup():
     # --slozka: rozbalený export (rodokmen.ged + media/) pro Family Tree Builder a Gramps
     out = export(d, "--slozka")
     sl = os.path.join(prac, "rodokmen")
-    ged = open(os.path.join(sl, "rodokmen.ged"), encoding="utf-8").read()
+    surovy = open(os.path.join(sl, "rodokmen.ged"), "rb").read()
+    # FTB bez BOM špatně přečte cestu s diakritikou – ve složce UTF-8 s BOM a CRLF (jako export MyHeritage)
+    ok("--slozka: UTF-8 s BOM a konci řádků CRLF",
+       surovy.startswith(b"\xef\xbb\xbf0 HEAD\r\n") and b"\n" not in surovy.replace(b"\r\n", b""))
+    ged = surovy.decode("utf-8-sig").replace("\r\n", "\n")
     soubory = re.findall(r"^\d+ FILE (.+)$", ged, re.M)
     ok("--slozka: rodokmen.ged a media/ vedle sebe", soubory and all(os.path.isfile(os.path.join(sl, f)) for f in soubory))
     # Family Tree Builder relativní cesty nenačte („Failed to Load Image“) – ve složce absolutní cesty do media/

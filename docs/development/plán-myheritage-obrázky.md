@@ -66,6 +66,14 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   „<název zápisu>, <svazek>, snímek N“, `REPO`/`CALN`/popisem svazku (`volume_lines`) a jedním `OBJE` s výřezem
   (chráněný zápis bez výřezu). ZIP beze změny (zdroj = svazek). Havlíčkovi: 20 zdrojů-zápisů, každý s výřezem.
   Testy 105 kontrol.
+- **Zkouška 0.12.3 ve FTB: obrázky opět „Failed to Load Image“** (i portrét), přestože cesty byly absolutní a soubory
+  v pořádku. Diagnostika třemi soubory (obrázky ve stejné složce `media`):
+  T3 = přesná kopie exportu (UTF-8 bez BOM, LF) → **ne**; T2 = totéž + BOM + CRLF → **ano**;
+  T1 = bez BOM, LF, ale každý obrázek jako záznam `0 @Mn@ OBJE` jednou a odkazy `n OBJE @Mn@` → **ano**.
+  Závěr: FTB bez BOM čte vložené (`n OBJE` + `FILE`) cesty s diakritikou („Můj disk“) zřejmě v jiném kódování,
+  i když hlavička uvádí `CHAR UTF-8` (proč první zkouška s absolutními cestami bez BOM prošla, nevysvětleno).
+  Oprava 0.12.4: s `--slozka` se `.ged` zapisuje jako UTF-8 s BOM a CRLF (jako export MyHeritage); ZIP
+  a `--bez-obrazku` beze změny. Varianta T1 (záznamy médií) zůstává v záloze. Testy 106 kontrol.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,

@@ -777,7 +777,9 @@ def main(argv=None):
         media = os.path.join(out, "media")
         if os.path.isdir(media):
             shutil.rmtree(media)
-        with open(os.path.join(out, "rodokmen.ged"), "w", encoding="utf-8", newline="\n") as f:
+        # Jako export MyHeritage: UTF-8 s BOM a konce řádků CRLF. Bez BOM Family Tree Builder špatně přečte cestu
+        # s diakritikou („Můj disk“) a obrázek nenačte („Failed to Load Image“), i když hlavička uvádí CHAR UTF-8.
+        with open(os.path.join(out, "rodokmen.ged"), "w", encoding="utf-8-sig", newline="\r\n") as f:
             f.write(ged)
         for path, src in sorted(ex.media.items()):
             dst = os.path.join(out, *path.split("/"))

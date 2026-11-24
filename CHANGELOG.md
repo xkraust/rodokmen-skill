@@ -6,6 +6,13 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.4 – 24. 11. 2026
+
+**Opravy**
+- Export s `ged_export.py --slozka` zapisuje `rodokmen.ged` v UTF-8 se značkou BOM a s konci řádků Windows (jako export
+  z MyHeritage). Bez ní Family Tree Builder špatně přečetl cestu k obrázkům s diakritikou (např. „Můj disk“) a místo
+  fotek a výřezů ukázal „Failed to Load Image“.
+
 ## 0.12.3 – 24. 11. 2026
 
 **Opravy**
