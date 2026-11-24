@@ -6,6 +6,13 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.5 – 24. 11. 2026
+
+**Nové**
+- Export s `ged_export.py --slozka` bere obrázky v plném rozlišení (`zdroje/`, jako detail na webu po kliknutí); kde
+  plné rozlišení není, použije běžný výřez. Ve Family Tree Builderu a po Sync na MyHeritage jsou zápisy čitelné
+  stejně jako na webu.
+
 ## 0.12.4 – 24. 11. 2026
 
 **Opravy**

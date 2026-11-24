@@ -7,9 +7,11 @@ Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py
                                                      – k importu ve Family Tree Builderu nebo Gramps; cesty
                                                      k obrázkům absolutní, FTB relativní nenačte; výřezy
                                                      zápisů i přímo u osoby a zdroj = jeden zápis s výřezem,
-                                                     FTB obrázky z citací zahodí)
+                                                     FTB obrázky z citací zahodí; obrázky v plném
+                                                     rozlišení ze zdroje/, jako detail na webu)
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
-  … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
+  … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/); s --slozka zbytečné – ta bere
+                       plné rozlišení rovnou
   … --cp-v-miste       číslo popisné i do místa události („Holice čp. 112, okres Pardubice, …“) – pro MyHeritage,
                        který adresu (ADDR) u narození, sňatku a úmrtí nezobrazí; ADDR zůstane pro jiné programy
   … --koren <číslo>    jen tato osoba a její předci (např. --koren 3 = maminčina strana); čísla osob zůstanou,
@@ -269,6 +271,7 @@ class Export:
         self.file_base = None      # s --slozka: FILE jako absolutní cesta do této složky (FTB relativní nenačte)
         self.cutouts_on_person = False  # s --slozka: výřezy zápisů i přímo u osoby (FTB obrázky z citací zahodí)
         self._cited = None         # výřezy zapsané v citacích právě zpracovávané osoby
+        self.prefer_full = False   # s --slozka: obrázek v plném rozlišení ze zdroje/, je-li (jinak vyrezy/)
         self.source_per_record = False  # s --slozka: zdroj = jeden zápis s výřezem (FTB dá obrázek ke zdroji, ne k citaci)
         self.warn, self.unparsed, self.missing = [], [], set()
         self.stats = dict(protected=0, notes_skipped=0, side_skipped=0, docs_skipped=0,
@@ -432,6 +435,8 @@ class Export:
 
     def obje(self, level, key, title, src_dir=None, sub="", prim=False):
         src = os.path.join(src_dir or VYREZY, key + ".jpg")
+        if self.prefer_full and src_dir is None and os.path.isfile(os.path.join(ZDROJE, key + ".jpg")):
+            src = os.path.join(ZDROJE, key + ".jpg")   # plné rozlišení jako detail na webu (vyrezy/ ~1800 px)
         if not self.with_images:
             return []
         if not os.path.isfile(src):
@@ -470,7 +475,7 @@ class Export:
             if img and self._cited is not None:
                 self._cited.append(key)
             out += img
-            if self.full_res and os.path.isfile(os.path.join(ZDROJE, key + ".jpg")):
+            if self.full_res and not self.prefer_full and os.path.isfile(os.path.join(ZDROJE, key + ".jpg")):
                 out += self.obje(level + 1, key, z.get("nazev", key) + " (plné rozlišení)", ZDROJE, "plne/")
         if z.get("odkaz"):
             out += gtext(level + 1, "NOTE", "Odkaz na snímek: " + z["odkaz"])
@@ -770,7 +775,7 @@ def main(argv=None):
     elif os.path.exists(out) and "--prepsat" not in argv:
         sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
     if folder:
-        ex.file_base, ex.cutouts_on_person, ex.source_per_record = out, True, True
+        ex.file_base, ex.cutouts_on_person, ex.source_per_record, ex.prefer_full = out, True, True, True
     ged = ex.build()
     os.makedirs(out if folder else os.path.dirname(out), exist_ok=True)
     if folder:

@@ -74,6 +74,17 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   i když hlavička uvádí `CHAR UTF-8` (proč první zkouška s absolutními cestami bez BOM prošla, nevysvětleno).
   Oprava 0.12.4: s `--slozka` se `.ged` zapisuje jako UTF-8 s BOM a CRLF (jako export MyHeritage); ZIP
   a `--bez-obrazku` beze změny. Varianta T1 (záznamy médií) zůstává v záloze. Testy 106 kontrol.
+- **0.12.4 ve FTB: fotky vidět.** Uživatel: na webu je detail ve větším rozlišení – web ukazuje `vyrezy/` (~1800 px),
+  po kliknutí `zdroje/` (např. 4000 × 490); export bral `vyrezy/`. Oprava 0.12.5: s `--slozka` (`prefer_full`)
+  obrázek ze `zdroje/`, je-li (jinak `vyrezy/`), pod stejným jménem `media/<klíč>.jpg`; `--plne-rozliseni` pak druhou
+  kopii nepřidá. ZIP beze změny. Testy 109 kontrol.
+- **Osobní fotka (náhled osoby ve stromu FTB) chybí.** Databáze FTB (`.ftb`, SQLite): synchronizovaný projekt Kraus má
+  vedle 18 obrázků (`media_item_main_data.item_type` 1) 15 osobních fotek (`item_type` 16, `parent_photo_id` = zdrojová
+  fotka; obdélník v `image_to_individual_face_tagging`, `is_personal_photo` 1). Import exportu: 128 obrázků typu 1,
+  žádná osobní fotka – `_PRIM Y` FTB na osobní fotku nepřevede (a každý odkaz je vlastní médium, tj. duplicity).
+  Podle doplňku Family Historian pro MyHeritage se osobní fotka značí `_PRIM Y`, `_PRIM_CUTOUT Y` „a souvisejícími
+  tagy“ (oficiální popis MyHeritage nenalezen). Zkouška T4: export + `_PRIM_CUTOUT Y` u portrétu – čeká na výsledek;
+  když nepomůže, export GEDCOM z projektu Kraus ve FTB jako vzor.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,

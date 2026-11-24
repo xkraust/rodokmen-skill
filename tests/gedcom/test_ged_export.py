@@ -112,6 +112,24 @@ def test_vystup():
        all(os.path.splitext(os.path.basename(o[0].replace("\\", "/")))[0] in klice for o in obr if o))
     ok("ZIP: zdroj = svazek, bez obrázků", all("\n1 OBJE" not in b for b in zdroje(zip_ged))
        and len(zdroje(zip_ged)) < len(zs))
+
+    # Ve složce obrázek v plném rozlišení ze zdroje/ (jako detail na webu), jinak z vyrezy/; ZIP bere vyrezy/
+    vyrez = next(k for k in sorted(klice) if os.path.isfile(os.path.join(d, "vyrezy", k + ".jpg")))
+    plne = b"\xff\xd8PLNE-ROZLISENI\xff\xd9"
+    os.makedirs(os.path.join(d, "zdroje"), exist_ok=True)
+    open(os.path.join(d, "zdroje", vyrez + ".jpg"), "wb").write(plne)
+    plna = os.path.join(prac, "plne")
+    export(d, "--slozka", "--plne-rozliseni", "--vystup", plna)
+    ok("--slozka: obrázek v plném rozlišení ze zdroje/",
+       open(os.path.join(plna, "media", vyrez + ".jpg"), "rb").read() == plne)
+    ok("--slozka --plne-rozliseni: bez druhé kopie (media/plne/)", not os.path.exists(os.path.join(plna, "media", "plne")))
+    def puvod(f):
+        z = os.path.join(d, "zdroje", f)
+        return open(z if os.path.isfile(z) else os.path.join(d, "vyrezy", f), "rb").read()
+    ok("--slozka: každý obrázek ze zdroje/, není-li, z vyrezy/", all(
+        open(os.path.join(plna, "media", f), "rb").read() == puvod(f)
+        for f in os.listdir(os.path.join(plna, "media")) if f.endswith(".jpg")))
+    os.remove(os.path.join(d, "zdroje", vyrez + ".jpg"))
     ok("--slozka: návod na import složky", "Family Tree Builderu importujte" in out, out)
     r = spust(d, "--slozka")
     ok("--slozka: existující export bez --prepsat odmítnut", r.returncode != 0 and "--prepsat" in r.stderr, r.stderr)
