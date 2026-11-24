@@ -6,6 +6,17 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.0 – 24. 11. 2026
+
+Začátek sloučení rodokmenu se stromem na MyHeritage: osoby si pamatují, kdo jsou v původním stromu.
+
+**Nové**
+- Kostra osob z importu stromu (`ged_import.py --osoby`) má u každé osoby ID z původního stromu (`ged`, `uid`).
+- `ged_import.py <strom.ged> "Výchozí osoba" --ged-id` doplní tuto vazbu do projektu, který strom importoval dřív:
+  porovná jméno (i příjmení po sňatku) a rok narození, vypíše shody a neshody, s `--zapsat` shody zapíše.
+- `zapis.py ged <číslo> <@I…@> [<uid>]` zapíše vazbu jedné osobě; `kontrola.py` hlídá tvar a duplicity a vypíše
+  osoby bez vazby (nově zjištěné předky).
+
 ## 0.12.6 – 24. 11. 2026
 
 **Opravy**

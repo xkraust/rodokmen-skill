@@ -38,6 +38,8 @@ P = {
   a úmrtí (`× 20. 6. 1919 (29 let)`), u zápisů osoby a u sňatku na stránce rodiny. Úplná data dají přesný věk
   (u dětí měsíce či dny); jen rok, `asi`/`≈` nebo `st: "prob"` → „asi 54 let“; `před`/`po` nebo chybějící `*` → bez věku.
   Proto do `*` zapisuj co nejpřesnější datum narození, i když `y` má jen roky.
+- `ged`, `uid` – ID osoby v původním stromu (GEDCOM z MyHeritage…) a jeho `_UID`; doplňuje `ged_import.py`
+  (`--osoby`, `--ged-id`) nebo `zapis.py ged`, ručně je neměň.
 - `r` klíče zápisů ze `zaznamy.json`; přidávej je `python3 -I tools/zapis.py odkaz <číslo> <klíč> [<klíč> …]` (u `SIDE`
   místo čísla část jména) – nástroj zachová zbytek souboru a ověří, že zápis existuje. `st` viz `matriky.md`: `doc` přečteno v matrice, `prob` pravděpodobné,
   `fam` od rodiny (i strom, který si rodina vede sama, např. GEDCOM z jejího MyHeritage), `mh` cizí strom z internetu, `unk`.
@@ -168,6 +170,13 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
   vypíše předky s čísly, všechny události a poznámky a **frontu zápisů** (nejmladší známá událost u každého předka,
   a jestli už je v archivu). `--osoby` dá kostru pro `osoby.py`. Poznámky ve stromu bývají plné rodinných historek –
   přečti je a vytěž do `udaje_od_rodiny.md`.
+- **Vazba na původní strom** (pro pozdější sloučení s MyHeritage): kostra z `--osoby` má u každé osoby `ged="@I…@"`
+  (ID ve stromu) a `uid` (`_UID`) – **nemaž je**, ani při úpravách osoby. Původní `.ged` nech v `dokumenty/` a do
+  `data/STAV.md` zapiš jeho název a datum stažení. Projekt, který strom importoval dřív (bez `ged`):
+  `python3 -I tools/ged_import.py dokumenty/strom.ged "Výchozí osoba" --ged-id` – stejné číslo = stejná osoba, nástroj
+  ověří jméno (i příjmení po sňatku z „provd.“) a rok narození (±1). Shody zapiš přidáním `--zapsat`; neshody ukaž
+  uživateli (jiná osoba ve stromu, nebo jen jiný pravopis?) a potvrzené zapiš `python3 -I tools/zapis.py ged <číslo> <@I…@> [<uid>]`.
+  Nově zjištění předci `ged` nemají – to je v pořádku, při sloučení budou nové osoby (`kontrola.py` je vypíše jako informaci).
 - Starší strom z **Brother's Keeper** (kódování ANSI a česká data „SRPEN 1945“ nástroj převede sám): místa tam bývají
   v 6. pádě („Táboře“) – do `osoby.py` je přepiš do 1. pádu. Kořenem takového stromu často nejsou uživatel, ale jeho
   děti (oba rody) – výchozí osobu proto vyber jménem.

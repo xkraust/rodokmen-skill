@@ -236,6 +236,25 @@ Výsledky zapsat sem; podle nich se upraví návrh níže.
 - `kontrola.py`: hlásit osoby bez `ged` **jen když `STAV.md` eviduje původní `.ged`** (`st="fam"` neznamená „z GEDCOM“,
   v ukázce by to hlásilo falešné poplachy; nově zjištěný předek bez `ged` je v pořádku, kontrola je jen informační).
 
+**Stav (24. 11. 2026, verze 0.13.0): implementováno** (kromě `SIDE` – boční příbuzní nemají ve stromu Kekulé číslo,
+párovat je až spolu s rozhodnutím níže):
+- `ged_import.py --osoby`: kostra má `ged="@I…@"` a `uid` (`_UID`, je-li). Stavba stromu vyčleněna do `ancestors()`.
+- `ged_import.py <strom> "Výchozí osoba" --ged-id [--zapsat]`: shoda = první křestní jméno a příjmení podle
+  společného začátku slova (Kraus/Krausová, Havlíček/Havlíčková, Anton/Antonín), i příjmení po sňatku z faktu
+  „provd. …“; rok narození ±1. Vypíše shody, NESEDÍ, JINÉ ID (osoba už má jiné `ged`), „už mají“ a nově zjištěné předky
+  (nejsou ve stromu). `--zapsat` zapíše jen shody přes `zapis.nastav()`.
+- `zapis.py ged <číslo> <@I…@> [<uid>]` (`nastav()`): nahradí/přidá pole v `dict(…)` i `{…}`, zachová styl uvozovek,
+  pojistka jako u `odkaz` (soubor jde načíst, jinak se nic nezměnilo).
+- `kontrola.py`: chyba při špatném tvaru `ged`, upozornění na stejné `ged` u dvou osob (kromě aliasů `SAME`),
+  „informace:“ se seznamem osob bez `ged`. **Odchylka od návrhu:** informace se vypíše, když má `ged` aspoň jedna osoba
+  (ne podle `STAV.md` – volný text, nespolehlivé); v ukázce bez `ged` tedy nic.
+- Původní `.ged` v `dokumenty/` a záznam do `STAV.md`: pokyn v `reference/data.md` (dělá Claude, ne nástroj).
+- Testy `tests/gedcom/test_ged_vazba.py` (19 kontrol: kostra, párování v ukázce `{…}` i `dict(…)`, opakování,
+  ruční zápis, kontrola).
+- **Ověřeno na projektu Krausovi** (kopie, bez zápisu) proti `dokumenty/strom.ged`: 50 shod, 3 neshody – č. 75
+  Rozálie × Rosalie Benešová (pravopis, potvrdí uživatel), č. 128/129 Josef Kraus a Anna Široká × Václav Kraus
+  a Barbora Menclová (strom má jiné předky než doložil výzkum – vazbu nezapisovat), 91 nově zjištěných předků.
+
 ## Otevřený bod: boční příbuzní (`SIDE`) jako osoby
 **Stav (24. 11. 2026):** Fáze 1 vyváží `SIDE` jen jako poznámku u předka (`1 NOTE Příbuzný: <n> – <t>`,
 `ged_export.py` ř. ~556), nikoli jako `INDI`. Na MyHeritage proto sourozenci a další příbuzní z webové sekce
