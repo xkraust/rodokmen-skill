@@ -184,10 +184,12 @@ v `web/src/data/site.json` (`people`). Při přejmenování osoby se slug změn�
 ## Export do GEDCOM
 `python3 -I tools/ged_export.py` → `pracovni/rodokmen.zip`: `rodokmen.ged` (GEDCOM 5.5.1, UTF-8) a složka `media/`
 s výřezy zápisů, rodinnými fotkami a portréty. ZIP se **rozbalí** (`rodokmen.ged` a `media/` vedle sebe) a importuje
-se `.ged` – obrázky si program načte podle relativních cest. **Pro import rovnou použij `--slozka`**: nástroj zapíše
-rozbalenou složku `pracovni/rodokmen/` (s `--koren 3` `pracovni/rodokmen_koren3/`) a ZIP nevznikne.
-- **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): File → Import GEDCOM → rozbalený
-  `rodokmen.ged` → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
+se `.ged` – obrázky si program načte podle relativních cest (Gramps ano, **Family Tree Builder ne**). **Pro import
+rovnou použij `--slozka`**: nástroj zapíše rozbalenou složku `pracovni/rodokmen/` (s `--koren 3`
+`pracovni/rodokmen_koren3/`), ZIP nevznikne a cesty k obrázkům jsou **absolutní** – Family Tree Builder je načte.
+Složku před importem nepřesouvej (po přesunu export zopakuj).
+- **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): export s `--slozka`, File → Import GEDCOM →
+  `rodokmen.ged` z té složky (z ručně rozbaleného ZIPu FTB obrázky nenačte – „Failed to Load Image“) → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
   se nahrají na web. Web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte nikdy (soubor
   obsahuje jen odkazy na ně); nahrání jen `.ged` na web = strom bez obrázků, fotky pak jen ručně.
   Pro MyHeritage exportuj s **`--cp-v-miste`**: číslo popisné jde i do místa události („Holice čp. 112, okres …“),

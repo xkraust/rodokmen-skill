@@ -46,6 +46,20 @@ Ruční zkouška ve FTB (jedním importem): `ged_export.py --koren 3 --slozka --
 1. jsou u osob a citací výřezy z `media/`? 2. je u narození vidět „čp.“ v místě? 3. má obec špendlík na mapě
 (převezme FTB `MAP`/`LATI`/`LONG`)? Výsledky zapsat sem a do `plán-export-gedcom.md` (otevřená otázka 2).
 
+## Výsledek zkoušky ve FTB (24. 11. 2026) → 0.12.3
+Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován do nového projektu FTB: 52 osob, 27 rodin
+(sedí s exportem), data a místa převzata.
+- **Relativní cesty (`FILE media/…`): FTB nenačte.** Obrázek je u osoby přiřazen (titulek sedí), prohlížeč hlásí
+  „Failed to Load Image“, 0×0, 0 KB – i když soubor vedle `.ged` existuje.
+- **Absolutní cesty: FTB načte** (zkušební kopie `.ged` s `FILE C:\…\rodokmen_koren3\media\…` (absolutní cesta do exportní složky); portrét vidět;
+  cesta s diakritikou a na Google Disku nevadí).
+- Oprava 0.12.3: `--slozka` zapisuje `FILE` jako absolutní cestu do `media/` výstupní složky (`Export.file_base`);
+  ZIP a `--bez-obrazku` beze změny (relativní, pro Gramps a přenos). Test: „FILE je absolutní cesta“ (98 kontrol).
+- Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u citací,
+  portrét jako hlavní fotka (`_PRIM`), a Sync na web s obrázky.
+- Drobnost: fakt „* 10. 6. 1922 Zbyslav (?), okres Klatovy“ dal u narození navíc poznámky „?“ a „okres Klatovy“ –
+  okres za čárkou se nebere jako součást místa. Řešit samostatně.
+
 ## Ověření
 - `tests/gedcom/test_ged_export.py` projde (beze změny formátu `.ged`; 93 kontrol včetně `--slozka`).
 - Ruční zkouška u uživatele: import rozbaleného ZIPu ukázkového projektu do FTB → fotky u osob viditelné →

@@ -74,6 +74,10 @@ def test_vystup():
     ged = open(os.path.join(sl, "rodokmen.ged"), encoding="utf-8").read()
     soubory = re.findall(r"^\d+ FILE (.+)$", ged, re.M)
     ok("--slozka: rodokmen.ged a media/ vedle sebe", soubory and all(os.path.isfile(os.path.join(sl, f)) for f in soubory))
+    # Family Tree Builder relativní cesty nenačte („Failed to Load Image“) – ve složce absolutní cesty do media/
+    ok("--slozka: FILE je absolutní cesta do media/ této složky",
+       all(os.path.isabs(f) and os.path.normcase(f).startswith(os.path.normcase(os.path.join(sl, "media") + os.sep))
+           for f in soubory), soubory[:3])
     ok("--slozka: návod na import složky", "Family Tree Builderu importujte" in out, out)
     r = spust(d, "--slozka")
     ok("--slozka: existující export bez --prepsat odmítnut", r.returncode != 0 and "--prepsat" in r.stderr, r.stderr)

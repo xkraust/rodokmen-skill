@@ -6,6 +6,13 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.12.3 – 24. 11. 2026
+
+**Opravy**
+- Export s `ged_export.py --slozka` zapisuje cesty k obrázkům celé (absolutní). Family Tree Builder relativní cesty
+  nenačte – u osob pak místo fotek a výřezů zápisů ukázal jen „Failed to Load Image“. Složku s exportem před importem
+  nepřesouvejte; po přesunu export zopakujte.
+
 ## 0.12.2 – 23. 11. 2026
 
 **Nové**

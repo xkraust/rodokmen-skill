@@ -4,7 +4,8 @@
 Použití (z kořene projektu, na Windows `python -I -X utf8 tools/ged_export.py …`):
   python3 -I tools/ged_export.py                  -> pracovni/rodokmen.zip (rodokmen.ged + složka media/ s obrázky)
   python3 -I tools/ged_export.py --slozka         -> pracovni/rodokmen/ (rodokmen.ged + media/ rovnou rozbalené
-                                                     – k importu ve Family Tree Builderu nebo Gramps)
+                                                     – k importu ve Family Tree Builderu nebo Gramps; cesty
+                                                     k obrázkům absolutní, FTB relativní nenačte)
   python3 -I tools/ged_export.py --bez-obrazku    -> pracovni/rodokmen.ged (jen text, bez odkazů na obrázky)
   … --plne-rozliseni   přidá k zápisům i výřezy v plném rozlišení (zdroje/)
   … --cp-v-miste       číslo popisné i do místa události („Holice čp. 112, okres Pardubice, …“) – pro MyHeritage,
@@ -263,6 +264,7 @@ class Export:
         self.cp_in_place = cp_in_place
         self.now = now or datetime.date.today().year
         self.media = {}            # cesta v ZIP → zdrojový soubor
+        self.file_base = None      # s --slozka: FILE jako absolutní cesta do této složky (FTB relativní nenačte)
         self.warn, self.unparsed, self.missing = [], [], set()
         self.stats = dict(protected=0, notes_skipped=0, side_skipped=0, docs_skipped=0,
                           rec_protected=set(), causes_skipped=0)
@@ -432,7 +434,8 @@ class Export:
             return []
         path = f"media/{sub}{key}.jpg"
         self.media[path] = src
-        out = [f"{level} OBJE", f"{level + 1} FILE {path}", f"{level + 2} FORM jpeg"]
+        file = os.path.join(self.file_base, *path.split("/")) if self.file_base else path
+        out = [f"{level} OBJE", f"{level + 1} FILE {file}", f"{level + 2} FORM jpeg"]
         out += gtext(level + 1, "TITL", title)
         if prim:
             out.append(f"{level + 1} _PRIM Y")
@@ -732,6 +735,8 @@ def main(argv=None):
                      "Zvolte jinou složku přes --vystup.")
     elif os.path.exists(out) and "--prepsat" not in argv:
         sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
+    if folder:
+        ex.file_base = out
     ged = ex.build()
     os.makedirs(out if folder else os.path.dirname(out), exist_ok=True)
     if folder:
@@ -761,8 +766,9 @@ def main(argv=None):
           f"{len(ex.media)} obrázků")
     if folder:
         print(f"  Jak dál: ve Family Tree Builderu importujte {os.path.join(out, 'rodokmen.ged')} a pak Sync "
-              "(web MyHeritage bere jen .ged a obrázky z něj nenačte). Gramps: importujte týž .ged. Složku nepřesouvejte "
-              "bez media/ – obrázky se hledají vedle .ged.")
+              "(web MyHeritage bere jen .ged a obrázky z něj nenačte). Gramps: importujte týž .ged. Cesty k obrázkům jsou "
+              "absolutní (Family Tree Builder relativní nenačte) – složku před importem nepřesouvejte ani "
+              "nepřejmenovávejte; po přesunu export zopakujte.")
     elif ex.with_images:
         print("  Jak dál: ZIP rozbalte (rodokmen.ged a media/ vedle sebe), nebo exportujte rovnou s --slozka. Web "
               "MyHeritage bere jen .ged a obrázky z něj nenačte – s obrázky importujte rodokmen.ged ve Family Tree "

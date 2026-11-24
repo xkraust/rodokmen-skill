@@ -28,8 +28,8 @@ maminčinu stranu Havlíčkovi, č. 3, jako vlastní strom v MyHeritage). Zbýv�
 (uživatel ho používá) a volitelně do Gramps.
 
 **Stav (24. 11. 2026, verze 0.12.2):** web MyHeritage ZIP odmítá a obrázky z GEDCOM nenačte – návod přes Family Tree
-Builder (0.12.1), volby `--slozka` a `--cp-v-miste` (0.12.2), viz `plán-myheritage-obrázky.md`. Zbývá ruční zkouška
-importu do FTB (obrázky, čp. v místě, mapa) a volitelně Gramps.
+Builder (0.12.1), volby `--slozka` a `--cp-v-miste` (0.12.2), viz `plán-myheritage-obrázky.md`. Zkouška ve FTB 24. 11. 2026:
+obrázky jen s absolutními cestami → oprava v 0.12.3. Zbývá čp. v místě, mapa, Sync a volitelně Gramps.
 
 Rozdíly proti návrhu níže (rozhodnuto při implementaci):
 - `PLAC` = plný název z pole `osm` v `mista.json` bez PSČ (např. „Holice, okres Pardubice, Pardubický kraj, Česko“),
@@ -192,7 +192,8 @@ Omezení MyHeritage (ověřeno v nápovědě, 11/2026):
    exporty téhož stromu? (Ověřit na exportu uživatele, rozhodne o párování osob.)
 2. Převezme FTB i webový import MyHeritage obrázky z `OBJE` s relativní cestou v ZIPu? Ověřit na zkušebním projektu.
    **Web: ne** (ověřeno 23. 11. 2026 – ZIP odmítne, bere jen `.ged`; podle nápovědy MyHeritage GEDCOM obrázky
-   nepřenáší, jen odkazy). **FTB:** čeká na ruční zkoušku – viz `plán-myheritage-obrázky.md`.
+   nepřenáší, jen odkazy). **FTB: relativní cesty ne, absolutní ano** (ověřeno 24. 11. 2026; `--slozka` od 0.12.3 zapisuje absolutní –
+   viz `plán-myheritage-obrázky.md`).
 Výsledky zapsat sem; podle nich se upraví návrh níže.
 
 ## Předpoklad: vazba osob na původní GEDCOM
