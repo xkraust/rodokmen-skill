@@ -1,4 +1,4 @@
-# Plán: export rodokmenu do GEDCOM (plugin rodokmen 0.11.2)
+# Plán: export rodokmenu do GEDCOM (navrženo pro 0.11.2, fáze 1 vydána v 0.12.0–0.12.2)
 
 ## Context
 Uživatel se ptal, zda plugin `rodokmen` umí export do GEDCOM. Prověřeno: neumí.
@@ -26,6 +26,10 @@ vedlejších efektů), test `tests/gedcom/test_ged_export.py` (76 kontrol), doku
 README a CHANGELOG. Navíc volba `--koren <číslo>` (export jedné větve jako samostatného stromu – uživatel chce
 maminčinu stranu Havlíčkovi, č. 3, jako vlastní strom v MyHeritage). Zbývá ruční zkouška importu ZIP do MyHeritage
 (uživatel ho používá) a volitelně do Gramps.
+
+**Stav (24. 11. 2026, verze 0.12.2):** web MyHeritage ZIP odmítá a obrázky z GEDCOM nenačte – návod přes Family Tree
+Builder (0.12.1), volby `--slozka` a `--cp-v-miste` (0.12.2), viz `plán-myheritage-obrázky.md`. Zbývá ruční zkouška
+importu do FTB (obrázky, čp. v místě, mapa) a volitelně Gramps.
 
 Rozdíly proti návrhu níže (rozhodnuto při implementaci):
 - `PLAC` = plný název z pole `osm` v `mista.json` bez PSČ (např. „Holice, okres Pardubice, Pardubický kraj, Česko“),
