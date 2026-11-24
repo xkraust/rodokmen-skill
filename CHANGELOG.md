@@ -12,6 +12,8 @@ Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to 
 - Export s `ged_export.py --slozka` bere obrázky v plném rozlišení (`zdroje/`, jako detail na webu po kliknutí); kde
   plné rozlišení není, použije běžný výřez. Ve Family Tree Builderu a po Sync na MyHeritage jsou zápisy čitelné
   stejně jako na webu.
+- Portrét je s `--slozka` i „osobní fotkou“ osoby, takže ho Family Tree Builder (a po Sync MyHeritage) ukáže přímo
+  v okénku osoby ve stromu – zapsáno stejně jako v exportu z Family Tree Builderu.
 
 ## 0.12.4 – 24. 11. 2026
 

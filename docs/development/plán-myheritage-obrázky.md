@@ -85,6 +85,21 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   Podle doplňku Family Historian pro MyHeritage se osobní fotka značí `_PRIM Y`, `_PRIM_CUTOUT Y` „a souvisejícími
   tagy“ (oficiální popis MyHeritage nenalezen). Zkouška T4: export + `_PRIM_CUTOUT Y` u portrétu – čeká na výsledek;
   když nepomůže, export GEDCOM z projektu Kraus ve FTB jako vzor.
+- **Osobní fotka – výsledek (24. 11. 2026).** Vzor = export GEDCOM z projektu Kraus ve FTB 8.0 (UTF-8 s BOM, hlavička
+  `SOUR MYHERITAGE`, u osob `1 RIN MH:I…`). Osobní fotka je dvojice `OBJE` u osoby: původní fotka (`_PRIM Y`,
+  `_PRIM_CUTOUT Y`, volitelně `_POSITION x1 y1 x2 y2`, `_PHOTO_RIN MH:P500019`, `_FILESIZE`) a výřez jako samostatný
+  soubor (`_PRIM Y`, `_CUTOUT Y`, `_PHOTO_RIN MH:P500020`, `_FILESIZE`, `_PARENTRIN @P500019@`). Import vzoru do FTB
+  osobní fotku vytvoří. Zkoušky (okénko osoby ve stromu):
+  T4 jen `_PRIM_CUTOUT` – ne; T5 dvojice podle vzoru (čísla P1/P2) – ne; T6 + hlavička MYHERITAGE – ne;
+  T7 + `RIN` osob, `FORM` před `FILE`, poškozená kopie – rozpoznána, prázdný rámeček; T8 = T5 + `RIN` – prázdný
+  rámeček; T9 + `_POSITION` – ne; T10 rozměry v názvu souboru – ne; V1 vzor s naším tvarem `OBJE` – ano;
+  V2 vzor s výřezem = kopie původní fotky – ano; **V3 vzor s čísly P1/P2 – ne**; V4 vzor s naším portrétem – ano;
+  **T11 = T8 s čísly P500001/P500002 – ano.** Závěr: nutné `RIN` osob (jinak se osobní fotka nerozpozná) a čísla fotek
+  mimo rozsah, který FTB při importu přidělí ostatním obrázkům (od 1) – jinak `_PARENTRIN` ukáže na cizí/prázdný
+  obrázek. Hlavička, pořadí řádků, `_POSITION`, název souboru ani stejný obsah obou souborů nevadí.
+  Oprava v 0.12.5: s `--slozka` (`personal_photo`) portrét = dvojice, výřez = kopie `media/<klíč>_osobni.jpg`, čísla
+  od `MH:P500001`, `1 RIN MH:I<číslo>` u každé osoby. Titulek zůstal dlouhý (T11 měl krátký – ověřit při zkoušce
+  vydání). Testy 112 kontrol.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,

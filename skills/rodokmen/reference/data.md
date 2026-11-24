@@ -192,7 +192,8 @@ i přímo u osoby (FTB obrázky z citací zahodí – formulář citace pole pro
 zdrojem jeden zápis (titul „zápis, svazek, snímek“, archiv svazku) s výřezem – FTB ho ukáže ve „Zdrojích fotografií“;
 bez `--slozka` je zdrojem svazek. Soubor ve složce je UTF-8 s BOM a CRLF – bez BOM FTB špatně přečte cestu
 s diakritikou a obrázky nenačte. Obrázky ve složce jsou v plném rozlišení ze `zdroje/` (jinak `vyrezy/`),
-`--plne-rozliseni` je u `--slozka` zbytečné.
+`--plne-rozliseni` je u `--slozka` zbytečné. Portrét je ve složce i osobní fotkou FTB (okénko osoby ve stromu):
+dvojice `OBJE` s `_PRIM_CUTOUT`/`_CUTOUT`/`_PARENTRIN`, čísla fotek `MH:P500001…` a `RIN MH:I<číslo>` u osob.
 - **MyHeritage s obrázky:** jen přes desktopový **Family Tree Builder** (zdarma): export s `--slozka`, File → Import GEDCOM →
   `rodokmen.ged` z té složky (z ručně rozbaleného ZIPu FTB obrázky nenačte – „Failed to Load Image“) → nový projekt (nebo „Merge into project“), zkontrolovat fotky u osob, pak **Sync** – strom i obrázky
   se nahrají na web. Web MyHeritage přijímá jen `.ged` (ZIP odmítne) a obrázky z GEDCOM nenačte nikdy (soubor

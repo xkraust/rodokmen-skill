@@ -376,6 +376,23 @@ def test_umely():
     r = subprocess.run([sys.executable, "-I", "-X", "utf8", os.path.join(d, "tools", "ged_export.py"), "--koren", "99"],
                        capture_output=True, text=True, encoding="utf-8", cwd=d)
     ok("--koren s neexistujícím číslem skončí chybou", r.returncode != 0 and "99" in r.stderr, r.stderr)
+
+    # Osobní fotka FTB (okénko osoby ve stromu): portrét jako dvojice jako v exportu FTB; ověřeno zkouškami ve FTB –
+    # nutné RIN osob a čísla fotek od 500001 (malá kolidují s čísly ostatních obrázků)
+    sl = os.path.join(d, "pracovni", "slozka")
+    export(d, "--slozka", "--vystup", sl)
+    text = open(os.path.join(sl, "rodokmen.ged"), encoding="utf-8-sig").read()
+    bloky = {re.match(r"0 (@I\d+@)", b)[1]: b for b in re.split(r"(?m)^(?=0 )", text) if re.match(r"0 @I\d+@ INDI", b)}
+    ok("--slozka: RIN u každé osoby", all(re.search(rf"(?m)^1 RIN MH:I{k[2:-1]}$", b) for k, b in bloky.items()))
+    kat_s = bloky["@I5@"]
+    rodic = re.search(r"(?m)^1 OBJE\n2 FILE (.+katerina_mala_portret\.jpg)\n(?:[2-9] .*\n)*?2 _PRIM_CUTOUT Y\n"
+                      r"2 _PHOTO_RIN MH:P(\d+)\n", kat_s)
+    osobni = re.search(r"(?m)^1 OBJE\n2 FILE (.+katerina_mala_portret_osobni\.jpg)\n(?:[2-9] .*\n)*?2 _CUTOUT Y\n"
+                       r"2 _PHOTO_RIN MH:P(\d+)\n2 _FILESIZE \d+\n2 _PARENTRIN @P(\d+)@", kat_s)
+    ok("--slozka: portrét = fotka (_PRIM_CUTOUT) + osobní fotka (_CUTOUT, _PARENTRIN)",
+       rodic and osobni and osobni[3] == rodic[2] and int(rodic[2]) > 500000
+       and os.path.isfile(rodic[1]) and os.path.isfile(osobni[1]), kat_s)
+    ok("ZIP: bez osobní fotky FTB", not any(gi.first(o, "_CUTOUT") or gi.first(o, "_PRIM_CUTOUT") for o in sub(kat, "OBJE")))
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 

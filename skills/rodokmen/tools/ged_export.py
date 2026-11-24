@@ -271,6 +271,9 @@ class Export:
         self.file_base = None      # s --slozka: FILE jako absolutní cesta do této složky (FTB relativní nenačte)
         self.cutouts_on_person = False  # s --slozka: výřezy zápisů i přímo u osoby (FTB obrázky z citací zahodí)
         self._cited = None         # výřezy zapsané v citacích právě zpracovávané osoby
+        self.personal_photo = False  # s --slozka: portrét i jako osobní fotka FTB (okénko osoby ve stromu)
+        self.photo_rin = 500000    # čísla fotek jako FTB (MH:P500001…); malá čísla kolidují s čísly, která FTB dá
+                                   # ostatním obrázkům při importu – osobní fotka pak ukáže prázdný soubor
         self.prefer_full = False   # s --slozka: obrázek v plném rozlišení ze zdroje/, je-li (jinak vyrezy/)
         self.source_per_record = False  # s --slozka: zdroj = jeden zápis s výřezem (FTB dá obrázek ke zdroji, ne k citaci)
         self.warn, self.unparsed, self.missing = [], [], set()
@@ -449,6 +452,23 @@ class Export:
         out += gtext(level + 1, "TITL", title)
         if prim:
             out.append(f"{level + 1} _PRIM Y")
+            if self.personal_photo:
+                # Jako export Family Tree Builderu: původní fotka (_PRIM_CUTOUT) + osobní fotka (_CUTOUT) jako samostatný
+                # soubor s odkazem _PARENTRIN. Bez _POSITION je osobní fotka celý obrázek. Jen tak ji FTB ukáže
+                # v okénku osoby ve stromu – samotné _PRIM (ani _PRIM_CUTOUT) nestačí. Ověřeno zkouškami ve FTB
+                # 24. 11. 2026 (plán-myheritage-obrázky.md): nutné i RIN osoby a čísla fotek od 500001.
+                self.photo_rin += 2
+                parent, cut = self.photo_rin - 1, self.photo_rin
+                size = os.path.getsize(src)
+                cpath = f"media/{sub}{key}_osobni.jpg"
+                self.media[cpath] = src
+                cfile = os.path.join(self.file_base, *cpath.split("/")) if self.file_base else cpath
+                out += [f"{level + 1} _PRIM_CUTOUT Y", f"{level + 1} _PHOTO_RIN MH:P{parent}",
+                        f"{level + 1} _FILESIZE {size}",
+                        f"{level} OBJE", f"{level + 1} FILE {cfile}", f"{level + 2} FORM jpeg"]
+                out += gtext(level + 1, "TITL", title)
+                out += [f"{level + 1} _PRIM Y", f"{level + 1} _CUTOUT Y", f"{level + 1} _PHOTO_RIN MH:P{cut}",
+                        f"{level + 1} _FILESIZE {size}", f"{level + 1} _PARENTRIN @P{parent}@"]
         return out
 
     def citation(self, level, key, st, note=""):
@@ -515,6 +535,8 @@ class Export:
     def person_lines(self, k):
         p, inf = self.P[k], self.info[k]
         L = [f"0 @I{k}@ INDI"]
+        if self.personal_photo:
+            L.append(f"1 RIN MH:I{k}")   # bez RIN osoby FTB osobní fotku (_PARENTRIN) nepřiřadí
         if inf["protected"]:
             L += ["1 NAME Žijící osoba", f"1 SEX {self.sex(k)}", "1 RESN privacy"]
             L += [f"1 FAMC {x}" for x in self.famc.get(k, [])] + [f"1 FAMS {x}" for x in self.fams_of.get(k, [])]
@@ -776,6 +798,7 @@ def main(argv=None):
         sys.exit(f"Soubor {out} už existuje. Přepsat ho jde volbou --prepsat, nebo zvolte jiný název přes --vystup.")
     if folder:
         ex.file_base, ex.cutouts_on_person, ex.source_per_record, ex.prefer_full = out, True, True, True
+        ex.personal_photo = True
     ged = ex.build()
     os.makedirs(out if folder else os.path.dirname(out), exist_ok=True)
     if folder:
