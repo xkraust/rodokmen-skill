@@ -32,7 +32,7 @@ Datum změny souborů je na Google Disku/OneDrive nespolehlivé (synchronizace m
 jmen a velikostí v `vyrezy/` a `zdroje/`; sdílená funkce v novém `tools/otisk_dat.py` (používá ji i `export_web.py`).
 
 ### 3. Připomínka v nástroji
-`export_web.py` při `--nasazeni` (a volitelně vždy) načte `data/export_gedcom.json`:
+`export_web.py` jen při `--nasazeni` načte `data/export_gedcom.json`:
 - `nabidnout: true` a otisk ≠ `posledni.otisk` → vypíše řádek
   `EXPORT GEDCOM: data se od posledního exportu (24. 11. 2026, pracovni/rodokmen_koren3) změnila – nabídni nový export.`
 - soubor chybí → nic (dotaz řídí pokyn v SKILL.md, viz 4). Nástroj nic neexportuje ani se neptá – jen hlásí.
@@ -68,7 +68,7 @@ push na pokyn.
 - Vlastní skript `skripty/web_varianty.py` v projektu Krausovi (tři weby) – volá `export_web.py` po svém; ověřit, zda
   hláška projde jeho výstupem.
 
-## Otevřené otázky
-1. Hlásit změnu i při běžném `npm run data` (po každém kole), nebo jen při `--nasazeni`? Návrh: jen při nasazení,
-   aby připomínka neobtěžovala.
-2. Více cílů (MyHeritage i Gramps, různé `--koren`)? Návrh: zatím jeden záznam; seznam až na požádání.
+## Rozhodnuto (24. 11. 2026)
+1. Změnu hlásit **jen při nasazení** (`export_web.py --nasazeni`), ne při běžném `npm run data` po každém kole.
+2. **Zatím jeden cíl** exportu (jeden záznam v `export_gedcom.json`); více cílů (MyHeritage i Gramps, různé `--koren`)
+   až na požádání.
