@@ -25,7 +25,7 @@ kde to archiv dovolí a kde ušetří práci.
   společné nástroje a brzda, jedna verze, žádné soupeření dvou skillů o stejné dotazy.
 - Podrobnosti budou v novém návodu **`skills/rodokmen/reference/scitani.md`**, který se čte až při potřebě.
   `SKILL.md` dostane jen krátký odkaz, `portaly.md`, `metodika.md` a `matriky.md` jen odkazy a opravy.
-- Jako vzorový arch slouží **Zbyslav čp. 43, 1921** (Havlíčkovi, rodina uživatele). Do veřejných souborů skillu
+- Jako vzorový arch slouží **Zbyslav čp. 43, 1921**. Do veřejných souborů skillu
   (návod, ukázka) ale jdou jen struktura a fiktivní jména. Skutečné údaje patří do projektu uživatele.
 
 ## Ověřený současný stav v repozitáři

@@ -7,7 +7,7 @@ Nastavení Claude Code je uložené v `~\.claude` konkrétního počítače a ne
 Proto je potřeba tento postup provést na každém PC zvlášť.
 
 ## Jak to funguje
-- Jediné místo pro úpravy je klon forku (zde `C:\Users\tomas\Documents\VSCode\rodokmen-skill`).
+- Jediné místo pro úpravy je klon forku (zde `C:\<cesta>\rodokmen-skill`).
   Remote `origin` = `xkraust/rodokmen-skill`, remote `upstream` = `sarsonj/rodokmen-skill` (repo autora).
 - Marketplace `rodokmen-skill` má zdroj `directory` s cestou ke klonu. GitHub se při aktualizaci pluginu nepoužívá.
 - Claude Code při instalaci a aktualizaci KOPÍRUJE soubory z klonu do
@@ -19,12 +19,12 @@ Proto je potřeba tento postup provést na každém PC zvlášť.
 ### 1. Naklonuj fork
 Doporučuji stejnou cestu jako na hlavním PC (pokud existuje stejný uživatel a složka), jinak jakoukoli mimo `~\.claude`:
 ```
-git clone https://github.com/xkraust/rodokmen-skill C:\Users\tomas\Documents\VSCode\rodokmen-skill
+git clone https://github.com/xkraust/rodokmen-skill C:\<cesta>\rodokmen-skill
 ```
 
 ### 2. Přidej remote upstream (původní repo autora)
 ```
-cd C:\Users\tomas\Documents\VSCode\rodokmen-skill
+cd C:\<cesta>\rodokmen-skill
 git remote add upstream https://github.com/sarsonj/rodokmen-skill.git
 git remote -v
 ```
@@ -40,7 +40,7 @@ Dva marketplace stejného jména nemohou existovat zároveň. Pokud tam nic nen�
 ### 4. Přidej marketplace z lokálního klonu
 V Claude Code:
 ```
-/plugin marketplace add C:\Users\tomas\Documents\VSCode\rodokmen-skill
+/plugin marketplace add C:\<cesta>\rodokmen-skill
 ```
 (Použij skutečnou cestu ke klonu na tomto PC.)
 
@@ -82,10 +82,10 @@ Bez pushe se změny na druhém PC neobjeví.
 
 ## Další tipy
 - Rychlé zkoušení bez cache a bez zvyšování verze:
-  `claude --plugin-dir C:\Users\tomas\Documents\VSCode\rodokmen-skill`
+  `claude --plugin-dir C:\<cesta>\rodokmen-skill`
   (nainstalovanou verzi pak dočasně vypni, ať se skilly nepřekrývají).
 - Novinky od autora: `git fetch upstream`, pak `git merge upstream/main`. Fork se sám nesynchronizuje.
 - Návrat k verzi autora: `/plugin marketplace remove rodokmen-skill`, pak
   `/plugin marketplace add sarsonj/rodokmen-skill` a `/plugin install rodokmen@rodokmen-skill`.
-- Data k bádání (např. složky `Rodokmen-Krausovi`, `Rodokmen-Hesovi`) jsou samostatná věc a s pluginem
+- Data k bádání (např. složky `Rodokmen-<rod>`) jsou samostatná věc a s pluginem
   se nesynchronizují. Pokud jsou na cloudovém disku, je potřeba ověřit, že se na druhý PC synchronizují.

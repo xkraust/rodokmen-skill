@@ -57,7 +57,7 @@ Výhoda: nezávisí na tom, zda si Claude pokyn pamatuje; hlášku uvidí ve vý
 
 ### 6. Vydání
 Zvýšit verzi (`plugin.json`, `VERZE`, README 2×), CHANGELOG („Nové“), commit, `/plugin marketplace update`,
-`/reload-plugins`, ověřit na projektu Krausovi (`novy_projekt.py`, `npm run data -- --nasazeni` bez nasazení – jen hláška),
+`/reload-plugins`, ověřit na skutečném projektu uživatele (`novy_projekt.py`, `npm run data -- --nasazeni` bez nasazení – jen hláška),
 push na pokyn.
 
 ## Mimo rozsah
@@ -65,7 +65,7 @@ push na pokyn.
 - Hook Claude Code na sestavení webu – připomínka ve výstupu nástroje stačí a funguje i v Claude Desktop/claude.ai.
 - Rozdílový export a sloučení se stromem MyHeritage – fáze 2 v `plán-export-gedcom.md`; po jejím dokončení změnit text
   připomínky („nabídni rozdílový export“).
-- Vlastní skript `skripty/web_varianty.py` v projektu Krausovi (tři weby) – volá `export_web.py` po svém; ověřit, zda
+- Vlastní skript `skripty/web_varianty.py` v projektu uživatele (tři weby) – volá `export_web.py` po svém; ověřit, zda
   hláška projde jeho výstupem.
 
 ## Rozhodnuto (24. 11. 2026)

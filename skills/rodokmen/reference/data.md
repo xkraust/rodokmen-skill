@@ -101,10 +101,10 @@ Když obrázek nemůžeš zobrazit, požádej o popis či označení, nepředst�
 použij přiřazení od rodiny nebo v evidenci; při nejasnosti se zeptej, kdo na snímku je.
 
 Nabídka například: „Na fotografii `IMG_1234.jpg` je jedna osoba a snímek by se hodil jako portrét. Chcete ho použít
-na stránce Josefa Krause vedle jména a událostí? Pak se nebude zobrazovat v dokumentech.“ Uživatel může souhlasit,
+na stránce Josefa Nováka vedle jména a událostí? Pak se nebude zobrazovat v dokumentech.“ Uživatel může souhlasit,
 ponechat fotku mezi dokumenty nebo rozhodnutí odložit. Před souhlasem nic nepřejmenovávej ani nepřesouvej mezi sekcemi.
 
-Po souhlasu oznam konkrétní jméno: „Pro web fotografii uložím jako `josef_kraus_portret.jpg`.“ Další souhlas se
+Po souhlasu oznam konkrétní jméno: „Pro web fotografii uložím jako `josef_novak_portret.jpg`.“ Další souhlas se
 stejným krokem nevyžaduj. Vstupní originál v `dokumenty/` ponech pod původním názvem; slovo „přejmenováno“ použij
 jen pro skutečně přejmenované soubory. Přejmenování samotného originálu musí být součástí nabídky uživateli.
 Po úspěšném zpracování potvrď výsledek a do `data/udaje_od_rodiny.md` zapiš datum, původní soubor, osobu, rozhodnutí
@@ -113,14 +113,14 @@ Po úspěšném zpracování potvrď výsledek a do `data/udaje_od_rodiny.md` za
 **Nová fotografie:** ověř volný klíč, vytvoř webové kopie a přidej položku přes `zapis.py`:
 
 ```text
-python3 -I tools/vyrez.py dokumenty/IMG_1234.jpg josef_kraus_portret
-python3 -I tools/zapis.py dokumenty josef_kraus_portret pracovni/portret.json
+python3 -I tools/vyrez.py dokumenty/IMG_1234.jpg josef_novak_portret
+python3 -I tools/zapis.py dokumenty josef_novak_portret pracovni/portret.json
 ```
 
 Obsah `pracovni/portret.json` (číslo 2 nahraď skutečným číslem osoby):
 
 ```json
-{"img": "josef_kraus_portret", "popis": "Josef Kraus, rodinná fotografie.", "osoby": [2]}
+{"img": "josef_novak_portret", "popis": "Josef Novák, rodinná fotografie.", "osoby": [2]}
 ```
 
 Rozhodující je klíč v `img` a název výsledného JPG. Export rozpoznává podřetězec `portret` kdekoliv v názvu,
@@ -131,8 +131,8 @@ Při odmítnutí použij neutrální webový klíč bez tohoto označení, i kdy
 kolize; při kolizi vyber volný klíč. Nikdy nepřidej druhý dokument jen kvůli změně názvu:
 
 ```text
-python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_kraus_portret --nahled
-python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_kraus_portret
+python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_novak_portret --nahled
+python3 -I tools/zapis.py dokumenty foto_josef --prejmenovat josef_novak_portret
 ```
 
 Příkaz zachová ostatní pole položky, přejmenuje existující JPG ve `vyrezy/`, `zdroje/`, `web/public/img/`

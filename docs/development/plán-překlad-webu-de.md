@@ -4,7 +4,7 @@ Datum: 18. 11. 2026
 
 Stav: obecný vzor, nic neimplementováno. Skill se nemění.
 
-**Provedení (18. 11. 2026):** německý web se bude dělat pro samostatný projekt **Winkelhöfer**, ne pro Krausovi. Ten nemá `web_varianty.py` ani varianty, proto má vlastní upravený plán `plán-web-de.md` v kořeni projektu (`Můj disk\Rodokmen\Winkelhöfer\`) a odkaz na něj v jeho `CLAUDE.md`. Postup níže zůstává vzorem pro případný překlad webů Krausovi. Odchylky plánu pro Winkelhöfer: stínový projekt mimo Disk místo varianty, překlady krátkých textů podle klíčů s otiskem originálu místo slovníku „česky → německy“.
+**Provedení (18. 11. 2026):** německý web se bude dělat pro samostatný projekt uživatele, ne pro jeho hlavní rodokmen. Ten nemá `web_varianty.py` ani varianty, proto má vlastní upravený plán `plán-web-de.md` v kořeni projektu (složka toho projektu) a odkaz na něj v jeho `CLAUDE.md`. Postup níže zůstává vzorem pro případný překlad webů hlavního rodokmenu. Odchylky plánu pro ten projekt: stínový projekt mimo Disk místo varianty, překlady krátkých textů podle klíčů s otiskem originálu místo slovníku „česky → německy“.
 
 ## Cíl
 
@@ -41,7 +41,7 @@ V projektu už je mechanismus variant: `skripty/web_varianty.py` připraví upra
 
 ### 1. Německá varianta ve `web_varianty.py`
 
-- Přidat variantu `<základní varianta>-de` (např. `krausovi-de`, podrobnosti v kroku 5) s nastavením v `data/weby/krausovi-de.json`. Která česká varianta (případně které) dostane německou verzi, rozhodne uživatel. Níže se v cestách používá `de` jako zkratka.
+- Přidat variantu `<základní varianta>-de` (např. `rodina-de`, podrobnosti v kroku 5) s nastavením v `data/weby/rodina-de.json`. Která česká varianta (případně které) dostane německou verzi, rozhodne uživatel. Níže se v cestách používá `de` jako zkratka.
 - Překlad je samostatná vrstva, původní data se nemění:
   - `data/weby/de/*.md`: přeložené `pribeh.md`, `zajimavosti.md` (a případně zkrácený deník)
   - `data/weby/de/preklad.json`: slovník „český text → německý text“ pro krátké texty (poznámky u osob, souhrny zápisů, popisy rodů a míst, `dokumenty.json`)
@@ -77,14 +77,14 @@ Rozhodnutí (18. 11. 2026): web nebude mít přepínač jazyků. Německá verze
 
 | Česky | Německy |
 |---|---|
-| `krausovi-rodokmen.netlify.app` | `krausovi-de.netlify.app` |
-| `krausovi.<subdoména>.workers.dev` | `krausovi-de.<subdoména>.workers.dev` |
-| (vlastní doména) `krausovi.example.cz` | `de.krausovi.example.cz` nebo `krausovi.example.cz` → `krausovi.example.de` |
+| `rodina-rodokmen.netlify.app` | `rodina-de.netlify.app` |
+| `rodina.<subdoména>.workers.dev` | `rodina-de.<subdoména>.workers.dev` |
+| (vlastní doména) `rodina.example.cz` | `de.rodina.example.cz` nebo `rodina.example.cz` → `rodina.example.de` |
 
-- Varianta se jmenuje `<základní varianta>-de`, např. `krausovi-de`, a nastavuje se v `data/weby/krausovi-de.json`:
-  - `"zaklad": "krausovi"`: převezme `koren`, `rody` a další nastavení základní varianty, takže se rodokmen nemusí popisovat podruhé
+- Varianta se jmenuje `<základní varianta>-de`, např. `rodina-de`, a nastavuje se v `data/weby/rodina-de.json`:
+  - `"zaklad": "rodina"`: převezme `koren`, `rody` a další nastavení základní varianty, takže se rodokmen nemusí popisovat podruhé
   - `"jazyk": "de"`: zapne překladovou vrstvu z kroků 1 a 2
-  - vlastní `netlify_site` a `cloudflare_worker` (`krausovi-de`)
+  - vlastní `netlify_site` a `cloudflare_worker` (`rodina-de`)
   - přeložené `rody` a `web` (název, úvod, přeložená otázka; odpověď se nepřekládá)
 - `web_varianty.py` musí umět `zaklad` (sloučit nastavení základu s nastavením varianty) a `jazyk`. Ostatní příkazy (`build`, `nasadit`, `nasadit-cf`, `nahled.py`) fungují beze změny.
 - Přihlášení (rozhodnutí 18. 11. 2026): stejná otázka jako na českém webu, jen přeložená do němčiny, a stejná odpověď beze změny, takže i stejný otisk. Odpověď se při přípravě varianty bere vždy z originálního `web.json`. Weby jsou na různých adresách, takže se na každém přihlašuje zvlášť, ale stejným heslem.
@@ -93,7 +93,7 @@ Rozhodnutí (18. 11. 2026): web nebude mít přepínač jazyků. Německá verze
 - Volitelně jediný nenápadný odkaz v patičce českého webu („Deutsche Version“) a naopak. Nejde o přepínač, jen o odkaz na úvodní stránku druhého webu (ten se ptá na své vlastní heslo). Vyžaduje jeden řádek v `Base.astro` řízený z `web.json`, tedy úpravu šablony. Proto zatím ne.
 - Nasazovat jen na pokyn uživatele. Nový web na Netlify nejdřív založit (`netlify sites:create`) a jeho ID zapsat do `netlify_site`.
 
-**Zamítnutá podoba: cesta `/de/` na stejném webu** (`krausovi-rodokmen.netlify.app/de/`)
+**Zamítnutá podoba: cesta `/de/` na stejném webu** (`rodina-rodokmen.netlify.app/de/`)
 - Astro by potřebovalo `base: '/de/'` a v šabloně je asi 24 pevných odkazů od kořene (`/osoba/…`, `/pagefind/…`), navíc `fan_hrefs.json` z exportu. Všechny by se musely přepsat, a tím by se změnila šablona skillu.
 - Brána (Netlify edge funkce i Cloudflare worker) zná jen jednu cookie `rodokmen` a jeden otisk. Oba jazyky by tedy měly stejnou otázku, nebo by se brána musela přepsat.
 - `netlify deploy` nahrazuje celý web. Každé nasazení by muselo složit českou i německou verzi do jedné složky, jinak by jedna smazala druhou.

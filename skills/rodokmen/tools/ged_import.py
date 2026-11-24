@@ -186,7 +186,7 @@ def tokens(text, keep_brackets=False):
 
 def same_name(project_name, tree_name, married=()):
     """Shoda: první křestní jméno a příjmení z projektu jsou ve jménu ve stromu (strom má navíc druhá jména…).
-    Příjmení se porovná podle začátku (Kraus × Krausová, Havlíček × Havlíčková); married = příjmení po sňatku
+    Příjmení se porovná podle začátku (Novák × Nováková, Dvořák × Dvořáková); married = příjmení po sňatku
     z faktu „provd. Nováková“ (strom ženu často vede pod ním)."""
     a = tokens(project_name)
     alt = [w for w in tokens(project_name, True) if w not in a]   # „Martin Novák (Vopat)“ – druhé příjmení v závorce
@@ -195,7 +195,7 @@ def same_name(project_name, tree_name, married=()):
     b = tokens(tree_name, True)   # strom: „MARTIN VOPAT (NOVÝ)“ – i závorka
     if len(a) < 2 or not b:
         return bool(a) and a[0] in b
-    def similar(x, y, least):   # společný začátek: Kraus/Krausová, Havlíček/Havlíčková (havlicek × havlickova)
+    def similar(x, y, least):   # společný začátek: Novák/Nováková, Dvořák/Dvořáková (dvorak × dvorakova)
         common = len(os.path.commonprefix([x, y]))
         return x == y or (common >= least and common >= min(len(x), len(y)) - 2)
     # křestní jméno podle začátku aspoň 4 znaků: Anton × Antonín, Johanna × Johana (Martin × Marie ne);

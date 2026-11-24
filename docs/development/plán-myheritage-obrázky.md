@@ -47,7 +47,7 @@ Ruční zkouška ve FTB (jedním importem): `ged_export.py --koren 3 --slozka --
 (převezme FTB `MAP`/`LATI`/`LONG`)? Výsledky zapsat sem a do `plán-export-gedcom.md` (otevřená otázka 2).
 
 ## Výsledek zkoušky ve FTB (24. 11. 2026) → 0.12.3
-Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován do nového projektu FTB: 52 osob, 27 rodin
+Export jedné větve (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován do nového projektu FTB: 52 osob, 27 rodin
 (sedí s exportem), data a místa převzata.
 - **Relativní cesty (`FILE media/…`): FTB nenačte.** Obrázek je u osoby přiřazen (titulek sedí), prohlížeč hlásí
   „Failed to Load Image“, 0×0, 0 KB – i když soubor vedle `.ged` existuje.
@@ -59,12 +59,12 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   stránka, hodnověrnost, datum, text, poznámky); u osob byly vidět jen 4 obrázky připojené přímo k osobě, 95 výřezů
   z citací chybělo. Oprava 0.12.3: s `--slozka` (`Export.cutouts_on_person`) jde výřez každého citovaného zápisu
   i jako `1 OBJE` k osobě (každý jednou; výřez sňatku u obou manželů, chráněné zápisy ne). V citaci zůstává (Gramps).
-  Havlíčkovi: 108 obrázků u osob.
+  Větev: 108 obrázků u osob.
 - **FTB umí obrázek u zdroje** („Upravit zdroj“ → „Zdroje fotografií…“, tj. `0 @S@ SOUR` → `1 OBJE`), ne u citace.
   Zvolena varianta „zdroj = zápis“ (proti „výřezy ke svazku“ – u svazku by nebylo poznat, který výřez patří ke které
   citaci): s `--slozka` (`Export.source_per_record`) má každý citovaný zápis vlastní `SOUR` s titulem
   „<název zápisu>, <svazek>, snímek N“, `REPO`/`CALN`/popisem svazku (`volume_lines`) a jedním `OBJE` s výřezem
-  (chráněný zápis bez výřezu). ZIP beze změny (zdroj = svazek). Havlíčkovi: 20 zdrojů-zápisů, každý s výřezem.
+  (chráněný zápis bez výřezu). ZIP beze změny (zdroj = svazek). Větev: 20 zdrojů-zápisů, každý s výřezem.
   Testy 105 kontrol.
 - **Zkouška 0.12.3 ve FTB: obrázky opět „Failed to Load Image“** (i portrét), přestože cesty byly absolutní a soubory
   v pořádku. Diagnostika třemi soubory (obrázky ve stejné složce `media`):
@@ -78,14 +78,14 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   po kliknutí `zdroje/` (např. 4000 × 490); export bral `vyrezy/`. Oprava 0.12.5: s `--slozka` (`prefer_full`)
   obrázek ze `zdroje/`, je-li (jinak `vyrezy/`), pod stejným jménem `media/<klíč>.jpg`; `--plne-rozliseni` pak druhou
   kopii nepřidá. ZIP beze změny. Testy 109 kontrol.
-- **Osobní fotka (náhled osoby ve stromu FTB) chybí.** Databáze FTB (`.ftb`, SQLite): synchronizovaný projekt Kraus má
+- **Osobní fotka (náhled osoby ve stromu FTB) chybí.** Databáze FTB (`.ftb`, SQLite): synchronizovaný projekt uživatele má
   vedle 18 obrázků (`media_item_main_data.item_type` 1) 15 osobních fotek (`item_type` 16, `parent_photo_id` = zdrojová
   fotka; obdélník v `image_to_individual_face_tagging`, `is_personal_photo` 1). Import exportu: 128 obrázků typu 1,
   žádná osobní fotka – `_PRIM Y` FTB na osobní fotku nepřevede (a každý odkaz je vlastní médium, tj. duplicity).
   Podle doplňku Family Historian pro MyHeritage se osobní fotka značí `_PRIM Y`, `_PRIM_CUTOUT Y` „a souvisejícími
   tagy“ (oficiální popis MyHeritage nenalezen). Zkouška T4: export + `_PRIM_CUTOUT Y` u portrétu – čeká na výsledek;
-  když nepomůže, export GEDCOM z projektu Kraus ve FTB jako vzor.
-- **Osobní fotka – výsledek (24. 11. 2026).** Vzor = export GEDCOM z projektu Kraus ve FTB 8.0 (UTF-8 s BOM, hlavička
+  když nepomůže, export GEDCOM z projektu uživatele ve FTB jako vzor.
+- **Osobní fotka – výsledek (24. 11. 2026).** Vzor = export GEDCOM z projektu uživatele ve FTB 8.0 (UTF-8 s BOM, hlavička
   `SOUR MYHERITAGE`, u osob `1 RIN MH:I…`). Osobní fotka je dvojice `OBJE` u osoby: původní fotka (`_PRIM Y`,
   `_PRIM_CUTOUT Y`, volitelně `_POSITION x1 y1 x2 y2`, `_PHOTO_RIN MH:P500019`, `_FILESIZE`) a výřez jako samostatný
   soubor (`_PRIM Y`, `_CUTOUT Y`, `_PHOTO_RIN MH:P500020`, `_FILESIZE`, `_PARENTRIN @P500019@`). Import vzoru do FTB
@@ -101,7 +101,7 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
   od `MH:P500001`, `1 RIN MH:I<číslo>` u každé osoby. Titulek zůstal dlouhý (T11 měl krátký – ověřit při zkoušce
   vydání). Testy 112 kontrol.
 - **Zkouška 0.12.5 ve FTB:** portrét v okénku ano, čp. v místě ano (mapu FTB ukáže jen u synchronizovaného stromu),
-  ale **ostatní obrázky (Václav: výřezy i pomník) ne** – uvedené, bez náhledu i detailu. Zkoušky:
+  ale **ostatní obrázky (u jedné osoby výřezy i pomník) ne** – uvedené, bez náhledu i detailu. Zkoušky:
   T12 = 0.12.5 s `vyrezy/` – portrét ano, ostatní ne; T13 = plné rozlišení bez `RIN` a osobní fotky – nic;
   T14 = T12 + `_PHOTO_RIN`/`_FILESIZE` u každého obrázku – ne; **T15 = plné rozlišení + `_PHOTO_RIN`/`_FILESIZE` u každého
   obrázku – ano.** Závěr: když má `_PHOTO_RIN` jen dvojice portrétu, FTB ostatní obrázky nenačte; s ním u všech ano.
@@ -117,7 +117,7 @@ Export Havlíčkovi (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován d
 - Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,
   portrét jako hlavní fotka (`_PRIM`), hodnověrnost citace (FTB ukázal u `QUAY 2` „Sporná hodnověrnost důkazu“ –
   ověřit, jak FTB čísla 0–3 pojmenovává), a Sync na web s obrázky.
-- Drobnost: fakt „* 10. 6. 1922 Zbyslav (?), okres Klatovy“ dal u narození navíc poznámky „?“ a „okres Klatovy“ –
+- Drobnost: fakt „* 10. 6. 1922 Obec (?), okres X“ dal u narození navíc poznámky „?“ a „okres X“ –
   okres za čárkou se nebere jako součást místa. Řešit samostatně.
 
 ## Ověření

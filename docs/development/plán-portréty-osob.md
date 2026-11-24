@@ -28,9 +28,9 @@ Při prohlížení rodinných dokumentů má asistent navíc rozpoznat fotografi
 Rozšířit `skills/rodokmen/SKILL.md` ve fázi 1 a podrobný postup v `skills/rodokmen/reference/data.md`:
 
 1. Při skutečném prohlížení obrázku vyhodnotit, zda jde o samostatnou fotografii jedné osoby vhodnou pro záhlaví její stránky. Nestačí samotný název souboru nebo jediná tvář uvnitř skenu dokumentu. Skupinové fotografie, koláže a dokumenty s vloženou fotografií automaticky nenabízet jako hotový portrét; případný výřez řešit zvlášť.
-2. Oznámit zjištění jako návrh, například: „Na fotografii `IMG_1234.jpg` je jedna osoba a snímek by se hodil jako portrét. Chcete ho použít na stránce Josefa Krause?“ Jméno použít pouze tehdy, když přiřazení vyplývá z údajů uživatele nebo evidence. Když není známo, zeptat se také, komu fotografie patří; identitu neurčovat podle obličeje.
+2. Oznámit zjištění jako návrh, například: „Na fotografii `IMG_1234.jpg` je jedna osoba a snímek by se hodil jako portrét. Chcete ho použít na stránce Josefa Nováka?“ Jméno použít pouze tehdy, když přiřazení vyplývá z údajů uživatele nebo evidence. Když není známo, zeptat se také, komu fotografie patří; identitu neurčovat podle obličeje.
 3. Před rozhodnutím stručně vysvětlit, že fotografie bude u jména a událostí a nebude v galerii dokumentů. Nabídnout použití jako portrét, ponechání mezi dokumenty nebo odložení rozhodnutí.
-4. Po souhlasu oznámit konkrétní plánovaný název, například: „Pro web fotografii uložím jako `josef_kraus_portret.jpg`, aby se zobrazovala jako portrét.“ Po úspěšném zpracování potvrdit skutečný výsledek. Souhlas s touto nabídkou zahrnuje popsané pojmenování; nevyžadovat druhé potvrzení téhož kroku.
+4. Po souhlasu oznámit konkrétní plánovaný název, například: „Pro web fotografii uložím jako `josef_novak_portret.jpg`, aby se zobrazovala jako portrét.“ Po úspěšném zpracování potvrdit skutečný výsledek. Souhlas s touto nabídkou zahrnuje popsané pojmenování; nevyžadovat druhé potvrzení téhož kroku.
 5. Rozhodnutí a vazbu původního souboru na osobu a výsledný klíč zaznamenat do `data/udaje_od_rodiny.md`, aby se zamítnutá či již vyřízená nabídka při dalším prohlížení neopakovala. Při odložení se k ní vrátit v odpovídajícím kontextu.
 
 Vizuální posouzení provádí asistent při práci s dokumenty, nikoliv export webu. Může se mýlit; proto jde o návrh s rozhodnutím uživatele. Pro tento postup není potřeba přidávat knihovnu na rozpoznávání obličejů ani samostatnou službu. Bez možnosti skutečně zobrazit obrázek automatické posouzení neslibovat a vyžádat popis nebo označení uživatelem. Nepřetržité sledování složky není součástí návrhu.
@@ -85,7 +85,7 @@ Upravit `skills/rodokmen/template/web/src/pages/osoba/[slug].astro` a odpovídaj
 
 Rozšířit `skills/rodokmen/reference/data.md` o pojmenování a příklad evidence portrétu; podle potřeby doplnit `skills/rodokmen/reference/web.md`.
 
-Rozhodující je název zpracovaného obrázku v `img`, například `josef_kraus_portret`, nikoliv pouze původní název fotografie. Při zpracování přes `vyrez.py` je proto nutné označení zachovat v klíči. Fotografii nadále evidovat v `dokumenty.json` a přiřadit správné číslo osoby v `osoby`.
+Rozhodující je název zpracovaného obrázku v `img`, například `josef_novak_portret`, nikoliv pouze původní název fotografie. Při zpracování přes `vyrez.py` je proto nutné označení zachovat v klíči. Fotografii nadále evidovat v `dokumenty.json` a přiřadit správné číslo osoby v `osoby`.
 
 Tento postup využívá stávající přidávání fotografií; nezahrnuje vytváření formuláře pro nahrávání přímo na webu.
 

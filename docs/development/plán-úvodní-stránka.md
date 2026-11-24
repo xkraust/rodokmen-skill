@@ -2,7 +2,7 @@
 
 Datum: 9. 11. 2026
 
-Stav: implementováno ve verzi 0.9.4 dne 9. 11. 2026, ověřeno na ukázkovém projektu včetně screenshotů z headless Chrome. Do projektu Krausovi zatím nepromítnuto.
+Stav: implementováno ve verzi 0.9.4 dne 9. 11. 2026, ověřeno na ukázkovém projektu včetně screenshotů z headless Chrome. Do projektu uživatele zatím nepromítnuto.
 
 ## Cíl
 
@@ -18,7 +18,7 @@ Stav: implementováno ve verzi 0.9.4 dne 9. 11. 2026, ověřeno na ukázkovém p
 ## Ověřený současný stav
 
 - Fotku určuje `uvod.foto` v `data/web.json`. Export (`skills/rodokmen/tools/export_web.py`) zkopíruje `vyrezy/<klíč>.jpg` do `web/public/img/`. Fotka se zobrazí jen tehdy, když je vyplněné `uvod.nadpis` nebo `uvod.odstavce`.
-- V projektu s více weby (Krausovi) se `data/web.json` hluboce sloučí s částí `web` v `data/weby/<varianta>.json` (`skripty/web_varianty.py`). Varianta spolecny používá `web.json` beze změny, krausovi a havlickovi mají vlastní `uvod`, včetně fotky. Úprava šablony se proto týká všech variant najednou.
+- V projektu s více weby (projekt uživatele) se `data/web.json` hluboce sloučí s částí `web` v `data/weby/<varianta>.json` (`skripty/web_varianty.py`). Varianta spolecny používá `web.json` beze změny, obě rodové varianty mají vlastní `uvod`, včetně fotky. Úprava šablony se proto týká všech variant najednou.
 - `vyrez.py` ukládá do `vyrezy/` obrázek zmenšený nejvýše na 1800×1800 px. Poměr stran zůstává podle zdroje.
 - Styl `.teaser img` v `skills/rodokmen/template/web/src/styles/global.css` (řádek 170): `width: 100%; max-height: 300px; object-fit: cover; object-position: center 22%`. Sloupec fotky má při širokém okně asi 600 px, takže rámeček je přibližně 600×300 (poměr 2:1) a vše mimo se ořízne.
 - Fotky na výšku tím trpí: rodinná fotka 832×1293 ukáže asi 32 % výšky (od 15 % do 47 %), čtvercový portrét 1800×1800 asi 50 % (od 11 % do 61 %). Hodnota `22 %` je nastavená pro fotografie na šířku.
@@ -70,16 +70,16 @@ Podle `CLAUDE.md`:
 - Úvod bez zajímavostí, bez míst a bez rodů: stránka se sestaví a sekce nechybí ani nezůstanou prázdné nadpisy.
 - Zobrazení na počítači a mobilu v prohlížeči: fotka na výšku (832×1293), čtvercová (1800×1800) a na šířku. Žádná se nesmí oříznout a nesmí vzniknout zbytečně velká prázdná plocha vedle textu.
 - Mapa na konci stránky se správně načte (Leaflet se inicializuje i mimo první obrazovku) a odkaz „Celá mapa…“ funguje.
-- Béžové okraje na rodinné fotce Krausových: po zobrazení celé fotky zkontrolovat, jestli jsou součástí skenu. Pokud ano, doporučit přeříznutí přes `vyrez.py` s oblastí; samotný obrázek se bez souhlasu uživatele nemění.
+- Béžové okraje na rodinné fotce uživatele: po zobrazení celé fotky zkontrolovat, jestli jsou součástí skenu. Pokud ano, doporučit přeříznutí přes `vyrez.py` s oblastí; samotný obrázek se bez souhlasu uživatele nemění.
 - Aktualizace projektu založeného předchozí verzí: `novy_projekt.py` na stejnou složku, `npm install`, `npm run data`, `npm run build` (`tests/aktualizace/test_aktualizace.py skills/rodokmen`). Změna se týká jen šablony webu, ne formátu mezi `tools/` a `template/web/`.
 - Nesmí selhat existující testy webu v `tests/` (spustit celou sadu, ne jen aktualizační test).
 
-## Promítnutí do existujícího rodokmenu (Krausovi)
+## Promítnutí do existujícího rodokmenu uživatele
 
 Úprava je zatím jen v šabloně v tomto repozitáři. Aby se projevila na webu:
 
-1. Po vydání verze spustit `novy_projekt.py` na `C:\Users\tomas\Můj disk\Rodokmen\Krausovi`. Zkontrolovat, jestli v hlášení nejsou konflikty ve `web/src/pages/index.astro` nebo `web/src/styles/global.css` (pokud má projekt vlastní úpravy, soubory se sloučí třícestně nebo se uloží záloha do `pracovni/zaloha_<datum>/puvodni/`).
-2. `skripty/web_varianty.py build vse` a náhled přes `skripty/nahled.py <varianta> <port>` pro všechny tři varianty (spolecny, krausovi, havlickovi). Varianta havlickovi nemá fotku, takže u ní se kontroluje jen nové pořadí sekcí.
+1. Po vydání verze spustit `novy_projekt.py` na složku projektu uživatele. Zkontrolovat, jestli v hlášení nejsou konflikty ve `web/src/pages/index.astro` nebo `web/src/styles/global.css` (pokud má projekt vlastní úpravy, soubory se sloučí třícestně nebo se uloží záloha do `pracovni/zaloha_<datum>/puvodni/`).
+2. `skripty/web_varianty.py build vse` a náhled přes `skripty/nahled.py <varianta> <port>` pro všechny tři varianty (spolecny a dvě rodové). Jedna rodová varianta nemá fotku, takže u ní se kontroluje jen nové pořadí sekcí.
 3. Nasazení (`web_varianty.py nasadit <varianta>`) jen na výslovný pokyn uživatele.
 
 ## Otevřené otázky
@@ -96,4 +96,4 @@ Podle `CLAUDE.md`:
 - Aktualizace projektu: ukázka založená verzí 0.9.3 (worktree `HEAD`) a aktualizovaná novou šablonou přes `novy_projekt.py` (2 soubory přepsány bez vlastních úprav), `npm install`, `npm run data`, `npm run build` prošly. V `dist/index.html` jsou nadpisy v pořadí Zajímavosti, Rodokmen, Osm rodů, Kde žili naši předci.
 - Vizuální kontrola (headless Chrome nad `dist/`, testovací fotka s červenými okraji): na šířce 1440 px fotka 832×1293, 1800×900 i 1800×1800 celá a vycentrovaná, všechny okraje viditelné. Na šířce 600 px (mobilní rozvržení) fotka pod textem, celá, výška 60 % okna. Mapa na konci stránky se načte i s body. Šířka 390 px se v headless Chrome nedala spolehlivě nasimulovat (minimální šířka okna), na skutečném telefonu ověřit.
 - Testy: `aktualizace` 20/20, `verze` 22/22, `portrety` 15, `mista` 39/39, `kontrola` 65/65, `web/test_cloudflare` 34/34, `web/test_nginx` 8/8 (nginx -t přeskočeno bez Dockeru), další testy nástrojů prošly. `web/test_overit` 12/13 – selhává stejně i bez této změny (pád Node na Windows `UV_HANDLE_CLOSING`). `brzda/test_brzda` 24/25 – zátěžový test časování brzdy archivů, šablony se netýká.
-- Béžové okraje u fotky `foto_krausovi_rodina` zatím neověřeny – ukážou se až po promítnutí do projektu Krausovi.
+- Béžové okraje u fotky rodinné fotky zatím neověřeny – ukážou se až po promítnutí do projektu uživatele.
