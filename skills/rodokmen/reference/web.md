@@ -23,6 +23,29 @@ Přidání a pojmenování: `data.md` → „Portréty osob“. Bez portrétu st
 
 Náhled spouštěj na pozadí a uživateli pošli odkaz. Vzhled si ověř sám (snímek obrazovky přes prohlížeč, je-li k dispozici).
 
+### Projekt v synchronizované složce (Google Disk, OneDrive, Dropbox, iCloud)
+`npm` ve `web/` by do synchronizované složky založilo desetitisíce souborů (`node_modules`, `dist`, `.astro`,
+`.netlify`, `.wrangler`) a synchronizace by se zahltila nebo skončila chybou (červený křížek u složky). **Odkazy
+(junction, symlink) z `web/` mimo Disk nepomáhají** – Disk Google je neumí přeskočit a hlásí u nich „Přístup byl
+odepřen“. Proto se takový projekt staví mimo cloud nástrojem `tools/stavba.py`: zrcadlí zdroje projektu do
+`~/projekt-rodokmen/<projekt>/stavba/` a `npm` spustí tam. Závislosti, build i vše, co vyrábí `npm run data`,
+vznikne jen v zrcadle. Cesta se odvozuje z domovské složky, takže funguje na každém počítači (PC i laptop) a každý
+počítač má své zrcadlo.
+
+- Místo `cd web && npm <příkaz>` spouštěj z kořene projektu `python3 -I tools/stavba.py <příkaz>` (na Windows
+  `python -I -X utf8 tools/stavba.py …`), např. `… stavba.py run nahled`, `… stavba.py run nasadit-cloudflare`.
+  `npm install` doplní sám, když chybí nebo se změnil `package.json`/`package-lock.json`.
+- Mimo cloud spustí příkaz přímo ve `web/`, takže ho lze používat vždy. Cloud pozná podle cesty (`Google Drive`,
+  `Můj disk`, `My Drive`, `OneDrive`, `Dropbox`, `iCloud`); jinak `--v-cloudu`, opačně `--na-miste`.
+- Nikdy `npm install` přímo ve `web/` takového projektu. Najdeš-li ve `web/` build složky nebo odkazy (třeba
+  z dřívějšího postupu s junctiony), `… stavba.py --kde` je ukáže a `… stavba.py --uklid` je z Disku odstraní:
+  odkaz smaže (cíl nechá) a obsah přesune do zrcadla, nic nemaže.
+- Stav nasazení (`.netlify/state.json`, `.wrangler/adresa.txt`) je v zrcadle, tedy na každém počítači zvlášť.
+  Na druhém počítači proto Netlify nabídne propojení znovu (`npx -y netlify-cli@latest link`) a Cloudflare se
+  ozve hláškou o existujícím webu – tentýž projekt z jiného počítače: `node scripts/nasadit_cloudflare.mjs --prepsat`
+  ve `web/` zrcadla.
+- `run dev` a `run nahled` běží nad zrcadlem: po úpravě souborů na Disku spusť příkaz znovu (zrcadlo se obnoví).
+
 ## `data/web.json`
 ```json
 {
@@ -135,6 +158,8 @@ Projekt má `.claude/launch.json` – náhled webu v Claude desktop spustí `npm
 předtím musí vyexportovat (`cd web && npm run data`). Když náhled nenaběhne (třeba na Windows, kde je `npm` jako `npm.cmd`),
 zkus v `launch.json` `"runtimeExecutable": "node"` a `"runtimeArgs": ["web/node_modules/astro/bin/astro.mjs", "dev", "--root", "web"]`
 (Astro 7 má spouštěč `astro.mjs`, ne `astro.js`). Server běží jen na tomto počítači – nepřidávej `--host`.
+Projekt v synchronizované složce: `launch.json` nepoužívej (vyrobil by `web/node_modules` na Disku), náhled spusť
+`tools/stavba.py run nahled` na pozadí.
 
 ## Vlastní server (pokročilé)
 - Docker: `web/Dockerfile` (build Astro → nginx s `nginx.conf` z `nginx.sablona.conf`). Před buildem image vždy `npm run data`.
@@ -193,5 +218,6 @@ nebo složku na místě zálohy skript odmítne s hláškou POZOR a soubory za n
 2. **Přepsáno, původní verze v záloze:** porovnej `puvodni/<soubor>` s novou verzí. Jsou-li v ní vlastní úpravy
    (ne jen starší stav šablony), nabídni jejich převzetí do nové verze.
 3. **Sloučeno:** prohlédni výsledek (`git diff`), jestli dává smysl.
-4. Ve `web/` `npm install`, `npm run data` a `npm run build`, pak `python3 -I tools/kontrola.py`.
+4. Ve `web/` `npm install`, `npm run data` a `npm run build` (projekt v synchronizované složce: `tools/stavba.py
+   install`, `… run data`, `… run build` – viz výše), pak `python3 -I tools/kontrola.py`.
 Starou šablonu přihlášení `export_web.py` odmítne s výzvou k aktualizaci.

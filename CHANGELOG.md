@@ -6,6 +6,21 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.4 – 25. 11. 2026
+
+Projekt v Google Disku (OneDrive, Dropboxu, iCloudu) se staví mimo synchronizovanou složku.
+
+**Nové**
+- `tools/stavba.py` – místo `cd web && npm …` spusť `python3 -I tools/stavba.py …` (např. `run nahled`,
+  `run nasadit-cloudflare`). Leží-li projekt v cloudu, zrcadlí ho do `~/projekt-rodokmen/<projekt>/stavba/`
+  a web staví tam, takže `node_modules`, `dist` a generované soubory na Disk nejdou. Funguje na každém počítači
+  (cesta z domovské složky); mimo cloud spustí příkaz přímo ve `web/`.
+- `stavba.py --kde` / `--uklid` najde a z Disku odstraní build složky a odkazy ve `web/` (obsah přesune do zrcadla).
+
+**Návody**
+- Odkazy (junction, symlink) z `web/` mimo Disk nepomáhají: Disk Google je neumí přeskočit, hlásí „Přístup byl
+  odepřen“ a složku projektu označí červeným křížkem (`reference/web.md` → Projekt v synchronizované složce).
+
 ## 0.13.3 – 25. 11. 2026
 
 Opravy pro Windows a testy brzdy.

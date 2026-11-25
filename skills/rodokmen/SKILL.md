@@ -39,7 +39,8 @@ Najdeš v ní `tools/` (nástroje), `template/` (šablona projektu a webu) a `re
      projekt aktualizuj až z nového skillu (po restartu), nikdy ne z klonu GitHubu. `PROJEKT_NOVEJSI` → jen poraď
      aktualizovat skill. `SKILL_NEZJISTEN` → spusť kontrolu znovu ze `SKILL_DIR`.
    - `AKTUALIZUJ_PROJEKT` → nabídni `python3 -I SKILL_DIR/tools/novy_projekt.py <složka projektu>` (data zůstanou,
-     vlastní úpravy webu a `tools/` se sloučí s novou šablonou), pak ve `web/` `npm install`. Výpis projdi s uživatelem
+     vlastní úpravy webu a `tools/` se sloučí s novou šablonou), pak ve `web/` `npm install` (v synchronizované
+     složce `tools/stavba.py install`). Výpis projdi s uživatelem
      podle `reference/web.md` → Aktualizace staršího projektu. Odmítne-li, připomeň to až příště. Po aktualizaci ať
      uživatel restartuje Claude Code (změny v `.claude/settings.json` se jinak nemusí projevit). Hlásí-li výpis
      „Hlídač sítě: vypnutý“, zeptej se, jestli ho zapnout (`--hlidac`, vysvětlení v `reference/instalace.md`).
@@ -199,6 +200,9 @@ Podrobně `reference/pribehy.md`. Tohle rodina na webu čte nejradši – nenech
 
 ## Fáze 4 – Web
 Podrobně `reference/web.md`. Ve zkratce:
+0. **Leží-li projekt ve složce Google Disku, OneDrive, Dropboxu nebo iCloudu**, `npm` nikdy nespouštěj ve `web/`:
+   všechny příkazy níže spouštěj přes `python3 -I tools/stavba.py <příkaz>` (např. `… stavba.py run nahled`), který
+   web staví mimo synchronizovanou složku (`reference/web.md` → Projekt v synchronizované složce).
 1. `cd web && npm install` (jednou), pak `npm run nahled` **na pozadí** (běží, dokud ho nezastavíš) →
    http://localhost:4321 – ukaž uživateli. Pouští-li si pak web sám (`npm run nahled`), svůj náhled předtím ukonči. V cloudovém
    prostředí (claude.ai) localhost neuvidí – pošli mu snímky stránek nebo nasaď náhled.
@@ -266,3 +270,4 @@ a `zdroje/` (výřezy pro web / plné rozlišení), `dokumenty/` (originály od 
 | `kontrola.py` | kontrola dat; hlásí i citlivé údaje na webu a kdy psát příběh |
 | `slusne.py` | brzda proti zablokování archivem (`stav`, `zastav`, `odblokuj`) |
 | `export_web.py`, `fan_chart.py` | data → web (volá ho `npm run data`); vějíř jako plakát k tisku |
+| `stavba.py` | `npm` pro projekt v Google Disku / OneDrive / Dropboxu: staví web mimo synchronizovanou složku |
