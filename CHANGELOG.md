@@ -6,6 +6,17 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.3 – 25. 11. 2026
+
+Opravy pro Windows a testy brzdy.
+
+**Opravy**
+- `npm run overit` na Windows už nespadne s hláškou „Assertion failed … async.c“ (třeba když web vrátí 404) a skončí
+  se správným kódem.
+- Brzda u `slusne.py curl` s vlastním `-w` pozná 429 a zastaví web, i když je curl spuštěný přes `.cmd`/`.bat`.
+- Testy brzdy počítají s tím, že ZA Opava je pro skripty úplně zavřená (od 0.11.0), a podvržený curl v testech funguje
+  i ve složce s diakritikou (např. `C:\Users\Tomáš`).
+
 ## 0.13.2 – 25. 11. 2026
 
 Sloučení novinek z původního repozitáře (verze 0.11.1): drobné opravy nástrojů a nový pomocník pro skok na folio v knize.
