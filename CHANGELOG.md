@@ -6,6 +6,12 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.8 – 26. 11. 2026
+
+**Návody**
+- Kramerius (vojenská knihovna i NK ČR) ignoruje háčky a čárky – návod už neradí hledat příjmení zvlášť bez háčků,
+  což jen zdvojovalo počet dotazů.
+
 ## 0.13.7 – 26. 11. 2026
 
 Hledání vojáků z 1. světové války ve vojenské digitální knihovně.

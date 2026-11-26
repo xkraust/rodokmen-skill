@@ -492,7 +492,9 @@ python3 -I tools/kramerius.py --armada --snimek <uuid nebo odkaz> pracovni/vha/x
 ```
 
 **Jak hledat:**
-- Pořadí je „Příjmení Jméno“. Zkus německý i český tvar (Johann/Jan, Wenzel/Václav) a příjmení i bez háčků.
+- Pořadí je „Příjmení Jméno“. Zkus německý i český tvar (Johann/Jan, Wenzel/Václav). Háčky a čárky Kramerius
+  ignoruje („Dvořák“ = „Dvorak“, i v NK ČR) – stačí jeden tvar příjmení, varianty bez háčků jen zdvojí dotazy.
+  Jiný pravopis zkus zvlášť (Hawliczek, Nowak).
 - Stránky matrik mají přepsaný seznam „Příjmení Jméno rok narození–rok úmrtí“, rejstříky „Příjmení Jméno strana“.
 - **Obec bývá v tisku nebo v OCR zkomolená** (i první písmeno): hledej jméno s ročníkem bez obce. Dotaz na samotnou
   obec s příjmením najde i bratry a sousedy – podle nich poznáš, u kterých pluků muži z obce sloužili.
