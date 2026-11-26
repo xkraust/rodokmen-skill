@@ -4,13 +4,23 @@ Datum: 12. 11. 2026
 
 Stav: **implementováno ve verzi 0.11.1 (12. 11. 2026)** – návod `reference/scitani.md`, odkazy v ostatních
 návodech, `portafontium.py scitani` / `domy` (+ `info`, `snimek`, `link`, `svazek` pro dům), test
-`tests/portafontium/test_scitani.py`, zápis sčítání v ukázce. Ověřeno na skutečném projektu (Zbyslav čp. 43, 1921).
+`tests/portafontium/test_scitani.py`, zápis sčítání v ukázce. Ověřeno na skutečném projektu (arch 1921).
 Zbývá: body v „K ověření“ 1 a 3–7 (ostatní portály jsou v návodu označené „neověřeno“); nástroj pro ARON jen
 po ověření, že starší operáty mají snímky. Body označené **[ověřit]** níže je potřeba ověřit přímo na portálu
 (v prohlížeči, ne skriptem tam, kde to brzda `tools/slusne.py` nepovoluje).
 
 Poznámka z implementace: `ramecek.py` při zápisu přeformátuje celý `zvyrazneni.json` (`indent=1`), na rozdíl
 od `zapis.py`, který mění jen jednu položku – v ukázce s kompaktním tvarem to dělá velký diff. Kandidát na opravu.
+
+## Pull request pro autora (26. 11. 2026)
+
+Odesláno jako https://github.com/sarsonj/rodokmen-skill/pull/255 (větev `scitani-lidu`, pracovní kopie `rodokmen-pr`,
+od `upstream/main` 0.11.1). Stejné opravy má fork od verze 0.13.5:
+- ZA Opava podle autorových pravidel 0.11.0 (Claude in Chrome, podmínky archivu), AHMP: v novém katalogu neověřeno.
+- Vzor přepisu, testovací obec a příklady nahrazeny údaji bez vazby na rodinu uživatele (platí pro aktuální soubory,
+  v historii gitu starší podoba zůstává).
+- Oprava `portafontium.py`: na stránce prvního domu sady chybělo v `domy` čp. 1 (a v názvu svazku číslo).
+- Ukázkový zápis sčítání má `"ukazka": true` a není vedený jako ARON.
 
 ## Cíl
 
@@ -25,7 +35,7 @@ kde to archiv dovolí a kde ušetří práci.
   společné nástroje a brzda, jedna verze, žádné soupeření dvou skillů o stejné dotazy.
 - Podrobnosti budou v novém návodu **`skills/rodokmen/reference/scitani.md`**, který se čte až při potřebě.
   `SKILL.md` dostane jen krátký odkaz, `portaly.md`, `metodika.md` a `matriky.md` jen odkazy a opravy.
-- Jako vzorový arch slouží **Zbyslav čp. 43, 1921**. Do veřejných souborů skillu
+- Jako vzorový arch sloužil jeden arch 1921 z projektu uživatele. Do veřejných souborů skillu
   (návod, ukázka) ale jdou jen struktura a fiktivní jména. Skutečné údaje patří do projektu uživatele.
 
 ## Ověřený současný stav v repozitáři
@@ -67,27 +77,29 @@ kde to archiv dovolí a kde ušetří práci.
 Zdroje: MyCzechRoots (článek asi 13 let starý, odkazy mohou být zastaralé), FamilySearch Wiki „Czechia Census“
 (upraveno 3. 11. 2026).
 
-### Porta fontium (SOA Plzeň) – ověřeno na obci Zbyslav (soudní okres Plánice)
+### Porta fontium (SOA Plzeň) – ověřeno na obcích soudního okresu Plánice
 
 - **Přehled:** `https://www.portafontium.eu/contents/census` – tabulka okres × rok (1857–1921), u každé buňky
   odkaz `/census/<archiv>/<rok>/okres-<soudní-okres>`, např. `/census/soap-kt/1921/okres-planice`. Archivy: `amp`
   (Archiv města Plzně), `soap-ch`, `soap-do`, `soap-kt` … (SOkA). Které roky má který okres, se liší:
   Klatovy, Nýrsko a Plánice 1880–1921, Domažlice 1857–1921, Hartmanice, Kašperské Hory a Sušice jen 1921.
-- **Stránka okresu a roku:** seznam obcí a osad s počtem domů, např. `Zbyslav (46 domů)`, s odkazem na
+- **Stránka okresu a roku:** seznam obcí a osad s počtem domů, např. `Neprochovy (38 domů)`, s odkazem na
   `/iipimage/<id>` (první dům) a „souhrn“ (soupis obce). Název obce je i německy v atributu `title`.
 - **Hledání (záložka „Sčítání lidu“, `/searching/census`, pole Nadpis / Místo / Text / roky)** skriptem nevrací
   výsledky ani pro Kdyni. Výsledky se nejspíš načítají JavaScriptem. Použitelná cesta je přehled → okres → obec.
 - **Sada = obec × rok, rozdělená po domech:** každé číslo popisné je samostatná stránka `/iipimage/<id>`. Na stránce
-  je navigace „Nr. 1 · Nr. 2 …“ s odkazy na `/iipimage/<id>` dalších domů (id jdou po sobě, ale chybějící čp. se
-  přeskakují – ve Zbyslavi 1921 chybí čp. 40) a odkazy na stejnou obec v jiných letech („1880 – 1890 – 1900 – 1910 – 1921“).
-- **Snímky:** stejné jako u matrik – `data-iip-path="census/soap-kt/census-1921-okres-planice/zbyslav/cp043/
-  soap-kt_01159_census-1921-zbyslav-cp043_0010.jp2"`, server `/fcgi-bin/iipsrv.fcgi?IIIF=<path>/full/<size>/0/default.jpg`
+  je navigace „Nr. 1 · Nr. 2 …“ s odkazy na `/iipimage/<id>` dalších domů (id jdou po sobě, chybějící čp. se
+  přeskakují) a odkazy na stejnou obec v jiných letech („1880 – 1890 – 1900 – 1910 – 1921“). Aktuální dům je
+  v navigaci zvýrazněný (`<big>`), titulek prvního domu číslo neuvádí.
+- **Snímky:** stejné jako u matrik – `data-iip-path="census/soap-kt/census-1921-okres-planice/neprochovy/cp012/
+  soap-kt_01159_census-1921-neprochovy-cp012_0010.jp2"`, server `/fcgi-bin/iipsrv.fcgi?IIIF=<path>/full/<size>/0/default.jpg`
   (ověřeno: náhled pct:25 = JPEG 76 kB). Trvalý odkaz na snímek: `/iipimage/<id>/<název souboru bez .jp2>`.
-  Čp. 43 má 3 snímky: 1 = **sběrný arch domovní** (země, soudní okres, obec, čp., majitel domu, byty a počet osob),
+  Čp. 12 má 3 snímky: 1 = **sběrný arch domovní** (země, soudní okres, obec, čp., majitel domu, byty a počet osob),
   2–3 = sčítací arch s osobami.
-- **Zbyslav:** 1880 jako osada „Újezd u Plánice – Zbyslav“ (`/iipimage/34441229`, 42 domů), 1890 (`/iipimage/34443819`,
-  42 domů), 1900 (`/iipimage/34443862`, 43 domů), **1910 v seznamu chybí**, 1921 (`/iipimage/34443905`, 46 domů;
-  čp. 43 = `/iipimage/34443948`). Pozor: obec může být v jednom roce samostatně a v jiném jako osada jiné obce.
+- **Neprochovy:** 1880 jako osada „Těchonice – Neprochovy“ (`/iipimage/34439398`, 31 domů), 1890
+  (`/iipimage/34426945`, 32 domů), 1900 (`/iipimage/34426978`, 34 domů), 1910 (`/iipimage/34427013`, 35 domů), 1921
+  (`/iipimage/34427048`, 38 domů; čp. 12 = `/iipimage/34427062`). Pozor: obec může být v jednom roce samostatně
+  a v jiném jako osada jiné obce.
 - **Dopad na nástroj:** `portafontium.py` umí snímky přes IIIF a trvalé odkazy. Chybí mu jen čtení stránky `/iipimage/<id>`
   místo `/register/…` a průchod přehled → okres → obec → čp. Rozšíření je malé, Crawl-delay 10 s platí
   (průchod jedné obce ≈ 3 dotazy + 1 na dům).
@@ -152,28 +164,28 @@ Osnova:
    sčítací arch pro každý byt. Červená čísla tužkou jsou statistické kódy úřadu – nepřepisovat.
 4. **Portály po krajích:** Porta fontium (postup přehled → soudní okres → obec → čp.), MZA (přesunout z `portaly.md`),
    Třeboň, Litoměřice, Opava, ARON, FamilySearch 1930345. Jen ověřené. U každého skript / jen prohlížeč.
-5. **Pasti:** obec hledat podle **soudního** okresu (Zbyslav → Plánice, ne Klatovy), osada vedená pod jinou obcí
-   (Zbyslav 1880 = „Újezd u Plánice – Zbyslav“), chybějící roky a čísla popisná, přečíslování domů, svisle psaná data.
+5. **Pasti:** obec hledat podle **soudního** okresu (Neprochovy → Plánice, ne Klatovy), osada vedená pod jinou obcí
+   (Neprochovy 1880 = „Těchonice – Neprochovy“), chybějící roky a čísla popisná, přečíslování domů, svisle psaná data.
 6. **Přepis a citace:** vzor níže.
 7. **Do dat:** jeden zápis `S` na byt (arch). Jeho klíč patří do `r` všech zapsaných osob z rodu, údaje do `f`
-   („domkář ve Zbyslavi čp. 43 (1921)“). Vztahy z archu (tchyně, bratr) jsou nepřímý doklad – ověřit matrikou.
+   („tkadlec v Horní Lhotě čp. 12 (1921)“). Vztahy z archu (tchyně, bratr) jsou nepřímý doklad – ověřit matrikou.
 
 Vzor přepisu (`prepisy.json`, ověřeno na archu 1921, 20 sloupců; jména fiktivní):
 
 ```
-[Arch] sčítání 1921, Čechy, soudní okres Plánice, obec Zbyslav, čp. 43, byt 1, bytová strana: Novák Jan, domkář
-[1] Novák Jan | majitel bytu | muž | ženatý | * 26. 7. 1887 | Zbyslav, Plánice, Čechy | v obci od narození |
-    domovská obec Zbyslav | česká | římskokatolické | čte a píše | zemědělství, samostatný majitel |
-    16. 7. 1914: ano, zemědělství, samostatný rolník
-[2] Nováková Anna | manželka | žena | vdaná | * 4. 8. 1888 | …
-[Podpis] Novák Jan, 16. 2. 1921; sčítací komisař …
+[Arch] sčítání 1921, Čechy, soudní okres Holice, obec Horní Lhota, čp. 12, byt 1, bytová strana: Novák Jan, tkadlec
+[1] Novák Jan | majitel bytu | muž | ženatý | * 3. 3. 1885 | Horní Lhota, Holice, Čechy | v obci od narození |
+    domovská obec Horní Lhota | česká | římskokatolické | čte a píše | tkalcovství, samostatný živnostník |
+    16. 7. 1914: ano, tkalcovství
+[2] Nováková Anna | manželka | žena | vdaná | * 12. 10. 1887 | …
+[Podpis] Novák Jan, 17. 2. 1921; sčítací komisař …
 ```
 
 Sloupce 1921: 1 pořadí, 2 příjmení, 3 jméno, 4 poměr k majiteli bytu, 5 pohlaví, 6 rodinný stav, 7 den / měsíc / rok
 narození, 8 rodiště (obec, soudní okres, země), 9 od kdy bydlí v obci, 10 domovská příslušnost, 11 národnost (mateřský
 jazyk), 12 náboženství, 13 čtení a psaní, 14–16 povolání (druh, postavení, závod), 17–19 povolání 16. 7. 1914
 (byl-li činný, druh, postavení), 20 poznámka. Pole `cs` = český souvislý text („V domě čp. 43 žil v únoru 1921
-domkář Jan Novák (* 26. 7. 1887) s manželkou …“).
+tkadlec Jan Novák (* 3. 3. 1885) s manželkou …“).
 
 Citace (`svazky.json` / `odkaz`): archiv a fond (SOkA Klatovy, sčítací operáty 1921), soudní okres, obec, čp., snímek;
 trvalý odkaz `https://www.portafontium.eu/iipimage/<id>/<soubor>`.
@@ -215,8 +227,8 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
    (Velká Lhota, Claude in Chrome): stránka obce → Sčítání lidu, sada = jedna řada snímků, trvalý odkaz
    `/<sada>/<snímek>`, rejstřík sady s čp. a hledání ve jmenných rejstřících sčítání napříč archivem. Zapsáno
    v `scitani.md`.
-2. ~~Porta fontium census – adresa sady, IIIF, trvalý odkaz.~~ Ověřeno 12. 11. 2026 (Zbyslav). Zbývá zjistit,
-   proč chybí Zbyslav 1910 (nedochováno, nebo jinde) a jestli hledání v prohlížeči najde obec bez znalosti okresu.
+2. ~~Porta fontium census – adresa sady, IIIF, trvalý odkaz.~~ Ověřeno 12. 11. 2026. Zbývá zjistit, jestli hledání
+   v prohlížeči najde obec bez znalosti okresu.
 3. ~~Litoměřice – kde jsou operáty, zda mají snímky.~~ Ověřeno 12. 11. 2026 (Lužice čp. 8, 1921): Digitální badatelna,
    ikona Operáty, sada po domech v jedné řadě, snímky přes `soal_zoomify.py` (cesta `…/ximage/operaty/…`), permalink.
 4. ~~ZA Opava – zda jsou operáty online a jak se hledají.~~ Ověřeno 12. 11. 2026 (Štěpánkovice 1921): ikona Sčítání,
@@ -228,7 +240,7 @@ Formát mezi `tools/` a `template/web/` se nemění, test aktualizace starého p
    jen ~2 300 indexovaných záznamů. Zbývá: zda snímek jde zobrazit bez přihlášení (rozšíření snímek obrazovky na
    stránce snímku nepovolilo).
 7. Obsah ročníků 1880–1910 (obcovací řeč, gramotnost, domovská příslušnost) na skutečném snímku.
-   Ročník 1921 ověřen na Zbyslavi čp. 43 (20 sloupců, viz vzor přepisu).
+   Ročník 1921 ověřen na skutečném archu (20 sloupců, viz vzor přepisu).
 
 ## Mimo rozsah
 

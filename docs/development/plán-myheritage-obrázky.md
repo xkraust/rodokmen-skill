@@ -39,7 +39,7 @@ nepřepíše. Pro zkoušku ve FTB stačí importovat `.ged` z této složky.
 
 Volba `--cp-v-miste`: číslo popisné i do `PLAC` („Holice čp. 112, okres Pardubice, …“), `ADDR` zůstane. Důvod:
 uživatelův strom z MyHeritage (`dokumenty/strom.ged`, export FTB) nemá žádné `ADDR`, čísla domů jsou v místě
-(„Obora č.21“, „Tlucná č.30“); recenze FTB 8 uvádí, že `ADDR` po importu nezobrazí. Výchozí zůstává čp. jen
+(tvar „Horní Lhota č.12“); recenze FTB 8 uvádí, že `ADDR` po importu nezobrazí. Výchozí zůstává čp. jen
 v `ADDR` (čisté místo pro mapy a Gramps).
 
 Ruční zkouška ve FTB (jedním importem): `ged_export.py --koren 3 --slozka --cp-v-miste` → import `.ged` →
@@ -114,10 +114,10 @@ Export jedné větve (`--koren 3 --slozka --cp-v-miste --zijici`) naimportován 
   restartovat“. Zbývá: Sync na MyHeritage (přenesou se fotky? mapa) a volitelně Gramps.
 - Riziko: absolutní cesta prodlužuje řádek `FILE` (GEDCOM max. 255 znaků, `FILE` nejde dělit `CONC`); u hluboko
   vnořené složky by mohla limit překročit – zatím neřešeno (projekt na Google Disku je daleko pod limitem).
-- Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 33“), špendlík na mapě, výřezy u osob,
+- Zbývá ověřit: čp. v místě (u osoby, která ho má, např. narození s „čp. 12“), špendlík na mapě, výřezy u osob,
   portrét jako hlavní fotka (`_PRIM`), hodnověrnost citace (FTB ukázal u `QUAY 2` „Sporná hodnověrnost důkazu“ –
   ověřit, jak FTB čísla 0–3 pojmenovává), a Sync na web s obrázky.
-- Drobnost: fakt „* 10. 6. 1922 Obec (?), okres X“ dal u narození navíc poznámky „?“ a „okres X“ –
+- Drobnost: fakt „* 3. 3. 1925 Obec (?), okres X“ dal u narození navíc poznámky „?“ a „okres X“ –
   okres za čárkou se nebere jako součást místa. Řešit samostatně.
 
 ## Ověření

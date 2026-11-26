@@ -189,17 +189,17 @@ def same_name(project_name, tree_name, married=()):
     Příjmení se porovná podle začátku (Novák × Nováková, Dvořák × Dvořáková); married = příjmení po sňatku
     z faktu „provd. Nováková“ (strom ženu často vede pod ním)."""
     a = tokens(project_name)
-    alt = [w for w in tokens(project_name, True) if w not in a]   # „Martin Novák (Vopat)“ – druhé příjmení v závorce
+    alt = [w for w in tokens(project_name, True) if w not in a]   # „Jan Novák (Svoboda)“ – druhé příjmení v závorce
     if len(a) >= 2 and any(same_name(f"{a[0]} {m}", tree_name) for m in [*married, *alt]):
         return True
-    b = tokens(tree_name, True)   # strom: „MARTIN VOPAT (NOVÝ)“ – i závorka
+    b = tokens(tree_name, True)   # strom: „JAN SVOBODA (NOVÝ)“ – i závorka
     if len(a) < 2 or not b:
         return bool(a) and a[0] in b
     def similar(x, y, least):   # společný začátek: Novák/Nováková, Dvořák/Dvořáková (dvorak × dvorakova)
         common = len(os.path.commonprefix([x, y]))
         return x == y or (common >= least and common >= min(len(x), len(y)) - 2)
     # křestní jméno podle začátku aspoň 4 znaků: Anton × Antonín, Johanna × Johana (Martin × Marie ne);
-    # příjmení stačí 3: Kočí × Kočová (Rosalie × Rozálie ne – ověří člověk)
+    # příjmení stačí 3: Malý × Malá (Rosalie × Rozálie ne – ověří člověk)
     return any(similar(a[0], w, 4) for w in b) and any(similar(a[-1], w, 3) for w in b[1:] or b)
 
 

@@ -6,6 +6,17 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.5 – 26. 11. 2026
+
+**Opravy**
+- `portafontium.py domy` u prvního domu sčítací sady nevynechá jeho číslo popisné a `svazek` ho uvede v názvu.
+- Sčítání lidu: návod k ZA Opava odpovídá pravidlům z 0.11.0 (Claude in Chrome, podmínky archivu); u AHMP je uvedeno,
+  že v novém katalogu sčítání ověřené není.
+- Ukázkový zápis ze sčítání už nehlásí chybějící odkaz na snímek.
+
+**Návody**
+- Příklady a testovací data v návodech a plánech jsou nahrazené smyšlenými nebo neutrálními.
+
 ## 0.13.4 – 25. 11. 2026
 
 Projekt v Google Disku (OneDrive, Dropboxu, iCloudu) se staví mimo synchronizovanou složku.

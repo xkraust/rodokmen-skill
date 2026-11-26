@@ -41,7 +41,7 @@ mají jako jednu řadu snímků seřazenou po domech. U obce bývá **souhrn** (
 
 ## Kde jsou online
 Sčítací operáty uchovávají **okresní archivy (SOkA)** a hledají se podle **soudního okresu**, ne politického
-(Zbyslav na Klatovsku → soudní okres **Plánice**). Soudní okres uvádí matriční zápis po 1870 („okres soudní: Plánice“)
+(Neprochovy na Klatovsku → soudní okres **Plánice**). Soudní okres uvádí matriční zápis po 1870 („okres soudní: Plánice“)
 nebo Wikipedie obce.
 
 | archiv | portál | stav se skillem |
@@ -50,10 +50,10 @@ nebo Wikipedie obce.
 | MZA Brno (Morava) | `www.mza.cz/scitacioperaty/digisada/search` | **jen v prohlížeči** (níže), ověřeno |
 | SOA Třeboň (jižní Čechy) | `digi.ceskearchivy.cz` – stránka obce → Sčítání lidu | **jen v prohlížeči** (brzda); **jmenné rejstříky napříč archivem** (níže) |
 | SOA Litoměřice (severní Čechy) | Digitální badatelna `digi.soalitomerice.cz` → ikona **Operáty** | **sadu najít v prohlížeči, snímky `soal_zoomify.py`** (níže) |
-| ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči** – snímky skriptem nejdou (níže) |
+| ZA Opava (sev. Morava, Slezsko) | Digitální badatelna `digi.archives.cz/da/` → ikona **Sčítání** | **jen v prohlížeči, Claude in Chrome** (podmínky archivu, níže) |
 | SOA Zámrsk (východní Čechy) | ARON – jen katalog fondů, **bez snímků** | online ne → FamilySearch (okresy Hradec Králové, Náchod, Trutnov…) |
 | SOA Praha (střední Čechy) | eBadatelna → Archiválie, typ **Sčítací operáty** (asi 260 sad, hlavně 1869) | **jen v prohlížeči** (brzda; níže) |
-| AHMP (Praha) | katalog Praga Publica | digitalizované operáty nenalezeny (11/2026) → pražské policejní přihlášky 1850–1914 (`portaly.md`) |
+| AHMP (Praha) | Praga Publica (`portaly.md` → AHMP) | ve starém katalogu operáty nenalezeny (11/2026), v novém `digi.ahmp.cz` neověřeno → pražské policejní přihlášky 1850–1914 |
 | více archivů | FamilySearch: „Czech Republic Censuses and Inhabitant Registers, 1800–1990“ (kolekce 1930345) | v prohlížeči, procházení po okresech (níže) |
 
 Nevyzkoušený portál při prvním použití ověř a postup zapiš do `poznamky_pro_skill.md`. Placené databáze (Ancestry,
@@ -74,29 +74,29 @@ s přihlášeným prohlížečem je v `portaly.md` → FamilySearch).
 
 ### Porta fontium – `tools/portafontium.py`
 1. `python3 -I tools/portafontium.py scitani` – přehled: archiv | soudní okres | roky (32 okresů).
-2. `python3 -I tools/portafontium.py scitani "Zbyslav" "Plánice"` – roky, ve kterých obec je:
-   `1880 | Újezd u Plánice - Zbyslav (…) | 42 domů | 34441229 | souhrn 34441228 | soap-kt/okres-planice`.
+2. `python3 -I tools/portafontium.py scitani "Neprochovy" "Plánice"` – roky, ve kterých obec je:
+   `1880 | Těchonice - Neprochovy (…) | 31 domů | 34439398 | souhrn 34439397 | soap-kt/okres-planice`.
    Sedí i na osadu vedenou pod jinou obcí a na německý název. Roky okresu, kde obec chybí, vypíše zvlášť.
    Bez okresu projde poslední rok všech okresů (asi 6 minut, stránky se uloží) – raději okres zjisti.
-3. `python3 -I tools/portafontium.py domy 34443905` – čísla popisná sady a id stránky domu; „8_0001_1“ = další arch
-   téhož domu. Na konci **tentýž dům v jiných letech** (id pro `domy` nebo `info`).
+3. `python3 -I tools/portafontium.py domy 34427048` – čísla popisná sady a id stránky domu; „1a“ nebo „8_0001_1“ = další
+   část či arch téhož čísla. Na konci **tentýž dům v jiných letech** (id pro `domy` nebo `info`).
 4. Dům jako kniha: `info <id>`, `snimek <id> <snímek> pracovni/scitani/<obec>_<rok>_cp<čp>_<snímek>.jpg [nahled] [výřez]`,
    `link <id> <snímek>`, `svazek <id>` (klíč `pf_<id>`, archiv podle kódu sady, např. SOkA Klatovy).
    Snímek 1 = sběrný arch domovní, další = sčítací archy.
 
 ### SOA Třeboň – jen v prohlížeči
 Archiv skripty odmítá (brzda je zastaví) – vše v prohlížeči, tempo a pravidla jako u třeboňských matrik
-(`portaly.md` → SOA Třeboň). Ověřeno 11/2026 na Velké Lhotě (SOkA Jindřichův Hradec, soudní okres Dačice).
+(`portaly.md` → SOA Třeboň). Ověřeno 11/2026.
 - **Hledání podle jména – začni jím.** Záložka HLEDÁNÍ → Typ: **Jmenné rejstříky** → Příjmení (případně Jméno,
   Lokalita) a **Typ materiálu: Sčítání lidu** → Hledat. Prohledá dobrovolnické rejstříky sčítání v celém archivu
   (i bez obce): u každé osoby rok, lokalita, osada, **číslo popisné a snímek**, náhled odkazuje na snímek.
   Rejstříky nemají všechny sady – negativní výsledek nic nedokazuje.
 - **Sady obce:** `https://digi.ceskearchivy.cz/<Obec>` (jako u matrik; zkontroluj název a okres – portál přesměruje
-  na stránku místa, např. „Velká Lhota (Volfířov, Jindřichův Hradec)“) → vlevo **SČÍTÁNÍ LIDU** (adresa
-  `…/<místo>/scitani-lidu`) → tabulky „Sčítání lidu: <obec> <rok>“ s inventárním číslem; osady mají vlastní sady
-  (Poldovka 1857). Ikona lupy otevře snímky v nové záložce `https://digi.ceskearchivy.cz/<sada>/<snímek>`
-  (zároveň trvalý odkaz), název sady v tabulce otevře popis.
-- **Sada = obec × rok v jedné řadě snímků** (Velká Lhota 1921: 88 snímků), ne po domech. Hlavička okna: archiv
+  na stránku místa, v závorce je obec a okres) → vlevo **SČÍTÁNÍ LIDU** (adresa
+  `…/<místo>/scitani-lidu`) → tabulky „Sčítání lidu: <obec> <rok>“ s inventárním číslem; osady mají vlastní sady.
+  Ikona lupy otevře snímky v nové záložce `https://digi.ceskearchivy.cz/<sada>/<snímek>` (zároveň trvalý odkaz), název
+  sady v tabulce otevře popis.
+- **Sada = obec × rok v jedné řadě snímků** (menší obec 1921: kolem 90 snímků), ne po domech. Hlavička okna: archiv
   (SOkA), datace, soudní okres, inventární číslo. 1921 je na formuláři „Popisný arch“, 1857 „Aufnahmsbogen“.
 - **Rejstřík sady:** záložka REJSTŘÍKY → Jmenný rejstřík po písmenech: příjmení, jméno, vyznání, lokalita,
   **číslo popisné**, rok; kliknutí na řádek otevře snímek (`…/<sada>/<snímek>`). Export TEXTOVÝ FORMÁT / XLSX je
@@ -123,24 +123,24 @@ Stejná Digitální badatelna jako u matrik (`portaly.md` → SOA Litoměřice):
 - **Snímky:** adresy zjisti úryvkem z `portaly.md` (SOA Litoměřice) jen pro snímky, které čteš – u sčítání mají cestu
   `https://images.soalitomerice.cz/ximage/operaty/zoomify/cz/archives/CZ-<kód SOkA>/operaty/dao/images/<složka>/<uuid>.jpg`
   (SOkA Teplice = CZ-224106010). Stahuj `python3 -I tools/soal_zoomify.py "<celá adresa>" 2 pracovni/x.jpg`
-  (2 = čtvrtina na orientaci, 0 = plné rozlišení na čtení); obrázkový server neomezuje.
+  (2 = čtvrtina na orientaci, 0 = plné rozlišení na čtení); po jednom a jen snímky, které čteš.
 - Svazek ručně (`zapis.py svazky`, klíč např. `soal_<id>`): archiv = „SOkA Teplice – Sčítání lidu 1921 Teplice
   (NAD 1204)“, `svazek` = „Sčítání lidu 1921, soudní okres Bílina, Lužice čp. 1–74, karton 33“, `url` = permalink.
 
-### ZA Opava – jen v prohlížeči
-Stejná Digitální badatelna jako v Litoměřicích, pravidla z `portaly.md` (ZA Opava): okno aspoň 1400×900, karta
-v popředí, **CAPTCHA řeší uživatel**, blokace aplikace už po ~75 rychlých krocích. Ověřeno 11/2026 na Štěpánkovicích
-(Hlučínsko) – CAPTCHA tentokrát nepřišla.
+### ZA Opava – jen v prohlížeči, Claude in Chrome
+**Nejdřív si přečti `portaly.md` (ZA Opava) a drž se ho celého** – pro operáty platí totéž co pro matriky: **podmínky
+archivu** (vysvětli je uživateli a nech rozhodnout jeho), prohlížeč Claude in Chrome, CAPTCHU řeší uživatel, žádný
+`fetch` ani dávky, tempo a denní limit. Bez asistovaného prohlížení čte uživatel sám a posílá snímky obrazovky, nebo
+zkus FamilySearch (níže). Hledání a uspořádání sad ověřeno 11/2026 na Štěpánkovicích (Hlučínsko).
 - **Hledání:** ikona **Sčítání** → obec do pole **Místo / Lokalita** → Enter v tom poli. Pozor, formulář se po prvním
   hledání posune – zkontroluj, že obec není v poli „Číslo / Název arch. souboru“. Výsledek: „Štěpánkovice, série
   čp. 2-302…, 1921“, fond **NAD 158 Okresní úřad Hlučín** (inv. č., karton) – operáty bývají ve fondech okresních
   úřadů, ne v samostatném fondu. Velká obec = víc sérií podle čísel popisných.
 - **Sada = jedna řada snímků** (Štěpánkovice 1921: 614); snímek 1 je list s metadaty digitalizace. Trvalý odkaz
   `https://digi.archives.cz/da/permalink?xid=<id>` (`portaly.md` → ZA Opava).
-- **Snímky jen v prohlížeči.** Dlaždice operátů (`images.archives.cz/ximage/common/zoomify/…/scitaci-operaty/…`)
-  vydá server jen prohlížeči, skriptu vrací 404 – `soal_zoomify.py` tu nefunguje a neobcházej to (hlavičky, cookies).
-  Prohlížeč je Zoomify přímo na stránce (`Z.Viewport`, bez rámu): přibliž zápis, ulož snímek obrazovky → `vyrez.py`
-  (jako u SOA Třeboň, úryvek bez `iframe`). Limit obrázků (~6 snímků, pak 403) hlídej jako u matrik.
+- **Čtení:** snímek obrazovky přiblíženého zápisu → `vyrez.py`; celý snímek volitelně z mezipaměti Chromu
+  (`cache.py z-chromu`) – obojí postupem z `portaly.md` (ZA Opava; u sad sčítání zatím neověřeno). `soal_zoomify.py`
+  ani jiné skripty nepoužívej, archiv je nepouští.
 - Svazek ručně: archiv podle detailu sady (ikona „i“: archiv a fond, např. „Okresní úřad Hlučín (NAD 158), inv. č. 46“),
   `svazek` = „Sčítání lidu 1921, Štěpánkovice čp. 2–302“, `url` = permalink.
 
@@ -165,18 +165,19 @@ sady** (BV0124). Větší obec má v jednom roce víc sad podle čísel popisný
 (rozpis čísel, poznámky typu „čp. 134 má 2 archy“), pak archy po domech. 1857 uvádí jen rok narození, 1869 a 1880
 místo i datum.
 
-### ARON (SOA Zámrsk) a AHMP – sčítání online není
+### ARON (SOA Zámrsk) a AHMP – sčítání online nenalezeno
 - **ARON:** ověřeno 11/2026 – fondy „Sčítací operáty“ (SOkA Náchod 1900–1910, SOkA Svitavy) jsou jen v katalogu,
   bez strukturovaného popisu a **bez snímků** (`aron_img.py <apu> info` → scans: 0); slovo „sčítání“ mají jinak hlavně
   operáty 1980 (SOkA Jičín). Pro východní Čechy použij **FamilySearch** (okresy Hradec Králové, Náchod, Trutnov,
   Pardubice, Jičín, Ústí nad Orlicí, Svitavy…), jinak dotaz na SOkA do `archivni_dotazy.md`.
-- **AHMP:** v katalogu Praga Publica digitalizované sčítací operáty nejsou (fulltext 11/2026). Pro Prahu 1850–1914
-  jsou náhradou **policejní přihlášky** (Národní archiv, `policie_prihlasky.py`, `portaly.md`) – karta celé rodiny
-  s daty a místy narození.
+- **AHMP:** ve starém katalogu Praga Publica digitalizované sčítací operáty nejsou (fulltext 11/2026). Starý katalog
+  končí 30. 11. 2026, v novém (`digi.ahmp.cz`, pravidla v `portaly.md` → AHMP) to ověřené není – při prvním použití
+  zjisti a zapiš do `poznamky_pro_skill.md`. Pro Prahu 1850–1914 jsou náhradou **policejní přihlášky** (Národní
+  archiv, `policie_prihlasky.py`, `portaly.md`) – karta celé rodiny s daty a místy narození.
 
 ## Pasti
 - **Soudní okres** místo politického; obec mohla v různých letech patřit pod jiný soudní okres.
-- **Osada pod jinou obcí** (Zbyslav 1880 = „Újezd u Plánice – Zbyslav“) – hledej i pod obcí, kam osada patřila.
+- **Osada pod jinou obcí** (Neprochovy 1880 = „Těchonice – Neprochovy“) – hledej i pod obcí, kam osada patřila.
 - **Chybějící rok nebo dům** = nedochováno nebo jinde; zapiš do deníku jako negativní výsledek s rozsahem.
 - **Přečíslování domů** (zvlášť po 1900) – tentýž rod může být v jiném roce pod jiným čp.; „tentýž dům v jiných
   letech“ z `domy` vede podle portálu, ne podle rodiny.
@@ -186,31 +187,32 @@ místo i datum.
 ## Přepis, citace a zápis do dat
 Postup je stejný jako u matriky (`SKILL.md`, Fáze 2, krok 5). Rozdíly:
 - **Jeden zápis na sčítací arch (byt)**, druh `S`, klíč `<obec>_scitani_<hlava domácnosti>_<rok>`
-  (`zbyslav_scitani_jan_novak_1921`), `datum` = rozhodný den („15. 2. 1921“), `snimek` = snímek sčítacího archu,
+  (`horni_lhota_scitani_jan_novak_1921`), `datum` = rozhodný den („15. 2. 1921“), `snimek` = snímek sčítacího archu,
   `odkaz` = `link` toho snímku. U Porta fontium svazek = dům (`portafontium.py svazek <id>`).
 - **Výřez celé strany** (`vyrez.py` bez souřadnic nebo s celou tabulkou) a rámeček kolem všech řádků osob.
 - **Klíč archu patří do `r` všech zapsaných osob z rodokmenu** (`zapis.py odkaz <číslo> <klíč>`), údaje do `f`
-  („domkář ve Zbyslavi čp. 43 (1921)“). Ostatní členy domácnosti (sourozence, tchyni) jen do přepisu, případně do `SIDE`.
+  („tkadlec v Horní Lhotě čp. 12 (1921)“). Ostatní členy domácnosti (sourozence, tchyni) jen do přepisu, případně do `SIDE`.
 - `shrnuti`: kdo v domě žil a s jakými daty narození; rozpory s matrikou výslovně.
 
-Vzor `orig` v `prepisy.json` (sčítání 1921; jedna osoba = jeden řádek, sloupce v pořadí archu oddělené „|“):
+Vzor `orig` v `prepisy.json` (sčítání 1921, údaje smyšlené; jedna osoba = jeden řádek, sloupce v pořadí archu
+oddělené „|“):
 ```
-[Arch] Sčítací arch pro bytovou stranu: Novák Jan, domkář. Země: Čechy, soudní okres: Plánice, obec: Zbyslav, čp. 43, byt 1
+[Arch] Sčítací arch pro bytovou stranu: Novák Jan, tkadlec. Země: Čechy, soudní okres: Holice, obec: Horní Lhota, čp. 12, byt 1
 [Sloupce] pořadí | příjmení | jméno | poměr k majiteli bytu | pohlaví | rodinný stav | narozen | rodiště a) obec,
   b) soudní okres, c) země | od kdy bydlí v obci | domovská příslušnost | národnost | náboženství | čtení a psaní |
   povolání: druh, postavení, závod | 16. 7. 1914: činný?, druh, postavení
-[1] Novák | Jan | majitel bytu | mužské | ženatý | 26. července 1887 | a) Zbyslav, b) Plánice, c) Čechy | od narození |
-  Zbyslav, Plánice, Čechy | česká | římsko-katolické | čte a píše | zemědělství, samostatný majitel | ano, zemědělství
-[2] Nováková | Anna | manželka | ženské | vdaná | 4. srpna 1888 | …
-[Podpis] V Zbyslavi dne 16. února 1921, Novák Jan; sčítací komisař […]
+[1] Novák | Jan | majitel bytu | mužské | ženatý | 3. března 1885 | a) Horní Lhota, b) Holice, c) Čechy | od narození |
+  Horní Lhota, Holice, Čechy | česká | římsko-katolické | čte a píše | tkalcovství, samostatný živnostník | ano, tkalcovství
+[2] Nováková | Anna | manželka | ženské | vdaná | 12. října 1887 | …
+[Podpis] V Horní Lhotě dne 17. února 1921, Novák Jan; sčítací komisař […]
 ```
 Sloupce 1921: 1 pořadí, 2 příjmení, 3 jméno, 4 poměr k majiteli bytu, 5 pohlaví, 6 rodinný stav, 7 den / měsíc / rok
 narození, 8 rodiště, 9 od kdy bydlí v obci, 10 domovská příslušnost, 11 národnost (mateřský jazyk), 12 náboženství,
 13 čtení a psaní, 14–16 povolání (druh, postavení, závod), 17–19 povolání 16. 7. 1914, 20 poznámka.
 Starší ročníky přepisuj stejně podle hlavičky jejich archu.
 
-`cs`: souvislý text pro rodinu („Při sčítání v únoru 1921 žil v domě čp. 43 domkář Jan Novák (* 26. 7. 1887)
+`cs`: souvislý text pro rodinu („Při sčítání v únoru 1921 žil v domě čp. 12 tkadlec Jan Novák (* 3. 3. 1885)
 s manželkou Annou…“), vysvětli staré pojmy (domkář, výměnkář, podruh, domovská obec).
 
-Svazek u ostatních portálů ručně (`zapis.py svazky`): `archiv` = archiv a fond („SOkA Klatovy – sčítací operáty“),
-`svazek` = „Sčítání lidu 1921, soudní okres Plánice, Zbyslav čp. 43“, `url` = stránka sady nebo domu.
+Svazek u ostatních portálů ručně (`zapis.py svazky`): `archiv` = archiv a fond („SOkA Pardubice – sčítací operáty“),
+`svazek` = „Sčítání lidu 1921, soudní okres Holice, Horní Lhota čp. 12“, `url` = stránka sady nebo domu.

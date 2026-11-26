@@ -131,6 +131,12 @@ def kniha_page(kniha):
     return kniha, page
 
 
+def _cislo_domu(page):
+    """Číslo popisné stránky domu ze sčítání: v seznamu domů je zvýrazněné, titulek ho u prvního domu nemá."""
+    m = re.search(r"<big>\s*Nr\.\s*([^<]+?)\s*</big>", page) or re.search(r"Nr\.\s*([^<|]+?)\s*(?:\||</title>)", page)
+    return m.group(1).strip() if m else ""
+
+
 def info(kniha):
     kniha, page = kniha_page(kniha)
     fields = {}
@@ -138,10 +144,13 @@ def info(kniha):
         lab, val = text(m.group(1)).rstrip(":"), text(m.group(2))
         if val and lab not in fields:
             fields[lab] = val
-    if kniha.isdigit():   # stránka domu ze sčítání: název „Census 1921 Zbyslav (Zbyslaw), Nr. 43“ a okresy
+    if kniha.isdigit():   # stránka domu ze sčítání: název „Census 1921 Neprochovy (…), Nr. 12“ a okresy
         m = re.search(r"<title>(.*?)(?:\s*\|[^|<]*)?</title>", page, re.S)
         if m:
             fields["Název"] = text(m.group(1))
+            cp = _cislo_domu(page)
+            if cp and "Nr." not in fields["Název"]:   # titulek prvního domu sady číslo neuvádí
+                fields["Název"] += f", Nr. {cp}"
         m = re.search(r"Politický okres:.*?</div>", page, re.S)
         if m:
             fields["Okres"] = text(m.group(0)).replace(" ,", ",")
@@ -307,7 +316,7 @@ def scitani_okres(arch, rok, okres):
 
 
 def _sedi(nazev, hledana):
-    """Obec „Zbyslav“ sedí na „Zbyslav (Zbyslaw)“ i na osadu „Újezd u Plánice - Zbyslav (Aujezd - Zbyslaw)“."""
+    """Obec „Neprochovy“ sedí na „Neprochovy (Neprachow)“ i na osadu „Těchonice - Neprochovy (…)“."""
     casti = re.split(r"\s+-\s+|\s*[(),]\s*", nazev)
     return _bez_diakritiky(hledana) in [_bez_diakritiky(c) for c in casti if c.strip()]
 
@@ -350,8 +359,8 @@ def scitani(obec, okres=None):
 
 def domy(id_):
     _, page = kniha_page(id_)
-    m = re.search(r"Nr\.\s*([^<|]+?)\s*(?:\||</title>)", page)
-    seznam = [(m.group(1).strip(), id_)] if m else []
+    cp = _cislo_domu(page)
+    seznam = [(cp, id_)] if cp else []
     seznam += [(c.strip(), i) for i, c in re.findall(r'<a href="/iipimage/(\d+)[^"]*">\s*Nr\.\s*([^<]+)</a>', page)]
     if not seznam:
         sys.exit(f"Stránka {id_} nemá seznam domů – je to opravdu stránka domu ze sčítání (id z „scitani“)?")
