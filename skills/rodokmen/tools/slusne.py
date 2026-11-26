@@ -298,7 +298,8 @@ def _spojeni_selhalo(host, e):
 
 # Kramerius: 403 u stránek, OCR a obrázků neveřejného díla (autorský zákon, licence) není blokace – dílo jen není
 # volně dostupné; zastavit kvůli němu celý web na hodiny by zastavilo i veřejná díla.
-KRAMERIUS = re.compile(r"kramerius|(^|\.)(ndk|digitalniknihovna|ceskadigitalniknihovna)\.cz$", re.I)   # CDK: api.ceskadigitalniknihovna.cz
+KRAMERIUS = re.compile(r"kramerius|(^|\.)(ndk|digitalniknihovna|ceskadigitalniknihovna)\.cz$|"   # CDK: api.ceskadigitalniknihovna.cz
+                       r"(^|\.)digitalnistudovna\.mo\.gov\.cz$", re.I)   # vojenská knihovna (totéž jako kramerius.army.cz)
 KRAMERIUS_DILO = re.compile(r"/(item|uuid)[/:].*/(ocr|streams|full|image|thumb|preview|foxml)|/iiif/|/ocr\b|/img\b", re.I)
 
 

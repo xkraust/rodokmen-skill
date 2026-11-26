@@ -94,7 +94,8 @@ z nich brát snímky: `portaly.md`, formát dat: `data.md`.
   v domovské faře. Spojuje **název obce v původním pravopisu**.
 - **Voják:** nejdřív **pluk** (podle domovské obce; doplňovací okrsky pluků uvádí Wredeho přehled) → do 1820
   odvodní listiny (Musterlisten, po plucích a letech) / od 1820 kmenové listy (Grundbuchblätter) → vojenské matriky
-  pluku (ve Vídni, uzavřené 100 let) → seznamy ztrát 1914–18 (`portaly.md` → Noviny) a kartotéka ztrát ve Vídni.
+  pluku (ve Vídni, uzavřené 100 let; část matrik českých pluků je online – `portaly.md` → Vojáci – vojenská digitální
+  knihovna) → seznamy ztrát 1914–18 (`portaly.md` → Noviny a tamtéž) a kartotéka ztrát ve Vídni.
   Kmenové listy mužů s domovskou obcí v Čechách, na Moravě a ve Slezsku: ročníky asi 1865–1886 ve VÚA–VHA Praha
   (Kriegsarchiv uvádí totéž), starší ročníky ve Vídni (Kriegsarchiv, asi 1820–1864 i na mikrofilmech FamilySearch),
   **ročníky 1887–1898 z velké části skartované** – tam hledej v seznamech ztrát a matrikách.
@@ -133,7 +134,8 @@ Ostatní archivy jsou většinou jen na písemnou žádost – zapiš do `archiv
 - **Kriegsarchiv (Vídeň), vše offline:** vojenské matriky 1633–1938 (podle pluku, 100 let uzavřené), kmenové listy
   1820–1918 (ročníky asi 1790–1900; ročníky do ~1864 jsou i na mikrofilmech FamilySearch), odvodní listiny
   1740–1820 (podle pluku a roku), kartotéky ztrát 1914–18 (asi 40 milionů karet vč. zajatců a padlých, písemná žádost).
-  Přes 90 % písemností je německy – čtení kurentu je nutnost.
+  Přes 90 % písemností je německy – čtení kurentu je nutnost. U mužů z českých zemí zkus nejdřív online prameny
+  v Praze (`portaly.md` → Vojáci – vojenská digitální knihovna).
 - **Wiener Stadt- und Landesarchiv (WStLA):** policejní přihlášky asi 1904–1975 (jen žádostí, originály nepůjčuje;
   starší pro narozené před 1897 na FamilySearch, viz Mrtvé body → Vídeň),
   protokoly ohledání mrtvol (Totenbeschauprotokolle), pozůstalosti (Verlassenschaften), druhopisy starokatolických matrik.

@@ -11,7 +11,7 @@ Vznikl při skutečném hledání předků jedné rodiny.
 
 **Autor a správce:** Jindřich Šaršon ([sarsonj@gmail.com](mailto:sarsonj@gmail.com), [GitHub](https://github.com/sarsonj))
 
-**Aktuální verze: 0.13.6 (vydána 26. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
+**Aktuální verze: 0.13.7 (vydána 26. 11. 2026).** Skill se průběžně vyvíjí – opravuji chyby a doplňuji postupy pro další archivy
 podle toho, na co narazíte vy. Jak aktualizovat, najdete v části [Instalace](#instalace), přehled změn
 po verzích v [CHANGELOG.md](CHANGELOG.md).
 
@@ -66,7 +66,7 @@ s přepisem a překladem, „Co hledáme“ a deník hledání. **[Podívejte se
 AI se vyvíjí rychle a za pár měsíců může skill dávat lepší, nebo jen jiné výsledky. Proto je tu uvedeno, s čím byl
 vyzkoušený.
 
-- **Stav k 26. 11. 2026 (verze 0.13.6):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
+- **Stav k 26. 11. 2026 (verze 0.13.7):** Claude Code s hlavním modelem **Claude Opus 5.5**. Pomocníci, kteří hledají
   a čtou matriky jako první, běží na **Claude Sonnet 5.5**. Každý jejich nález pak hlavní model ověřuje na snímku.
 - Vyzkoušeno na několika skutečných rodokmenech (největší má 243 předků v 11 generacích a 192 matričních zápisů).
   Výsledek se porovnával s větví, kterou jsme léta dělali ručně.
@@ -149,6 +149,7 @@ skills/rodokmen/
   zápis přiblíží v jejich prohlížeči a uloží snímek obrazovky. Opava taky přes prohlížeč. Funguje to, ale je to
   pomalejší.
 - U úředníků, vojáků a lékařů hledá i v **dobových novinách** (ANNO, Kramerius) – kariéra, vyznamenání, parte.
+- **Vojáky z 1. světové války** hledá v seznamech ztrát a vojenských matrikách (digitální knihovna Ministerstva obrany).
 - Umí načíst **rodinný strom z MyHeritage** a dalších služeb (export GEDCOM, z MyHeritage i zálohu stromu z programu
   Family Tree Builder) a udělat z něj plán hledání. Hotový rodokmen umí **vyexportovat do GEDCOM** i s výřezy
   zápisů a fotkami (pro Gramps, MyHeritage a jiné programy; do MyHeritage s obrázky přes program Family Tree Builder,
@@ -203,7 +204,7 @@ tady v repozitáři.
   npm při instalaci webu a přihlášení nástroje pro nasazení (Cloudflare, Netlify, CapRover), pokud web zveřejňujete. Mimo
   projekt nic nemažou ani nepřepisují – kromě nejdéle nepoužitých snímků ve vlastní mezipaměti nad limitem.
 - **Na které servery chodí:** archivní portály (ARON SOA Zámrsk, SOA Třeboň, SOA Plzeň – Porta fontium, SOA Praha –
-  eBadatelna, AHMP, Národní archiv, SOA Litoměřice, Matricula), noviny (ANNO, Kramerius), OpenStreetMap (mapa
+  eBadatelna, AHMP, Národní archiv, SOA Litoměřice, Matricula), noviny (ANNO, Kramerius), vojenská digitální knihovna MO (kramerius.army.cz), OpenStreetMap (mapa
   a souřadnice obcí) a při instalaci webu registr npm.
   Na Cloudflare (nebo Netlify) jen tehdy, když web sami zveřejníte. Nikam jinam nic neposílají, ani vaše data, ani poznámky.
 - **Doporučení:** nechte v Claude Code zapnuté schvalování příkazů, aspoň dokud si nezvyknete, co Claude dělá.

@@ -463,12 +463,48 @@ A když osoba „chybí“ v očekávaných matrikách (stěhovala se se službo
   „Hromadko Wenzel, Inft., IR. Nr. 98, 4. Marschkomp., Rokosnitz, 1881, Schuß …“. Pořadí je „Příjmení Jméno“, německy
   (Wenzel, Johann) a zkus i bez háčků; shodu potvrď obcí a ročníkem. Běžná příjmení mají tisíce výskytů – hledej
   vzácným příjmením nebo domovskou obcí v německém tvaru. Krajské noviny otiskovaly seznamy padlých okresu.
-  Padlí na frontě v domovské matrice zemřelých často nejsou. Kartotéka padlých VÚA je jen v Digitální badatelně MO
-  po registraci (stará databáze VÚA už neexistuje).
+  Padlí na frontě v domovské matrice zemřelých často nejsou. Seznamy ztrát i vojenské matriky má také česká vojenská
+  knihovna (níže). Kartotéka padlých VÚA je jen v Digitální badatelně MO po registraci (stará databáze VÚA už neexistuje).
 - **Rizika:** jména se opakují a fulltext šumí („Winter“ = i zima, „Novák“ = nový obyvatel). Ztotožni jen při shodě víc údajů (bydliště,
   funkce navazující na matriku, časová posloupnost). Zdroj je „J“ (jiný pramen) – vodítko a příběh, ne náhrada matriky.
 - Výstřižky jsou skvělé na web: ulož do `dokumenty/noviny/`, přes `vyrez.py` a do `dokumenty.json`.
 - Pořadí: nejdřív matriky; noviny, když chybí stopa kvůli stěhování, nebo když jde o úředníka/vojáka a chceme příběh.
+
+## Vojáci – vojenská digitální knihovna (`tools/kramerius.py --armada`)
+Digitální studovna Ministerstva obrany ČR: `kramerius.army.cz` (totéž i `digitalnistudovna.mo.gov.cz`), bez přihlášení,
+skriptem přes brzdu. **Kdy:** muž za 1. světové války padl, zemřel v lazaretu, byl raněn nebo zajat (přípisek o smrti
+„v poli“ u křtu, jméno na pomníku padlých), nebo ho chceme zařadit k pluku.
+
+**Co tam je** (ověřeno 11/2026):
+- seznamy ztrát: `Verlustliste` (raněn, zajat, padl), `Nachrichten über Verwundete und Kranke` (u zemřelých i datum,
+  místo úmrtí a číslo hrobu), abecední rejstříky `Alphabetisches Verzeichnis …`,
+- vojenské matriky (tituly `Matriky …` pěších pluků a praporů myslivců, ze sbírky VÚA–VHA; ověřené svazky jsou matriky
+  zemřelých: datum a místo úmrtí, rodiště, věk, příčina, pohřeb) a `Kniha zemřelých v polních nemocnicích`,
+- dobové vojenské a legionářské tisky.
+
+**Příkazy:**
+```
+python3 -I tools/kramerius.py --armada 'text_ocr:"Nowak Johann 1885"~15' 20      # jméno a ročník poblíž sebe
+python3 -I tools/kramerius.py --armada 'text_ocr:"Novák Josef" AND root_title:Matriky*'
+python3 -I tools/kramerius.py --armada 'text_ocr:Nowak AND text_ocr:Taus'         # příjmení a okres či obec
+python3 -I tools/kramerius.py --armada --text <uuid nebo odkaz>                  # celý text stránky
+python3 -I tools/kramerius.py --armada --snimek <uuid nebo odkaz> pracovni/vha/x.jpg
+```
+
+**Jak hledat:**
+- Pořadí je „Příjmení Jméno“. Zkus německý i český tvar (Johann/Jan, Wenzel/Václav) a příjmení i bez háčků.
+- Stránky matrik mají přepsaný seznam „Příjmení Jméno rok narození–rok úmrtí“, rejstříky „Příjmení Jméno strana“.
+- **Obec bývá v tisku nebo v OCR zkomolená** (i první písmeno): hledej jméno s ročníkem bez obce. Dotaz na samotnou
+  obec s příjmením najde i bratry a sousedy – podle nich poznáš, u kterých pluků muži z obce sloužili.
+- **Seznamy ztrát nemají `datum_begin`** – omezení na roky je z výsledků vyřadí.
+- Běžná jména mají mnoho jmenovců: ztotožni až při shodě ročníku a obce (nebo pluku a dalších údajů); záznam se
+  zkomolenou obcí popiš v poznámce. Domovská obec není rodiště – rodiště a datum ověř křtem.
+- Nenalezení v matrikách je jen orientační (hledá se v přepsaném textu, ne v rukopisu) – do deníku to tak zapiš.
+
+**Čtení a zápis:** nález vždy ověř na snímku (`--snimek`, pak `vyrez.py`, `ramecek.py`); úryvek z OCR nestačí. Seznamy
+ztrát jsou pramen `J`. Do `odkaz` dej adresu, kterou nástroj vypíše (`/view/…?page=…`); `/search/handle/…` v prohlížeči
+nefunguje, přestože server odpoví 200. Snímky z této knihovny brzda neukládá do mezipaměti – stahuj jen ty, které čteš,
+a před stažením se podívej do `pracovni/`. Neveřejné dílo (hláška o licenci) jde číst jen v badatelně.
 
 ## Ostatní portály – obecný postup
 Nástroje pro ně hotové nejsou. Postupuj takto a výsledek zapiš do `STAV.md`, ať to příště víš:

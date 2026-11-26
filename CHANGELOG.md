@@ -6,6 +6,21 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.7 – 26. 11. 2026
+
+Hledání vojáků z 1. světové války ve vojenské digitální knihovně.
+
+**Nové**
+- `kramerius.py --armada` hledá v digitální knihovně Ministerstva obrany (seznamy ztrát, vojenské matriky).
+- U každého nálezu je odkaz do prohlížeče; `--text` vypíše celý text stránky a `--snimek` stáhne snímek (obojí i pro
+  Národní knihovnu).
+
+**Opravy**
+- `kramerius.py`: dotaz s `OR` vrací jen stránky; neveřejné nebo chybějící dílo ohlásí srozumitelně.
+
+**Návody**
+- Nový oddíl o vojenské knihovně v `portaly.md`: co v ní je, jak hledat a na co si dát pozor.
+
 ## 0.13.6 – 26. 11. 2026
 
 **Opravy**

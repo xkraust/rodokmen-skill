@@ -128,6 +128,8 @@ Pravidla, která chrání kvalitu:
   „bey Hohenelbe“ = u Vrchlabí).
 - **Sčítání lidu 1857–1921** ukáže, kdo spolu v domě bydlel (sourozenci, tchyně, výměnkáři), rodiště přistěhovalých
   a domovskou obec; data narození v něm bývají o rok vedle – matrika má přednost (`reference/scitani.md`).
+- **Muž padlý, zemřelý nebo raněný za 1. světové války:** farní matrika o tom často mlčí – hledej v seznamech ztrát
+  a vojenských matrikách (`kramerius.py --armada`; `portaly.md` → Vojáci – vojenská digitální knihovna).
 - U úředníků, vojáků, lékařů, učitelů, farářů zkus noviny a ročenky (`portaly.md` → Noviny); pro 17. století soupis
   poddaných 1651, berní rulu a gruntovní knihy (`portaly.md` → Starší prameny) – matriky před ~1650 skoro nejsou.
 - **Spornou věc**, kterou nerozhodneš (dvě čtení, dva kandidáti), ukaž uživateli s výřezem a nech ho rozhodnout; do té
@@ -257,7 +259,7 @@ a `zdroje/` (výřezy pro web / plné rozlišení), `dokumenty/` (originály od 
 | `policie_prihlasky.py` | pražské policejní přihlášky 1850–1914 |
 | `soal_zoomify.py` | snímek SOA Litoměřice (knihu najdi v prohlížeči); ZA Opava jen v prohlížeči (`portaly.md`) |
 | `matricula_dl.sh`, `matricula_batch.sh` | snímky z Matriculy (Rakousko, Bavorsko, Polsko…) |
-| `anno.py`, `anno_snap.py`, `kramerius.py` | noviny: ANNO (rakouské, `--ztraty` = seznamy ztrát 1914–1919), Kramerius (české) |
+| `anno.py`, `anno_snap.py`, `kramerius.py` | noviny: ANNO (rakouské, `--ztraty` = seznamy ztrát 1914–1919), Kramerius (české); `kramerius.py --armada` = vojenská knihovna (seznamy ztrát, vojenské matriky), `--text`, `--snimek` |
 | `mapa_knihy.py` | mapa knihy po vsích a montáž sloupce jmen (`matriky.md`) |
 | `folio.py` | folio nebo strana → číslo snímku z několika známých dvojic (`matriky.md`) |
 | `cache.py` | sdílená mezipaměť snímků; uložení snímku z prohlížeče |
