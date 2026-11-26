@@ -6,6 +6,12 @@ dá v repozitáři **Watch → Custom → Releases**.
 
 Projekt založený starší verzí Claude sám nabídne aktualizovat (pozná to podle souboru `VERZE`).
 
+## 0.13.6 – 26. 11. 2026
+
+**Opravy**
+- Rozdílový export do GEDCOM (`--rozdil`) čísluje fotky nad čísly, která už má strom z Family Tree Builderu.
+  Shodné číslo mohlo způsobit, že se portrét v okénku osoby neukázal nebo ukázal cizí fotku.
+
 ## 0.13.5 – 26. 11. 2026
 
 **Opravy**

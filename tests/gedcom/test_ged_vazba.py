@@ -20,6 +20,9 @@ STROM = """0 HEAD
 1 NAME Petr /Novák/
 1 BIRT
 2 DATE 1980
+1 OBJE
+2 FILE C:\\strom\\P500040.jpg
+2 _PHOTO_RIN MH:P500040
 1 FAMC @F1@
 0 @I2@ INDI
 1 _UID U2
@@ -203,6 +206,16 @@ def test_rozdil():
        r.stdout + r.stderr)
     r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--bez-obrazku")
     ok("--rozdil: existující výstup bez --prepsat odmítnut", r.returncode != 0, r.stderr)
+
+    # Strom z FTB má fotky MH:P500001…; naše čísla musí být nad nimi, jinak _PARENTRIN portrétu ukáže na cizí fotku.
+    r = spust(d, "ged_export.py", "--rozdil", "dokumenty/strom.ged", "--slozka", "--se-zmenenymi", "--prepsat")
+    import re
+    slozka = os.path.join(prac, "rozdil")
+    text = open(os.path.join(slozka, "rodokmen.ged"), encoding="utf-8-sig").read() if r.returncode == 0 else ""
+    cisla = [int(n) for n in re.findall(r"(?m)^\d+ _PHOTO_RIN MH:P(\d+)$", text)]
+    rodice = [int(n) for n in re.findall(r"_PARENTRIN @P(\d+)@", text)]
+    ok("--rozdil --slozka: čísla fotek nad čísly stromu (P500040 → od P502001)",
+       cisla and min(cisla) == 502001 and all(n in cisla for n in rodice), (r.stdout + r.stderr)[-800:] or cisla[:5])
     shutil.rmtree(os.path.dirname(d), ignore_errors=True)
 
 

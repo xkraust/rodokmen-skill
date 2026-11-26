@@ -739,6 +739,13 @@ class Export:
         self.tree_date = datetime.date.fromtimestamp(os.path.getmtime(self.diff_path))
         self.tree_age_days = (datetime.date.today() - self.tree_date).days
         self.tree_ind = {r["_id"]: r for r in self.tree.values() if r["_type"] == "INDI"}
+        # Fotky stromu z FTB mají čísla MH:P500001… – stejná jako naše. Při importu do projektu se stromem by výřez
+        # portrétu (_PARENTRIN) ukázal na cizí fotku a osobní fotka by se u osoby neukázala. Proto čísla nad stromem,
+        # s rezervou na fotky přidané ve FTB po jeho exportu.
+        with open(self.diff_path, encoding="utf-8-sig", errors="replace") as f:
+            used = [int(n) for n in re.findall(r"MH:P(\d+)", f.read())]
+        if used:
+            self.photo_rin = max(self.photo_rin, (max(used) // 1000 + 2) * 1000)
         in_tree = set()
         for k in self.persons:
             g = self.P[k].get("ged")
