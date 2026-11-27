@@ -280,6 +280,7 @@ z `n`, zbytek `t` jako `NOTE`, citace zápisů z `r`. Překážky:
   Párování `SIDE` s osobami původního stromu (`ged`, viz výše) by to vyřešilo, proto rozhodnout až spolu s ním.
 
 Rozhodnutí zatím: ponechat jako poznámku; řešit ve fázi 2 po zkoušce 1 (`_UID`, stabilita `@I…@`).
+Rozpracováno v `plán-boční-příbuzní-gedcom.md` (volba `--bocni`, 27. 11. 2026).
 
 ## Doporučený postup: rozdílový GEDCOM přes FTB
 Nový režim `ged_export.py --rozdil dokumenty/strom.ged`:
